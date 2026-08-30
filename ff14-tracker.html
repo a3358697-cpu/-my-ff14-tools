@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>以太紀錄簿 ‧ FF14 Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0a0807;
+    --bg-void-2:#120e0c;
+    --bg-panel:#1a1411;
+    --bg-panel-2:#221a16;
+    --bg-panel-3:#2a201b;
+    --border-soft:#54453a;
+    --border-gold:#7d6a54;
+    --text-parchment:#e8ddd0;
+    --text-muted:#a4917f;
+    --text-dim:#6b5c4d;
+    --accent-gold:#c3a679;
+    --accent-gold-soft:#87715a;
+    --accent-aether:#6fd3e0;
+    --accent-aether-dim:#3a7d8a;
+    --accent-coral:#e0876a;
+    --accent-violet:#b48ee0;
+    --shadow-deep: 0 20px 60px rgba(0,0,0,0.55);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-size:17px;
+    background:
+      radial-gradient(circle, rgba(195,166,121,0.05) 1px, transparent 1.5px) 0 0/28px 28px,
+      radial-gradient(circle at 15% 0%, rgba(195,166,121,0.045), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(58,125,138,0.04), transparent 40%),
+      linear-gradient(180deg, var(--bg-void) 0%, var(--bg-void-2) 100%);
+    color:var(--text-parchment);
+    font-family:'Noto Sans TC','Noto Serif TC',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{
+    max-width:960px;
+    margin:0 auto;
+    padding:26px 18px 70px;
+  }
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:18px;
+    padding-bottom:18px;
+    border-bottom:1px solid var(--border-soft);
+    position:relative;
+  }
+  header.top::after{
+    content:'◆';
+    position:absolute;
+    left:50%;bottom:-7px;
+    transform:translateX(-50%);
+    font-size:9px;
+    color:var(--accent-gold-soft);
+    background:var(--bg-void-2);
+    padding:0 9px;
+  }
+  .crystal{
+    width:36px;height:36px;flex:0 0 auto;position:relative;
+    animation:spin 14s linear infinite;
+  }
+  .crystal svg{width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(111,211,224,0.55));}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){.crystal{animation:none;}}
+  .title-block{flex:1;min-width:0;}
+  h1{
+    font-family:'Cinzel','Noto Serif TC',serif;
+    font-weight:600;
+    font-size:26px;
+    letter-spacing:0.06em;
+    margin:0 0 3px;
+    color:var(--text-parchment);
+  }
+  h1 .sub-cn{
+    font-family:'Noto Serif TC',serif;
+    font-size:16px;
+    font-weight:500;
+    color:var(--accent-aether);
+    letter-spacing:0.15em;
+    margin-left:8px;
+  }
+  .clock{
+    font-family:'Cinzel',serif;
+    font-size:13px;
+    color:var(--text-muted);
+    letter-spacing:0.05em;
+    text-align:right;
+    line-height:1.6;
+    flex:0 0 auto;
+  }
+  .clock b{color:var(--accent-gold);font-weight:600;}
+
+  /* ---------- Sheet: sections connected, divided by lines ---------- */
+  .sheet{
+    position:relative;
+    border:1px solid var(--border-soft);
+    border-radius:16px;
+    background:linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+    box-shadow:var(--shadow-deep);
+    overflow:hidden;
+  }
+  .section-row{
+    display:grid;
+    grid-template-columns:120px 1fr;
+    border-top:1px solid var(--border-soft);
+    position:relative;
+  }
+  .section-row:first-child{border-top:none;}
+  .section-row:not(:first-child)::before{
+    content:'◆';
+    position:absolute;
+    top:-6px;left:50%;
+    transform:translateX(-50%);
+    font-size:8px;
+    line-height:1;
+    color:var(--accent-gold-soft);
+    background:var(--bg-panel-2);
+    padding:0 9px;
+  }
+  .section-label{
+    padding:22px 14px 22px 22px;
+    display:flex;
+    flex-direction:column;
+  }
+  .section-label h2{
+    font-family:'Noto Serif TC',serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0;
+    line-height:1.4;
+    color:var(--text-parchment);
+  }
+  .section-label h2::before{
+    content:'◆';
+    display:inline-block;
+    font-size:8px;
+    color:var(--accent-gold-soft);
+    margin-right:8px;
+    vertical-align:middle;
+    transform:translateY(-2px);
+  }
+  .section-reset-btn{
+    margin-top:8px;
+    align-self:flex-start;
+    padding:6px 13px;
+    font-size:12px;
+  }
+  .section-content{
+    padding:22px 24px 22px 0;
+    min-width:0;
+  }
+  @media (max-width:680px){
+    .section-row{grid-template-columns:1fr;}
+    .section-label{padding:18px 18px 6px;}
+    .section-label h2{margin-bottom:2px;}
+    .section-content{padding:8px 18px 22px;}
+  }
+
+  /* ---------- shared form bits ---------- */
+  .add-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  input[type=text], input[type=number], input[type=date], input[type=datetime-local], textarea{
+    background:var(--bg-void-2);
+    border:1px solid var(--border-soft);
+    color:var(--text-parchment);
+    font-family:'Noto Sans TC',sans-serif;
+    font-size:15.5px;
+    padding:10px 13px;
+    border-radius:8px;
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input[type=text]{flex:1;min-width:140px;}
+  input:focus, textarea:focus{
+    border-color:var(--accent-aether-dim);
+    box-shadow:0 0 0 2px rgba(111,211,224,0.15);
+  }
+  input:focus-visible, textarea:focus-visible, button:focus-visible{
+    outline:2px solid var(--accent-aether);
+    outline-offset:2px;
+  }
+  button{
+    font-family:'Noto Sans TC',sans-serif;
+    cursor:pointer;
+    border-radius:8px;
+    border:1px solid var(--border-soft);
+    background:var(--bg-panel-3);
+    color:var(--text-parchment);
+    font-size:14.5px;
+    padding:10px 16px;
+    transition:border-color .15s ease, color .15s ease, background .15s ease;
+  }
+  button:hover{border-color:var(--accent-gold-soft);color:var(--accent-gold);}
+  .btn-primary{
+    background:linear-gradient(160deg, rgba(195,166,121,0.22), rgba(195,166,121,0.07));
+    border-color:var(--accent-gold-soft);
+    color:var(--accent-gold);
+    font-weight:600;
+  }
+  .btn-primary:hover{border-color:var(--accent-gold);color:#fff;}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--text-dim);padding:6px 8px;font-size:17px;line-height:1;}
+  .btn-ghost:hover{color:var(--accent-coral);}
+
+  ul.item-list{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px;}
+  .item-row{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--bg-void-2);
+    border:1px solid var(--border-soft);
+    border-radius:8px;
+    padding:8px 11px;
+  }
+  .item-row.done{opacity:0.5;}
+  .item-row.done .item-text{text-decoration:line-through;}
+  .crystal-check{
+    flex:0 0 auto;width:16px;height:16px;border:1.5px solid var(--accent-gold-soft);background:transparent;
+    transform:rotate(45deg);cursor:pointer;padding:0;border-radius:2px;
+    transition:border-color .15s ease, background .15s ease, box-shadow .15s ease;
+  }
+  .crystal-check.checked{background:var(--accent-aether);border-color:var(--accent-aether);box-shadow:0 0 10px 1px rgba(111,211,224,0.75);}
+  .item-text{font-size:15px;color:var(--text-parchment);word-break:break-word;outline:none;cursor:text;border-bottom:1px dotted transparent;}
+  .item-text:focus{border-bottom-color:var(--accent-gold-soft);}
+  .item-text:hover{border-bottom-color:var(--border-soft);}
+  .empty-state{text-align:center;padding:26px 12px;color:var(--text-dim);font-size:14px;border:1px dashed var(--border-soft);border-radius:10px;width:100%;}
+  .empty-state .glyph{font-size:20px;display:block;margin-bottom:6px;color:var(--accent-gold-soft);}
+
+  /* ---------- Submarines: character-based, compact ---------- */
+  .char-list{display:flex;flex-direction:column;gap:8px;}
+  .char-card{
+    background:var(--bg-void-2);
+    border:1px solid var(--border-soft);
+    border-left:4px solid var(--char-color, var(--accent-gold));
+    border-radius:9px;
+    padding:9px 12px 10px;
+  }
+  .char-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .char-color-input{width:22px;height:22px;flex:0 0 auto;padding:0;border:1px solid var(--border-soft);border-radius:5px;background:none;cursor:pointer;}
+  .char-name-input{flex:1;min-width:60px;background:transparent;border:none;border-bottom:1px solid transparent;font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;color:var(--text-parchment);padding:3px 2px;}
+  .char-name-input:focus{border-bottom-color:var(--accent-aether-dim);box-shadow:none;}
+  .char-badge{font-size:10.5px;background:rgba(224,135,106,0.16);color:var(--accent-coral);border:1px solid rgba(224,135,106,0.4);padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;display:none;}
+  .char-badge.show{display:inline-block;}
+  .char-del{margin-left:auto;}
+
+  .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media (max-width:560px){.slot-grid{grid-template-columns:repeat(2,1fr);}}
+  .slot-cell{display:flex;flex-direction:column;gap:4px;}
+  .slot-countdown{font-family:'Cinzel',serif;font-weight:600;font-size:12px;color:var(--accent-aether);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .slot-countdown.ready{color:var(--accent-coral);}
+  .slot-date-row{display:flex;align-items:center;gap:2px;}
+  .slot-date-row span{font-size:10px;color:var(--text-dim);flex:0 0 auto;}
+  .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:10.5px;text-align:center;}
+  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:10.5px;}
+
+  /* ---------- Goals ---------- */
+
+  /* ---------- Misc / notes ---------- */
+  textarea{width:100%;min-height:120px;resize:vertical;line-height:1.75;font-size:15.5px;}
+  .full-note{padding:20px 24px;border-top:1px solid var(--border-soft);}
+  .misc-note-label{font-size:13px;color:var(--text-dim);margin-bottom:8px;display:block;letter-spacing:0.05em;font-family:'Noto Serif TC',serif;font-weight:600;}
+
+  .image-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;align-items:center;}
+  .image-thumb{
+    position:relative;width:72px;height:72px;flex:0 0 auto;
+    border-radius:8px;overflow:hidden;border:1px solid var(--border-soft);
+    background:var(--bg-void-2);cursor:zoom-in;
+  }
+  .image-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .image-thumb .del-img{
+    position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+    background:rgba(0,0,0,0.65);color:var(--text-parchment);border:none;font-size:10px;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;padding:0;
+  }
+  .image-add-btn{
+    width:72px;height:72px;flex:0 0 auto;border-radius:8px;
+    border:1px dashed var(--border-soft);background:var(--bg-void-2);
+    color:var(--text-dim);font-size:22px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .image-add-btn:hover{color:var(--accent-gold);border-color:var(--accent-gold-soft);}
+
+  .lightbox{
+    position:fixed;inset:0;background:rgba(2,2,1,0.9);
+    display:none;align-items:center;justify-content:center;z-index:50;
+    padding:24px;cursor:zoom-out;
+  }
+  .lightbox.show{display:flex;}
+  .lightbox img{max-width:92vw;max-height:92vh;border-radius:8px;box-shadow:0 24px 70px rgba(0,0,0,0.6);}
+
+  .field-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .sub-field-label{font-size:12.5px;color:var(--text-dim);}
+
+  footer.foot{text-align:center;margin-top:30px;font-size:12.5px;color:var(--text-dim);letter-spacing:0.05em;}
+
+  @media (max-width:520px){
+    .clock{display:none;}
+    h1{font-size:21px;}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="top">
+    <div class="crystal" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <polygon points="50,4 90,30 90,70 50,96 10,70 10,30" fill="none" stroke="#6fd3e0" stroke-width="3"/>
+        <polygon points="50,20 74,35 74,65 50,80 26,65 26,35" fill="rgba(111,211,224,0.15)" stroke="#c3a679" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="6" fill="#6fd3e0"/>
+      </svg>
+    </div>
+    <div class="title-block">
+      <h1>Aetheryte Ledger<span class="sub-cn">以太紀錄簿</span></h1>
+    </div>
+    <div class="clock" id="clockBox">--:--:--</div>
+  </header>
+
+  <div class="sheet">
+
+    <!-- WEEKLY -->
+    <div class="section-row" id="panel-weekly">
+      <div class="section-label">
+        <h2>每週任務</h2>
+        <button class="section-reset-btn" id="weeklyResetBtn">重置</button>
+      </div>
+      <div class="section-content">
+        <div class="add-row">
+          <input type="text" id="weeklyInput" maxlength="60">
+          <button class="btn-primary" id="weeklyAddBtn">新增</button>
+        </div>
+        <ul class="item-list" id="weeklyList"></ul>
+      </div>
+    </div>
+
+    <!-- DAILY -->
+    <div class="section-row" id="panel-daily">
+      <div class="section-label">
+        <h2>每日任務</h2>
+        <button class="section-reset-btn" id="dailyResetBtn">重置</button>
+      </div>
+      <div class="section-content">
+        <div class="add-row">
+          <input type="text" id="dailyInput" maxlength="60">
+          <button class="btn-primary" id="dailyAddBtn">新增</button>
+        </div>
+        <ul class="item-list" id="dailyList"></ul>
+      </div>
+    </div>
+
+    <!-- SUBMARINES -->
+    <div class="section-row" id="panel-subs">
+      <div class="section-label">
+        <h2>潛水艇時間</h2>
+      </div>
+      <div class="section-content">
+        <div class="add-row">
+          <input type="text" id="charNameInput" maxlength="30">
+          <input type="color" id="charColorInput" class="char-color-input" value="#6fd3e0" title="選擇顏色">
+          <button class="btn-primary" id="charAddBtn">新增角色</button>
+        </div>
+        <div class="char-list" id="charList"></div>
+      </div>
+    </div>
+
+    <!-- GOALS -->
+    <div class="section-row" id="panel-goals">
+      <div class="section-label">
+        <h2>目標</h2>
+      </div>
+      <div class="section-content">
+        <div class="add-row">
+          <input type="text" id="goalTitleInput" maxlength="60">
+          <button class="btn-primary" id="goalAddBtn">新增目標</button>
+        </div>
+        <ul class="item-list" id="goalList"></ul>
+      </div>
+    </div>
+
+    <!-- MISC -->
+    <div class="section-row" id="panel-misc">
+      <div class="section-label">
+        <h2>雜項</h2>
+      </div>
+      <div class="section-content">
+        <div class="add-row">
+          <input type="text" id="miscInput" maxlength="60">
+          <button class="btn-primary" id="miscAddBtn">新增</button>
+        </div>
+        <ul class="item-list" id="miscList"></ul>
+      </div>
+    </div>
+
+    <!-- FREE NOTES: spans full width, not confined to the label column -->
+    <div class="full-note">
+      <span class="misc-note-label">自由筆記（自動儲存）</span>
+      <textarea id="miscNotes"></textarea>
+      <div class="image-row" id="imageRow">
+        <button class="image-add-btn" id="imageAddBtn" aria-label="新增圖片" type="button">＋</button>
+      </div>
+      <input type="file" id="imageFileInput" accept="image/*" multiple style="display:none;">
+    </div>
+
+  </div>
+
+  <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
+
+  <footer class="foot"><span id="storageMode"></span><br><span id="saveStatus">尚未儲存</span></footer>
+</div>
+
+<script>
+(function(){
+  const STORE_KEY = 'ff14-tracker-state-v2';
+  let state = null;
+  let saveTimer = null;
+  const subRefs = {}; // characterId -> { cardEl, badgeEl, slots:[{countdownEl, monthInput, dayInput, timeInput}] }
+
+  const hasCloudStorage = !!(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function');
+
+  async function storeGet(key){
+    if(hasCloudStorage){
+      try{ const r = await window.storage.get(key, false); return r ? r.value : null; }
+      catch(e){ return null; }
+    }
+    try{ return localStorage.getItem(key); }catch(e){ return null; }
+  }
+  async function storeSet(key, value){
+    if(hasCloudStorage){
+      try{ await window.storage.set(key, value, false); return true; }
+      catch(e){ console.error('雲端儲存失敗', e); return false; }
+    }
+    try{ localStorage.setItem(key, value); return true; }catch(e){ console.error('本機儲存失敗', e); return false; }
+  }
+
+  function defaultState(){
+    return {
+      settings:{ dailyResetHour:23, weeklyResetHour:23, weeklyResetDay:2 },
+      daily:{ periodStart:null, items:[] },
+      weekly:{ periodStart:null, items:[] },
+      characters:[],
+      goals:[],
+      misc:{ notes:'', items:[], images:[] }
+    };
+  }
+
+  function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+  async function load(){
+    const raw = await storeGet(STORE_KEY);
+    state = raw ? JSON.parse(raw) : null;
+    if(!state){
+      // migrate from old per-submarine v1 store if present
+      state = await migrateFromV1();
+    }
+    const d = defaultState();
+    if(!state.settings) state.settings = d.settings;
+    if(!state.daily) state.daily = d.daily;
+    if(!state.weekly) state.weekly = d.weekly;
+    if(!state.characters) state.characters = [];
+    if(!state.goals) state.goals = [];
+    state.goals = state.goals.map(g => g.text!==undefined ? g : { id:g.id||uid(), text:g.title||'', done:!!g.done });
+    if(!state.misc) state.misc = { notes:'', items:[], images:[] };
+    if(!state.misc.images) state.misc.images = [];
+  }
+
+  async function migrateFromV1(){
+    const raw = await storeGet('ff14-tracker-state-v1');
+    if(raw){
+      const old = JSON.parse(raw);
+      old.characters = [];
+      return old;
+    }
+    return defaultState();
+  }
+
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 400);
+  }
+  async function save(){
+    const ok = await storeSet(STORE_KEY, JSON.stringify(state));
+    const statusEl = document.getElementById('saveStatus');
+    if(statusEl) statusEl.textContent = ok ? '已儲存 · ' + new Date().toLocaleTimeString('zh-TW',{hour12:false}) : '儲存失敗，請確認網路或儲存權限';
+  }
+
+  // ---------- formatting (no year anywhere) ----------
+  function fmtCountdown(ms){
+    const s = Math.max(0, Math.floor(ms/1000));
+    const d = Math.floor(s/86400);
+    const h = Math.floor((s%86400)/3600);
+    const m = Math.floor((s%3600)/60);
+    const sec = s%60;
+    if(d>0) return `${d}天 ${h}小時 ${m}分`;
+    if(h>0) return `${h}小時 ${m}分 ${sec}秒`;
+    return `${m}分 ${sec}秒`;
+  }
+  function fmtClock(dt){
+    return dt.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  }
+  function fmtDateShort(dt){
+    return dt.toLocaleDateString('zh-TW',{month:'2-digit',day:'2-digit'});
+  }
+
+  // ---------- generic checklist renderer ----------
+  function renderChecklist(listEl, items, emptyText, emptyGlyph){
+    listEl.innerHTML = '';
+    if(!items.length){
+      listEl.innerHTML = `<li class="empty-state"><span class="glyph">${emptyGlyph}</span>${emptyText}</li>`;
+      return;
+    }
+    items.forEach(it=>{
+      const li = document.createElement('li');
+      li.className = 'item-row' + (it.done?' done':'');
+      li.innerHTML = `
+        <button class="crystal-check ${it.done?'checked':''}" aria-label="切換完成"></button>
+        <span class="item-text" contenteditable="true" spellcheck="false"></span>
+        <button class="btn-ghost" aria-label="刪除">✕</button>
+      `;
+      const textEl = li.querySelector('.item-text');
+      textEl.textContent = it.text;
+      textEl.addEventListener('keydown', e=>{
+        if(e.key==='Enter'){ e.preventDefault(); textEl.blur(); }
+      });
+      textEl.addEventListener('blur', ()=>{
+        const val = textEl.textContent.trim();
+        if(val){ it.text = val; textEl.textContent = val; scheduleSave(); }
+        else{ textEl.textContent = it.text; }
+      });
+      li.querySelector('.crystal-check').addEventListener('click', ()=>{
+        it.done = !it.done; renderAll(); scheduleSave();
+      });
+      li.querySelector('.btn-ghost').addEventListener('click', ()=>{
+        items.splice(items.indexOf(it),1); renderAll(); scheduleSave();
+      });
+      listEl.appendChild(li);
+    });
+  }
+
+  function renderDaily(){
+    renderChecklist(document.getElementById('dailyList'), state.daily.items, '尚未新增每日任務，新增你的第一項吧。', '◈');
+  }
+  function renderWeekly(){
+    renderChecklist(document.getElementById('weeklyList'), state.weekly.items, '尚未新增每週任務，新增你的第一項吧。', '◈');
+  }
+  function renderMisc(){
+    renderChecklist(document.getElementById('miscList'), state.misc.items, '目前沒有雜項待辦。', '✦');
+  }
+
+  // ---------- submarines (character based, compact) ----------
+  function buildCharCard(ch){
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.style.setProperty('--char-color', ch.color || '#c3a679');
+    card.dataset.id = ch.id;
+
+    const head = document.createElement('div');
+    head.className = 'char-head';
+    head.innerHTML = `
+      <input type="color" class="char-color-input" value="${ch.color||'#6fd3e0'}" title="選擇顏色">
+      <input type="text" class="char-name-input" maxlength="30">
+      <span class="char-badge">可回收</span>
+      <button class="btn-ghost char-del" aria-label="刪除角色">✕</button>
+    `;
+    const nameInput = head.querySelector('.char-name-input');
+    nameInput.value = ch.name;
+    nameInput.addEventListener('input', ()=>{ ch.name = nameInput.value; scheduleSave(); });
+
+    const colorInput = head.querySelector('.char-color-input');
+    colorInput.addEventListener('input', ()=>{
+      ch.color = colorInput.value;
+      card.style.setProperty('--char-color', ch.color);
+      scheduleSave();
+    });
+
+    head.querySelector('.char-del').addEventListener('click', ()=>{
+      state.characters.splice(state.characters.indexOf(ch),1);
+      delete subRefs[ch.id];
+      renderCharacters(true);
+      scheduleSave();
+    });
+
+    card.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'slot-grid';
+
+    const slotEls = [];
+    ch.subs.forEach((sub, i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'slot-cell';
+      cell.innerHTML = `
+        <div class="slot-countdown"></div>
+        <div class="slot-date-row">
+          <input type="number" class="slot-month" min="1" max="12">
+          <span>/</span>
+          <input type="number" class="slot-day" min="1" max="31">
+        </div>
+        <input type="time" class="slot-time">
+      `;
+      const monthInput = cell.querySelector('.slot-month');
+      const dayInput = cell.querySelector('.slot-day');
+      const timeInput = cell.querySelector('.slot-time');
+      function commit(){
+        const m = Number(monthInput.value), d = Number(dayInput.value), t = timeInput.value;
+        if(!m || !d || !t) return;
+        const [hh, mm] = t.split(':').map(Number);
+        const now = new Date();
+        let candidate = new Date(now.getFullYear(), m-1, d, hh, mm, 0, 0);
+        while(candidate.getTime() <= Date.now()) candidate.setFullYear(candidate.getFullYear()+1);
+        sub.returnAt = candidate.getTime();
+        updateSubOrderAndCountdowns();
+        scheduleSave();
+      }
+      [monthInput, dayInput, timeInput].forEach(inp => inp.addEventListener('change', commit));
+      grid.appendChild(cell);
+      slotEls.push({ countdownEl: cell.querySelector('.slot-countdown'), monthInput, dayInput, timeInput });
+    });
+    card.appendChild(grid);
+
+    subRefs[ch.id] = { cardEl: card, badgeEl: head.querySelector('.char-badge'), slots: slotEls, sortKey: Infinity };
+    return card;
+  }
+
+  function renderCharacters(rebuild){
+    const wrap = document.getElementById('charList');
+    if(rebuild){
+      wrap.innerHTML = '';
+      Object.keys(subRefs).forEach(k=>delete subRefs[k]);
+      if(!state.characters.length){
+        wrap.innerHTML = `<div class="empty-state"><span class="glyph">⚓</span>還沒有角色，新增一位開始追蹤潛水艇吧。</div>`;
+      }else{
+        state.characters.forEach(ch=> wrap.appendChild(buildCharCard(ch)));
+        wrap.style.display = 'flex';
+      }
+    }
+    updateSubOrderAndCountdowns();
+  }
+
+  function updateSubOrderAndCountdowns(){
+    const now = Date.now();
+    state.characters.forEach(ch=>{
+      const refs = subRefs[ch.id];
+      if(!refs) return;
+      let minRemain = Infinity;
+      let anyReady = false;
+      ch.subs.forEach((sub, i)=>{
+        const s = refs.slots[i];
+        if(sub.returnAt){
+          const remain = sub.returnAt - now;
+          if(remain <= 0){
+            s.countdownEl.textContent = '已返航';
+            s.countdownEl.classList.add('ready');
+            anyReady = true;
+          }else{
+            s.countdownEl.textContent = fmtCountdown(remain);
+            s.countdownEl.classList.remove('ready');
+            if(remain < minRemain) minRemain = remain;
+          }
+          s.countdownEl.title = '返航 ' + fmtClock(new Date(sub.returnAt));
+          const active = document.activeElement;
+          if(active !== s.monthInput && active !== s.dayInput && active !== s.timeInput){
+            const d = new Date(sub.returnAt);
+            s.monthInput.value = d.getMonth()+1;
+            s.dayInput.value = d.getDate();
+            s.timeInput.value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+          }
+        }else{
+          s.countdownEl.textContent = '未出發';
+          s.countdownEl.classList.remove('ready');
+          s.countdownEl.title = '';
+        }
+      });
+      refs.sortKey = anyReady ? -1e15 : minRemain;
+      refs.badgeEl.classList.toggle('show', anyReady);
+    });
+    const ranked = [...state.characters].sort((a,b)=>(subRefs[a.id]?.sortKey ?? Infinity) - (subRefs[b.id]?.sortKey ?? Infinity));
+    ranked.forEach((ch, idx)=>{ if(subRefs[ch.id]) subRefs[ch.id].cardEl.style.order = idx; });
+  }
+
+  // ---------- goals ----------
+  function renderGoals(){
+    renderChecklist(document.getElementById('goalList'), state.goals, '還沒有目標，新增你想達成的第一件事吧。', '✦');
+  }
+
+  function renderAll(){
+    renderWeekly();
+    renderDaily();
+    renderCharacters(false);
+    renderGoals();
+    renderMisc();
+  }
+
+  function renderClock(){
+    const now = new Date();
+    document.getElementById('clockBox').innerHTML = `台灣時間<br><b>${now.toLocaleTimeString('zh-TW',{hour12:false})}</b>`;
+  }
+
+  // ---------- input wiring ----------
+  function addFromInput(inputId, arr){
+    const input = document.getElementById(inputId);
+    const text = input.value.trim();
+    if(!text) return;
+    arr.push({ id:uid(), text, done:false });
+    input.value='';
+    renderAll(); scheduleSave();
+  }
+  document.getElementById('weeklyAddBtn').addEventListener('click', ()=>addFromInput('weeklyInput', state.weekly.items));
+  document.getElementById('weeklyInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('weeklyInput', state.weekly.items); });
+
+  document.getElementById('dailyAddBtn').addEventListener('click', ()=>addFromInput('dailyInput', state.daily.items));
+  document.getElementById('dailyInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('dailyInput', state.daily.items); });
+
+  document.getElementById('miscAddBtn').addEventListener('click', ()=>addFromInput('miscInput', state.misc.items));
+  document.getElementById('miscInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('miscInput', state.misc.items); });
+
+  document.getElementById('charAddBtn').addEventListener('click', ()=>{
+    const nameInput = document.getElementById('charNameInput');
+    const colorInput = document.getElementById('charColorInput');
+    const name = nameInput.value.trim();
+    if(!name) return;
+    state.characters.push({
+      id: uid(), name, color: colorInput.value,
+      subs: [{returnAt:null},{returnAt:null},{returnAt:null},{returnAt:null}]
+    });
+    nameInput.value='';
+    renderCharacters(true);
+    scheduleSave();
+  });
+  document.getElementById('charNameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('charAddBtn').click(); });
+
+  document.getElementById('goalAddBtn').addEventListener('click', ()=>addFromInput('goalTitleInput', state.goals));
+  document.getElementById('goalTitleInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('goalTitleInput', state.goals); });
+
+  document.getElementById('miscNotes').addEventListener('input', e=>{ state.misc.notes = e.target.value; scheduleSave(); });
+
+  // ---------- notes images ----------
+  function compressImage(file, maxDim=1000, quality=0.72){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        const img = new Image();
+        img.onload = ()=>{
+          let { width, height } = img;
+          if(width > maxDim || height > maxDim){
+            if(width > height){ height = Math.round(height * maxDim/width); width = maxDim; }
+            else { width = Math.round(width * maxDim/height); height = maxDim; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderImages(){
+    const row = document.getElementById('imageRow');
+    row.querySelectorAll('.image-thumb').forEach(el=>el.remove());
+    const addBtn = document.getElementById('imageAddBtn');
+    state.misc.images.forEach(img=>{
+      const thumb = document.createElement('div');
+      thumb.className = 'image-thumb';
+      thumb.innerHTML = `<img src="${img.dataUrl}" alt=""><button class="del-img" aria-label="刪除圖片" type="button">✕</button>`;
+      thumb.querySelector('img').addEventListener('click', ()=>openLightbox(img.dataUrl));
+      thumb.querySelector('.del-img').addEventListener('click', ev=>{
+        ev.stopPropagation();
+        state.misc.images.splice(state.misc.images.indexOf(img),1);
+        renderImages(); scheduleSave();
+      });
+      row.insertBefore(thumb, addBtn);
+    });
+  }
+
+  function openLightbox(url){
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightbox').classList.add('show');
+  }
+  function closeLightbox(){
+    document.getElementById('lightbox').classList.remove('show');
+    document.getElementById('lightboxImg').src = '';
+  }
+  document.getElementById('lightbox').addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeLightbox(); });
+
+  document.getElementById('imageAddBtn').addEventListener('click', ()=>{
+    document.getElementById('imageFileInput').click();
+  });
+  document.getElementById('imageFileInput').addEventListener('change', async e=>{
+    const files = Array.from(e.target.files || []);
+    for(const file of files){
+      try{
+        const dataUrl = await compressImage(file);
+        state.misc.images.push({ id: uid(), dataUrl });
+      }catch(err){ console.error('圖片處理失敗', err); }
+    }
+    e.target.value = '';
+    renderImages();
+    scheduleSave();
+  });
+
+  document.getElementById('dailyResetBtn').addEventListener('click', ()=>{
+    state.daily.items.forEach(it=>it.done=false);
+    renderAll(); scheduleSave();
+  });
+  document.getElementById('weeklyResetBtn').addEventListener('click', ()=>{
+    state.weekly.items.forEach(it=>it.done=false);
+    renderAll(); scheduleSave();
+  });
+
+  // ---------- init ----------
+  async function init(){
+    document.getElementById('storageMode').textContent = hasCloudStorage
+      ? '資料儲存在你的 Claude 帳號中，換裝置登入也會同步。'
+      : '⚠ 未偵測到 Claude 帳號儲存，資料僅存在目前這個瀏覽器（清除瀏覽器資料會遺失，換裝置也不會同步）。';
+    await load();
+    document.getElementById('saveStatus').textContent = '已載入 · ' + new Date().toLocaleTimeString('zh-TW',{hour12:false});
+    document.getElementById('miscNotes').value = state.misc.notes || '';
+    renderWeekly();
+    renderDaily();
+    renderCharacters(true);
+    renderGoals();
+    renderMisc();
+    renderImages();
+    renderClock();
+    setInterval(()=>{ updateSubOrderAndCountdowns(); renderClock(); }, 1000);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
