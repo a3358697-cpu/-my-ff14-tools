@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>薪水台帳｜RP店</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --brass:#c9a15d;
+    --brass-soft:#8a744a;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --wine:#8c3b4a;
+    --wine-soft:#5f2c36;
+    --ok:#7f9a6a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(201,161,93,0.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(140,59,74,0.10), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:1160px;margin:0 auto;}
+
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.15em;
+    color:var(--brass);
+    border:1px solid var(--brass-soft);
+    padding:4px 10px;
+    border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+  }
+  .month-field{
+    display:flex;align-items:center;gap:8px;
+    font-size:15px;color:var(--ivory-dim);
+  }
+  .month-field input{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--brass);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:17px;
+    padding:2px 4px;
+    width:130px;
+  }
+  .month-field input:focus{outline:none;border-bottom-color:var(--brass);}
+
+  .save-status{
+    font-size:14px;color:var(--ivory-dim);
+    display:flex;align-items:center;gap:6px;
+    margin-top:6px;
+  }
+  .save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);transition:opacity .3s;}
+  .save-dot.saving{background:var(--brass);}
+
+  h2.section-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:17px;
+    font-weight:700;
+    color:var(--brass);
+    letter-spacing:0.04em;
+    margin:0 0 12px;
+  }
+
+  /* rules panel */
+  .rules-panel{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin-bottom:26px;
+  }
+  .rules-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
+    gap:14px;
+  }
+  .rule-card{
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .rule-card .pos-name{
+    font-family:'Noto Serif TC', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory);
+    margin-bottom:10px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .rule-card .pos-tag{
+    font-size:12px;
+    letter-spacing:0.05em;
+    color:var(--ivory-dim);
+    border:1px solid var(--line);
+    padding:2px 6px;
+    border-radius:3px;
+  }
+  .rule-field{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:5px 0;
+    border-bottom:1px dashed var(--line-soft);
+    font-size:14.5px;
+    color:var(--ivory-dim);
+  }
+  .rule-field:last-child{border-bottom:none;}
+  .rule-field input{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--brass);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    text-align:right;
+    width:80px;
+    padding:2px 2px;
+  }
+  .rule-field input:focus{outline:none;border-bottom-color:var(--brass);}
+  .rule-field.disabled{opacity:0.4;}
+  .rule-field.disabled input{pointer-events:none;}
+
+  .note-card{
+    background:var(--panel-2);
+    border:1px dashed var(--line);
+    border-radius:8px;
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    color:var(--ivory-dim);
+    font-size:14.5px;
+    line-height:1.6;
+  }
+  .note-card .pos-name{
+    font-family:'Noto Serif TC', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory-dim);
+    margin-bottom:6px;
+  }
+
+  /* ledger table */
+  .ledger{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    overflow:hidden;
+    margin-bottom:24px;
+  }
+  .ledger-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:1220px;}
+  thead th{
+    text-align:left;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--brass);
+    font-weight:500;
+    padding:14px 10px;
+    border-bottom:1px solid var(--brass-soft);
+    white-space:nowrap;
+  }
+  thead th.num{text-align:right;}
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line-soft);
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{filter:brightness(1.2);}
+
+  td input[type=text], td input[type=number], td input[type=date], td select{
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:15.5px;
+    padding:6px 7px;
+    border-radius:5px;
+    width:100%;
+    transition:border-color .15s, background .15s;
+  }
+  td select{appearance:none;-webkit-appearance:none;background-image:none;cursor:pointer;}
+  td select option{background:var(--panel);color:var(--ivory);}
+  td input[type=number]{
+    font-family:'IBM Plex Mono', monospace;
+    text-align:right;
+  }
+  td input[type=date]{font-family:'IBM Plex Mono', monospace;font-size:14.5px;}
+  td input:hover, td select:hover{background:rgba(255,255,255,0.03);}
+  td input:focus, td select:focus{outline:none;border-color:var(--brass-soft);background:rgba(201,161,93,0.06);}
+
+  .col-date{width:118px;}
+  .col-name{width:112px;}
+  .col-pos{width:100px;}
+  .col-hours{width:82px;}
+  .col-sessions{width:74px;}
+  .col-guests{width:84px;}
+  .col-calc{width:112px;}
+  .col-total{width:122px;}
+  .col-note{min-width:130px;}
+  .col-del{width:36px;text-align:center;}
+
+  .computed{color:var(--ivory);font-family:'IBM Plex Mono', monospace;text-align:right;padding-right:6px;font-size:15px;}
+  .computed.total{color:var(--brass);font-weight:500;}
+  .computed.dim{color:var(--ivory-dim);}
+  .computed.cut{color:var(--wine);}
+
+  .del-btn{
+    background:none;border:none;color:var(--ivory-dim);
+    cursor:pointer;font-size:18px;line-height:1;
+    padding:6px;border-radius:5px;
+  }
+  .del-btn:hover{color:var(--wine);background:rgba(140,59,74,0.15);}
+
+  .ledger-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 20px;
+    background:var(--panel-2);
+    border-top:1px solid var(--line-soft);
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .add-btn{
+    background:transparent;
+    border:1px solid var(--brass-soft);
+    color:var(--brass);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:15px;
+    padding:8px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .add-btn:hover{background:rgba(201,161,93,0.1);border-color:var(--brass);}
+  .foot-hint{font-size:14px;color:var(--ivory-dim);}
+
+  .empty{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ivory-dim);
+    font-size:15.5px;
+  }
+
+  /* summary section */
+  .summary-row{
+    display:grid;
+    grid-template-columns:1.3fr 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  @media (max-width:820px){
+    .summary-row{grid-template-columns:1fr;}
+    table{min-width:900px;}
+  }
+
+  .by-employee{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:18px 20px;
+  }
+  .emp-line{
+    display:grid;
+    grid-template-columns:1fr auto auto auto;
+    gap:14px;
+    align-items:baseline;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line-soft);
+    font-size:15px;
+  }
+  .emp-line:last-child{border-bottom:none;}
+  .emp-line .nm{color:var(--ivory);font-weight:500;}
+  .emp-line .meta{color:var(--ivory-dim);font-size:13.5px;font-family:'IBM Plex Mono', monospace;}
+  .emp-line .amt{color:var(--brass);font-family:'IBM Plex Mono', monospace;font-weight:500;text-align:right;}
+
+  .receipt{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:22px 24px 20px;
+  }
+  .receipt::before, .receipt::after{
+    content:"";
+    position:absolute;left:0;right:0;height:8px;
+    background-image:radial-gradient(circle at 6px 4px, var(--ink) 4px, transparent 4.5px);
+    background-size:14px 8px;
+    background-repeat:repeat-x;
+  }
+  .receipt::before{top:-4px;}
+  .receipt::after{bottom:-4px;transform:rotate(180deg);}
+  .receipt h2{margin:0 0 14px;}
+  .receipt-line{
+    display:flex;justify-content:space-between;
+    font-size:15.5px;
+    padding:7px 0;
+    border-bottom:1px dashed var(--line-soft);
+    color:var(--ivory-dim);
+  }
+  .receipt-line span.v{font-family:'IBM Plex Mono', monospace;color:var(--ivory);}
+  .receipt-line.grand{
+    border-bottom:none;margin-top:6px;padding-top:14px;
+    border-top:1px solid var(--brass-soft);
+  }
+  .receipt-line.grand .k{font-family:'Noto Serif TC', serif;font-size:18px;color:var(--ivory);font-weight:700;}
+  .receipt-line.grand .v{font-size:24px;color:var(--brass);font-weight:500;}
+
+  .side-card{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-top:12px;
+  }
+  .side-card h3{font-family:'Noto Serif TC', serif;font-size:15px;font-weight:700;margin:0 0 8px;color:var(--brass);}
+  .side-card p{font-size:14.5px;color:var(--ivory-dim);line-height:1.6;margin:0 0 10px;}
+  .ghost-btn{
+    width:100%;background:transparent;border:1px solid var(--line);
+    color:var(--ivory-dim);font-family:'Noto Sans TC', sans-serif;font-size:14.5px;
+    padding:8px 10px;border-radius:6px;cursor:pointer;
+    transition:border-color .15s,color .15s;
+  }
+  .ghost-btn:hover{border-color:var(--wine);color:var(--wine);}
+
+  ::selection{background:var(--brass-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <span class="mark">RP</span>
+        <h1>薪水台帳</h1>
+      </div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    </div>
+    <div class="month-field">
+      日期
+      <input type="date" id="dateLabel" value="2026-08-18">
+    </div>
+  </header>
+
+  <div class="rules-panel">
+    <h2 class="section-title">職位規則設定</h2>
+    <div class="rules-grid" id="rulesGrid"></div>
+  </div>
+
+  <div class="ledger">
+    <h2 class="section-title" style="padding:18px 20px 0;">每日紀錄（日結）</h2>
+    <div class="ledger-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-name">姓名</th>
+          <th class="col-pos">職位</th>
+          <th class="num col-hours">工時</th>
+          <th class="num col-sessions">節數</th>
+          <th class="num col-guests">額外人頭</th>
+          <th class="num col-calc">時薪收入</th>
+          <th class="num col-calc">業績小計</th>
+          <th class="num col-calc">店家抽成</th>
+          <th class="num col-total">當日應發</th>
+          <th class="col-note">備註</th>
+          <th class="col-del"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+    <div class="empty" id="emptyState" style="display:none;">目前沒有紀錄，點下方按鈕新增第一筆。</div>
+    <div class="ledger-foot">
+      <button class="add-btn" id="addRow">+ 新增每日紀錄</button>
+      <span class="foot-hint" id="countHint">共 0 筆紀錄</span>
+    </div>
+  </div>
+
+  <div class="summary-row">
+    <div class="by-employee">
+      <h2 class="section-title">依員工彙總</h2>
+      <div id="empList"></div>
+    </div>
+    <div>
+      <div class="receipt">
+        <h2 class="section-title">全店彙總</h2>
+        <div class="receipt-line"><span>紀錄筆數</span><span class="v" id="sumCount">0 筆</span></div>
+        <div class="receipt-line"><span>總工時</span><span class="v" id="sumHours">0</span></div>
+        <div class="receipt-line"><span>總節數</span><span class="v" id="sumSessions">0</span></div>
+        <div class="receipt-line"><span>總業績（指名+人頭）</span><span class="v" id="sumRevenue">$0</span></div>
+        <div class="receipt-line grand"><span class="k">應發薪資總額</span><span class="v" id="sumTotal">$0</span></div>
+      </div>
+      <div class="side-card">
+        <h3>資料儲存</h3>
+        <p>資料會存在這個瀏覽器裡，下次用同一個瀏覽器打開同一個檔案會自動載入。建議定期匯出備份，避免清瀏覽器資料或換裝置時遺失。</p>
+        <button class="ghost-btn" id="exportBtn" style="margin-bottom:8px;">匯出備份 (.json)</button>
+        <input type="file" id="importFile" accept=".json" style="display:none;">
+        <button class="ghost-btn" id="importBtn" style="margin-bottom:8px;">匯入備份</button>
+        <button class="ghost-btn" id="clearBtn">清空所有紀錄</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'rp-payroll:state-v2';
+
+const POSITIONS = ['正式','實習','前臺','攝影'];
+const POSITION_COLORS = {
+  '正式': '#c9a15d',
+  '實習': '#7f9a6a',
+  '前臺': '#6f8fae',
+  '攝影': '#a3607e'
+};
+
+let state = {
+  date: todayStr(),
+  rules: {
+    '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
+    '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
+    '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
+    '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
+  },
+  entries: []
+};
+
+function uid(){ return 'r' + Math.random().toString(36).slice(2, 9); }
+function todayStr(){
+  const d = new Date();
+  return d.toISOString().slice(0,10);
+}
+function fmtMoney(n){
+  n = Math.round(Number(n) || 0);
+  return '$' + n.toLocaleString('en-US');
+}
+function escapeAttr(s){
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function newEntry(){
+  return {
+    id: uid(),
+    name: '',
+    position: '正式',
+    hours: 0,
+    sessions: 0,
+    guests: 0,
+    note: ''
+  };
+}
+
+function calcEntry(entry){
+  const r = state.rules[entry.position] || state.rules['正式'];
+  const hourlyPay = (Number(entry.hours) || 0) * (Number(r.hourly) || 0);
+  let revenue = 0, cut = 0, share = 0;
+  if(r.hasSession){
+    revenue = (Number(entry.sessions) || 0) * (Number(r.sessionFee) || 0) + (Number(entry.guests) || 0) * (Number(r.guestBonus) || 0);
+    cut = revenue * ((Number(r.cutRate) || 0) / 100);
+    share = revenue - cut;
+  }
+  const total = hourlyPay + share;
+  return { hourlyPay, revenue, cut, share, total };
+}
+
+async function persistState(){
+  const payload = JSON.stringify(state);
+  let lastError = null;
+  if(window.storage && typeof window.storage.set === 'function'){
+    try{
+      await window.storage.set(STORAGE_KEY, payload, false);
+      return true;
+    }catch(e){ lastError = e; }
+  }
+  try{
+    localStorage.setItem(STORAGE_KEY, payload);
+    return true;
+  }catch(e){ lastError = e; }
+  throw lastError || new Error('no storage available');
+}
+
+async function loadState(){
+  if(window.storage && typeof window.storage.get === 'function'){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value) return result.value;
+    }catch(e){ /* fall through to localStorage */ }
+  }
+  try{
+    const v = localStorage.getItem(STORAGE_KEY);
+    if(v) return v;
+  }catch(e){ /* no storage available at all */ }
+  return null;
+}
+
+let saveTimer = null;
+function scheduleSave(){
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = '儲存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try{
+      await persistState();
+      dot.classList.remove('saving');
+      text.textContent = '已同步';
+    }catch(e){
+      dot.classList.remove('saving');
+      text.textContent = '儲存失敗，建議點右下角「匯出備份」保存資料';
+    }
+  }, 400);
+}
+
+function renderRules(){
+  const grid = document.getElementById('rulesGrid');
+  grid.innerHTML = '';
+  POSITIONS.forEach(pos => {
+    const r = state.rules[pos];
+    const color = POSITION_COLORS[pos] || 'var(--brass)';
+    const card = document.createElement('div');
+    card.className = 'rule-card';
+    card.style.boxShadow = `inset 4px 0 0 ${color}`;
+    card.style.background = `${color}1f`;
+    card.innerHTML = `
+      <div class="pos-name" style="color:${color};">${pos}<span class="pos-tag">${r.hasSession ? '時薪＋抽成' : '純時薪'}</span></div>
+      <div class="rule-field"><span>時薪</span><input type="number" data-pos="${pos}" data-key="hourly" value="${r.hourly}" min="0" step="1000"></div>
+      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>指名一節</span><input type="number" data-pos="${pos}" data-key="sessionFee" value="${r.sessionFee}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
+      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>每加一位人頭</span><input type="number" data-pos="${pos}" data-key="guestBonus" value="${r.guestBonus}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
+      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>店家抽成 %</span><input type="number" data-pos="${pos}" data-key="cutRate" value="${r.cutRate}" min="0" max="100" step="1" ${r.hasSession ? '' : 'disabled'}></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+document.getElementById('rulesGrid').addEventListener('input', (e) => {
+  const pos = e.target.dataset.pos;
+  const key = e.target.dataset.key;
+  if(!pos || !key) return;
+  state.rules[pos][key] = Number(e.target.value) || 0;
+  renderEntries();
+  scheduleSave();
+});
+
+function positionOptions(selected){
+  return POSITIONS.map(p => `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`).join('');
+}
+
+function renderEntries(){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  document.getElementById('emptyState').style.display = state.entries.length ? 'none' : 'block';
+  document.getElementById('countHint').textContent = `共 ${state.entries.length} 筆紀錄`;
+
+  state.entries.forEach(entry => {
+    const c = calcEntry(entry);
+    const r = state.rules[entry.position] || state.rules['正式'];
+    const posColor = POSITION_COLORS[entry.position] || 'var(--brass)';
+    const tr = document.createElement('tr');
+    tr.dataset.id = entry.id;
+    tr.style.background = `${posColor}2e`;
+    tr.style.boxShadow = `inset 4px 0 0 ${posColor}`;
+    tr.innerHTML = `
+      <td class="col-name"><input type="text" data-field="name" placeholder="姓名" value="${escapeAttr(entry.name)}"></td>
+      <td class="col-pos"><select data-field="position" style="color:${posColor};border-color:${posColor}88;background:${posColor}3d;font-weight:700;border-radius:5px;">${positionOptions(entry.position)}</select></td>
+      <td class="col-hours"><input type="number" data-field="hours" min="0" step="0.5" value="${entry.hours}"></td>
+      <td class="col-sessions"><input type="number" data-field="sessions" min="0" step="1" value="${entry.sessions}" ${r.hasSession ? '' : 'disabled'}></td>
+      <td class="col-guests"><input type="number" data-field="guests" min="0" step="1" value="${entry.guests}" ${r.hasSession ? '' : 'disabled'}></td>
+      <td class="col-calc"><div class="computed dim">${fmtMoney(c.hourlyPay)}</div></td>
+      <td class="col-calc"><div class="computed dim">${r.hasSession ? fmtMoney(c.revenue) : '—'}</div></td>
+      <td class="col-calc"><div class="computed cut">${r.hasSession ? '－' + fmtMoney(c.cut) : '—'}</div></td>
+      <td class="col-total"><div class="computed total">${fmtMoney(c.total)}</div></td>
+      <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(entry.note)}"></td>
+      <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  renderSummary();
+}
+
+function renderSummary(){
+  let sumHours = 0, sumSessions = 0, sumRevenue = 0, sumCut = 0, sumTotal = 0;
+  const byEmp = {};
+
+  state.entries.forEach(entry => {
+    const c = calcEntry(entry);
+    const r = state.rules[entry.position] || state.rules['正式'];
+    sumHours += Number(entry.hours) || 0;
+    sumSessions += r.hasSession ? (Number(entry.sessions) || 0) : 0;
+    sumRevenue += c.revenue;
+    sumCut += c.cut;
+    sumTotal += c.total;
+
+    const key = entry.name.trim() || '（未填姓名）';
+    if(!byEmp[key]) byEmp[key] = { total: 0, hours: 0, sessions: 0, guests: 0, records: 0, position: entry.position };
+    byEmp[key].total += c.total;
+    byEmp[key].hours += Number(entry.hours) || 0;
+    byEmp[key].sessions += r.hasSession ? (Number(entry.sessions) || 0) : 0;
+    byEmp[key].guests += r.hasSession ? (Number(entry.guests) || 0) : 0;
+    byEmp[key].records += 1;
+  });
+
+  document.getElementById('sumCount').textContent = `${state.entries.length} 筆`;
+  document.getElementById('sumHours').textContent = sumHours.toLocaleString('en-US');
+  document.getElementById('sumSessions').textContent = sumSessions.toLocaleString('en-US');
+  document.getElementById('sumRevenue').textContent = fmtMoney(sumRevenue);
+  document.getElementById('sumTotal').textContent = fmtMoney(sumTotal);
+
+  const empList = document.getElementById('empList');
+  const names = Object.keys(byEmp).sort((a,b) => byEmp[b].total - byEmp[a].total);
+  if(names.length === 0){
+    empList.innerHTML = `<div class="foot-hint" style="padding:6px 0;">尚無資料</div>`;
+  } else {
+    empList.innerHTML = names.map(name => {
+      const d = byEmp[name];
+      return `<div class="emp-line">
+        <span class="nm">${escapeAttr(name)}　<span style="color:${POSITION_COLORS[d.position] || 'var(--ivory-dim)'};font-size:13px;font-weight:600;">${d.position}</span></span>
+        <span class="meta">${d.records} 筆</span>
+        <span class="meta">節數 ${d.sessions}／人頭 ${d.guests}</span>
+        <span class="amt">${fmtMoney(d.total)}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function updateRowComputed(tr, entry){
+  const c = calcEntry(entry);
+  const r = state.rules[entry.position] || state.rules['正式'];
+  const calcCells = tr.querySelectorAll('td.col-calc .computed');
+  calcCells[0].textContent = fmtMoney(c.hourlyPay);
+  calcCells[1].textContent = r.hasSession ? fmtMoney(c.revenue) : '—';
+  calcCells[2].textContent = r.hasSession ? '－' + fmtMoney(c.cut) : '—';
+  tr.querySelector('td.col-total .computed').textContent = fmtMoney(c.total);
+}
+
+document.getElementById('tbody').addEventListener('input', (e) => {
+  const field = e.target.dataset.field;
+  if(!field) return;
+  const tr = e.target.closest('tr');
+  const entry = state.entries.find(x => x.id === tr.dataset.id);
+  if(!entry) return;
+  if(field === 'hours' || field === 'sessions' || field === 'guests'){
+    entry[field] = e.target.value === '' ? 0 : Number(e.target.value);
+    updateRowComputed(tr, entry);
+  } else {
+    // name / note / date: just store the value, no re-render, so focus is never lost mid-typing
+    entry[field] = e.target.value;
+  }
+  renderSummary();
+  scheduleSave();
+});
+
+document.getElementById('tbody').addEventListener('change', (e) => {
+  if(e.target.dataset.field === 'position'){
+    const tr = e.target.closest('tr');
+    const entry = state.entries.find(x => x.id === tr.dataset.id);
+    if(!entry) return;
+    entry.position = e.target.value;
+    renderEntries();
+    scheduleSave();
+  }
+});
+
+document.getElementById('tbody').addEventListener('click', (e) => {
+  if(e.target.dataset.action === 'delete'){
+    const tr = e.target.closest('tr');
+    state.entries = state.entries.filter(x => x.id !== tr.dataset.id);
+    renderEntries();
+    scheduleSave();
+  }
+});
+
+document.getElementById('addRow').addEventListener('click', () => {
+  state.entries.push(newEntry());
+  renderEntries();
+  scheduleSave();
+  const rows = document.querySelectorAll('#tbody tr');
+  if(rows.length){
+    const lastId = state.entries[state.entries.length - 1].id;
+    const targetRow = [...rows].find(r => r.dataset.id === lastId);
+    if(targetRow) targetRow.querySelector('input[data-field="name"]').focus();
+  }
+});
+
+document.getElementById('dateLabel').addEventListener('input', (e) => {
+  state.date = e.target.value;
+  scheduleSave();
+});
+
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateTag = todayStr();
+  a.href = url;
+  a.download = `rp-payroll-備份-${dateTag}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+document.getElementById('importBtn').addEventListener('click', () => {
+  document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const loaded = JSON.parse(reader.result);
+      if(!loaded || typeof loaded !== 'object') throw new Error('格式錯誤');
+      if(!confirm('匯入備份會覆蓋目前畫面上的資料，確定要匯入嗎？')) return;
+      state = Object.assign(state, loaded);
+      state.rules = Object.assign({
+        '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
+        '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
+        '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
+        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
+      }, loaded.rules || {});
+      document.getElementById('dateLabel').value = state.date;
+      renderRules();
+      renderEntries();
+      scheduleSave();
+    }catch(err){
+      alert('匯入失敗，請確認檔案是本工具匯出的備份檔。');
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if(confirm('確定要清空所有紀錄嗎？此動作無法復原。')){
+    state.entries = [];
+    renderEntries();
+    scheduleSave();
+  }
+});
+
+async function init(){
+  try{
+    const raw = await loadState();
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+      state.rules = Object.assign({
+        '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
+        '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
+        '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
+        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
+      }, loaded.rules || {});
+    } else {
+      state.entries = [newEntry()];
+    }
+  }catch(e){
+    state.entries = [newEntry()];
+  }
+  document.getElementById('dateLabel').value = state.date;
+  renderRules();
+  renderEntries();
+}
+
+init();
+</script>
+</body>
+</html>
