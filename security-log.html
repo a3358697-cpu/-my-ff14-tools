@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RP店丨保安紀錄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --brass:#c9a15d;
+    --brass-soft:#8a744a;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --wine:#8c3b4a;
+    --wine-soft:#5f2c36;
+    --ok:#7f9a6a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(201,161,93,0.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(140,59,74,0.10), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:1160px;margin:0 auto;}
+
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:16px;
+    letter-spacing:0.15em;
+    color:var(--brass);
+    border:1px solid var(--brass-soft);
+    padding:4px 10px;
+    border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+  }
+  .save-status{
+    font-size:14px;color:var(--ivory-dim);
+    display:flex;align-items:center;gap:6px;
+    margin-top:6px;
+  }
+  .save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);transition:opacity .3s;}
+  .save-dot.saving{background:var(--brass);}
+
+  h2.section-title{
+    font-family:'Noto Serif TC', serif;
+    font-size:17px;
+    font-weight:700;
+    color:var(--brass);
+    letter-spacing:0.04em;
+    margin:0 0 12px;
+  }
+
+  .rules-panel{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    margin-bottom:26px;
+  }
+
+  .confirm-items{display:flex;flex-wrap:wrap;gap:8px;}
+  .confirm-chip{
+    display:flex;align-items:center;gap:4px;
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:20px;
+    padding:5px 6px 5px 14px;
+  }
+  .confirm-chip input{
+    background:transparent;border:none;color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:13.5px;width:auto;min-width:70px;padding:2px;
+  }
+  .confirm-chip input:focus{outline:none;}
+  .confirm-chip .del-chip{
+    background:none;border:none;color:var(--ivory-dim);
+    cursor:pointer;font-size:14px;padding:3px 8px;line-height:1;border-radius:50%;
+  }
+  .confirm-chip .del-chip:hover{color:var(--wine);background:rgba(140,59,74,0.15);}
+
+  .add-row-inline{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  .add-row-inline input[type=text]{
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:14px;
+    padding:8px 12px;
+    border-radius:6px;
+    min-width:180px;
+  }
+  .add-row-inline input:focus{outline:none;border-color:var(--brass-soft);}
+  .add-btn{
+    background:transparent;
+    border:1px solid var(--brass-soft);
+    color:var(--brass);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:15px;
+    padding:8px 16px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .add-btn:hover{background:rgba(201,161,93,0.1);border-color:var(--brass);}
+
+  .ledger{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    overflow:hidden;
+    margin-bottom:24px;
+  }
+  .ledger-scroll{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;min-width:980px;}
+  thead th{
+    text-align:left;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--brass);
+    font-weight:500;
+    padding:14px 10px;
+    border-bottom:1px solid var(--brass-soft);
+    white-space:nowrap;
+  }
+  thead th.num{text-align:right;}
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line-soft);
+    vertical-align:middle;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{filter:brightness(1.2);}
+
+  td input[type=text], td input[type=number], td input[type=time]{
+    background:transparent;
+    border:1px solid transparent;
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:15.5px;
+    padding:6px 7px;
+    border-radius:5px;
+    width:100%;
+    transition:border-color .15s, background .15s;
+  }
+  td input[type=number]{font-family:'IBM Plex Mono', monospace;text-align:right;}
+  td input[type=time]{font-family:'IBM Plex Mono', monospace;font-size:14.5px;}
+  td input:hover{background:rgba(255,255,255,0.03);}
+  td input:focus{outline:none;border-color:var(--brass-soft);background:rgba(201,161,93,0.06);}
+
+  .visit-count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:var(--ivory-dim);
+  }
+
+  .col-time{width:88px;}
+  .col-id{width:120px;}
+  .col-visits{width:78px;}
+  .col-count{width:70px;}
+  .col-amount{width:100px;}
+  .col-confirm{min-width:220px;}
+  .col-note{min-width:130px;}
+  .col-del{width:36px;text-align:center;}
+
+  .confirm-cell{display:flex;flex-wrap:wrap;gap:4px;}
+  .confirm-toggle{
+    font-size:11.5px;
+    padding:4px 9px;
+    border-radius:12px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ivory-dim);
+    cursor:pointer;
+    white-space:nowrap;
+    font-family:'Noto Sans TC', sans-serif;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .confirm-toggle.on{
+    background:rgba(127,154,106,0.18);
+    border-color:var(--ok);
+    color:var(--ok);
+  }
+
+  .del-btn{
+    background:none;border:none;color:var(--ivory-dim);
+    cursor:pointer;font-size:18px;line-height:1;
+    padding:6px;border-radius:5px;
+  }
+  .del-btn:hover{color:var(--wine);background:rgba(140,59,74,0.15);}
+
+  .ledger-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 20px;
+    background:var(--panel-2);
+    border-top:1px solid var(--line-soft);
+    flex-wrap:wrap;
+    gap:10px;
+  }
+  .foot-hint{font-size:14px;color:var(--ivory-dim);font-family:'IBM Plex Mono', monospace;}
+
+  .empty{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--ivory-dim);
+    font-size:15.5px;
+  }
+
+  ::selection{background:var(--brass-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <span class="mark">RP店</span>
+        <h1>保安紀錄</h1>
+      </div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    </div>
+  </header>
+
+  <div class="rules-panel">
+    <h2 class="section-title">確認事項設定</h2>
+    <div class="confirm-items" id="confirmItemsList"></div>
+    <div class="add-row-inline">
+      <input type="text" id="newConfirmItemInput" placeholder="新增確認項目">
+      <button class="add-btn" id="addConfirmItemBtn">＋ 新增項目</button>
+    </div>
+  </div>
+
+  <div class="ledger">
+    <h2 class="section-title" style="padding:18px 20px 0;">入場紀錄</h2>
+    <div class="ledger-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-time">時間</th>
+          <th class="col-id">ID</th>
+          <th class="col-visits">到訪次數</th>
+          <th class="num col-count">人數</th>
+          <th class="num col-amount">金額</th>
+          <th class="col-confirm">確認事項</th>
+          <th class="col-note">備註</th>
+          <th class="col-del"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    </div>
+    <div class="empty" id="emptyState" style="display:none;">目前沒有紀錄，點下方按鈕新增第一筆。</div>
+    <div class="ledger-foot">
+      <button class="add-btn" id="addRow">＋ 新增紀錄</button>
+      <span class="foot-hint" id="countHint">共 0 筆・人數 0・總金額 $0</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'rp-security:state-v1';
+
+let state = {
+  entries: [],
+  confirmItems: ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒']
+};
+
+function uid(){ return 's' + Math.random().toString(36).slice(2, 9); }
+function nowTimeStr(){
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+function fmtMoney(n){
+  n = Math.round(Number(n) || 0);
+  return '$' + n.toLocaleString('en-US');
+}
+function escapeAttr(s){
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function newEntry(){
+  return {
+    id: uid(),
+    time: nowTimeStr(),
+    guestId: '',
+    guestCount: 1,
+    amount: 0,
+    confirmed: {},
+    note: ''
+  };
+}
+
+async function persistState(){
+  const payload = JSON.stringify(state);
+  let lastError = null;
+  if(window.storage && typeof window.storage.set === 'function'){
+    try{
+      await window.storage.set(STORAGE_KEY, payload, false);
+      return true;
+    }catch(e){ lastError = e; }
+  }
+  try{
+    localStorage.setItem(STORAGE_KEY, payload);
+    return true;
+  }catch(e){ lastError = e; }
+  throw lastError || new Error('no storage available');
+}
+
+async function loadState(){
+  if(window.storage && typeof window.storage.get === 'function'){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value) return result.value;
+    }catch(e){ /* fall through to localStorage */ }
+  }
+  try{
+    const v = localStorage.getItem(STORAGE_KEY);
+    if(v) return v;
+  }catch(e){ /* no storage available at all */ }
+  return null;
+}
+
+let saveTimer = null;
+function scheduleSave(){
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = '儲存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try{
+      await persistState();
+      dot.classList.remove('saving');
+      text.textContent = '已同步';
+    }catch(e){
+      dot.classList.remove('saving');
+      text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
+    }
+  }, 400);
+}
+
+function renderConfirmSettings(){
+  const wrap = document.getElementById('confirmItemsList');
+  wrap.innerHTML = '';
+  state.confirmItems.forEach((label, idx) => {
+    const chip = document.createElement('div');
+    chip.className = 'confirm-chip';
+    chip.innerHTML = `<input type="text" value="${escapeAttr(label)}" data-idx="${idx}"><button class="del-chip" data-idx="${idx}" aria-label="刪除項目">×</button>`;
+    wrap.appendChild(chip);
+  });
+}
+
+document.getElementById('confirmItemsList').addEventListener('change', (e) => {
+  const idx = e.target.dataset.idx;
+  if(idx === undefined) return;
+  const v = e.target.value.trim();
+  if(v) state.confirmItems[idx] = v;
+  else e.target.value = state.confirmItems[idx];
+  renderEntries();
+  scheduleSave();
+});
+
+document.getElementById('confirmItemsList').addEventListener('click', (e) => {
+  if(e.target.classList.contains('del-chip')){
+    const idx = Number(e.target.dataset.idx);
+    state.confirmItems.splice(idx, 1);
+    renderConfirmSettings();
+    renderEntries();
+    scheduleSave();
+  }
+});
+
+document.getElementById('addConfirmItemBtn').addEventListener('click', () => {
+  const input = document.getElementById('newConfirmItemInput');
+  const v = input.value.trim();
+  if(!v) return;
+  state.confirmItems.push(v);
+  input.value = '';
+  renderConfirmSettings();
+  renderEntries();
+  scheduleSave();
+});
+
+function updateSummary(){
+  const count = state.entries.length;
+  const totalGuests = state.entries.reduce((s,e)=> s + (Number(e.guestCount)||0), 0);
+  const totalAmount = state.entries.reduce((s,e)=> s + (Number(e.amount)||0), 0);
+  document.getElementById('countHint').textContent = `共 ${count} 筆・人數 ${totalGuests}・總金額 ${fmtMoney(totalAmount)}`;
+}
+
+function updateVisitCounts(){
+  const counts = {};
+  state.entries.forEach(e => {
+    const key = (e.guestId || '').trim();
+    if(!key) return;
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  document.querySelectorAll('#tbody tr').forEach(tr => {
+    const entry = state.entries.find(x => x.id === tr.dataset.id);
+    if(!entry) return;
+    const key = (entry.guestId || '').trim();
+    const el = tr.querySelector('.visit-count');
+    if(el) el.textContent = key ? `共 ${counts[key]} 次` : '—';
+  });
+}
+
+function renderEntries(){
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  document.getElementById('emptyState').style.display = state.entries.length ? 'none' : 'block';
+
+  state.entries.forEach(entry => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = entry.id;
+    const confirmHtml = state.confirmItems.map(label => {
+      const on = !!entry.confirmed[label];
+      return `<button type="button" class="confirm-toggle ${on ? 'on' : ''}" data-label="${escapeAttr(label)}">${escapeAttr(label)}</button>`;
+    }).join('');
+    tr.innerHTML = `
+      <td class="col-time"><input type="time" data-field="time" value="${escapeAttr(entry.time)}"></td>
+      <td class="col-id"><input type="text" data-field="guestId" placeholder="ID" value="${escapeAttr(entry.guestId)}"></td>
+      <td class="col-visits"><span class="visit-count">—</span></td>
+      <td class="col-count"><input type="number" data-field="guestCount" min="0" step="1" value="${entry.guestCount}"></td>
+      <td class="col-amount"><input type="number" data-field="amount" min="0" step="100" value="${entry.amount}"></td>
+      <td class="col-confirm"><div class="confirm-cell">${confirmHtml}</div></td>
+      <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(entry.note)}"></td>
+      <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateVisitCounts();
+  updateSummary();
+}
+
+document.getElementById('tbody').addEventListener('input', (e) => {
+  const field = e.target.dataset.field;
+  if(!field) return;
+  const tr = e.target.closest('tr');
+  const entry = state.entries.find(x => x.id === tr.dataset.id);
+  if(!entry) return;
+  if(field === 'guestCount' || field === 'amount'){
+    entry[field] = e.target.value === '' ? 0 : Number(e.target.value);
+    updateSummary();
+  } else if(field === 'guestId'){
+    entry.guestId = e.target.value;
+    updateVisitCounts();
+  } else {
+    entry[field] = e.target.value;
+  }
+  scheduleSave();
+});
+
+document.getElementById('tbody').addEventListener('click', (e) => {
+  if(e.target.dataset.action === 'delete'){
+    const tr = e.target.closest('tr');
+    state.entries = state.entries.filter(x => x.id !== tr.dataset.id);
+    renderEntries();
+    scheduleSave();
+    return;
+  }
+  if(e.target.classList.contains('confirm-toggle')){
+    const tr = e.target.closest('tr');
+    const entry = state.entries.find(x => x.id === tr.dataset.id);
+    if(!entry) return;
+    const label = e.target.dataset.label;
+    entry.confirmed[label] = !entry.confirmed[label];
+    e.target.classList.toggle('on', entry.confirmed[label]);
+    scheduleSave();
+  }
+});
+
+document.getElementById('addRow').addEventListener('click', () => {
+  state.entries.push(newEntry());
+  renderEntries();
+  scheduleSave();
+  const rows = document.querySelectorAll('#tbody tr');
+  if(rows.length){
+    const lastId = state.entries[state.entries.length - 1].id;
+    const targetRow = [...rows].find(r => r.dataset.id === lastId);
+    if(targetRow) targetRow.querySelector('input[data-field="guestId"]').focus();
+  }
+});
+
+async function init(){
+  try{
+    const raw = await loadState();
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+      if(!Array.isArray(state.confirmItems) || !state.confirmItems.length){
+        state.confirmItems = ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒'];
+      }
+      state.entries.forEach(e => { if(!e.confirmed) e.confirmed = {}; });
+    } else {
+      state.entries = [newEntry()];
+    }
+  }catch(e){
+    state.entries = [newEntry()];
+  }
+  renderConfirmSettings();
+  renderEntries();
+}
+
+init();
+</script>
+</body>
+</html>

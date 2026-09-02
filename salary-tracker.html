@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>薪水台帳｜RP店</title>
+<title>RP店丨接待台帳</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -236,6 +236,12 @@
   .col-calc{width:112px;}
   .col-total{width:122px;}
   .col-note{min-width:130px;}
+  .col-res-date{width:130px;}
+  .col-res-name{width:120px;}
+  .col-res-staff{width:120px;}
+  .col-res-start{width:110px;}
+  .col-res-sessions{width:80px;}
+  table.table-compact{min-width:760px;}
   .col-del{width:36px;text-align:center;}
 
   .computed{color:var(--ivory);font-family:'IBM Plex Mono', monospace;text-align:right;padding-right:6px;font-size:15px;}
@@ -371,8 +377,8 @@
   <header class="top">
     <div>
       <div class="brand">
-        <span class="mark">RP</span>
-        <h1>薪水台帳</h1>
+        <span class="mark">RP店</span>
+        <h1>接待台帳</h1>
       </div>
       <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
     </div>
@@ -416,6 +422,36 @@
     </div>
   </div>
 
+  <div class="ledger">
+    <h2 class="section-title" style="padding:18px 20px 0;">預約</h2>
+    <div class="ledger-scroll">
+    <table class="table-compact">
+      <thead>
+        <tr>
+          <th class="col-res-date">日期</th>
+          <th class="col-res-name">姓名</th>
+          <th class="col-res-staff">指名人員</th>
+          <th class="col-res-start">開始時間</th>
+          <th class="num col-res-sessions">節數</th>
+          <th class="col-note">備註</th>
+          <th class="col-del"></th>
+        </tr>
+      </thead>
+      <tbody id="resTbody"></tbody>
+    </table>
+    </div>
+    <div class="empty" id="resEmptyState" style="display:none;">目前沒有預約，點下方按鈕新增第一筆。</div>
+    <div class="ledger-foot">
+      <button class="add-btn" id="addResRow">+ 新增預約</button>
+      <span class="foot-hint" id="resCountHint">共 0 筆預約</span>
+    </div>
+  </div>
+
+  <div class="rules-panel">
+    <h2 class="section-title">自由筆記</h2>
+    <textarea id="freeNotes" placeholder="" style="width:100%;min-height:120px;resize:vertical;background:var(--panel-2);border:1px solid var(--line-soft);border-radius:8px;color:var(--ivory);font-family:'Noto Sans TC',sans-serif;font-size:15px;padding:12px 14px;line-height:1.7;"></textarea>
+  </div>
+
   <div class="summary-row">
     <div class="by-employee">
       <h2 class="section-title">依員工彙總</h2>
@@ -429,14 +465,6 @@
         <div class="receipt-line"><span>總節數</span><span class="v" id="sumSessions">0</span></div>
         <div class="receipt-line"><span>總業績（指名+人頭）</span><span class="v" id="sumRevenue">$0</span></div>
         <div class="receipt-line grand"><span class="k">應發薪資總額</span><span class="v" id="sumTotal">$0</span></div>
-      </div>
-      <div class="side-card">
-        <h3>資料儲存</h3>
-        <p>資料會存在這個瀏覽器裡，下次用同一個瀏覽器打開同一個檔案會自動載入。建議定期匯出備份，避免清瀏覽器資料或換裝置時遺失。</p>
-        <button class="ghost-btn" id="exportBtn" style="margin-bottom:8px;">匯出備份 (.json)</button>
-        <input type="file" id="importFile" accept=".json" style="display:none;">
-        <button class="ghost-btn" id="importBtn" style="margin-bottom:8px;">匯入備份</button>
-        <button class="ghost-btn" id="clearBtn">清空所有紀錄</button>
       </div>
     </div>
   </div>
@@ -462,7 +490,9 @@ let state = {
     '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
     '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
   },
-  entries: []
+  entries: [],
+  reservations: [],
+  notes: ''
 };
 
 function uid(){ return 'r' + Math.random().toString(36).slice(2, 9); }
@@ -486,6 +516,18 @@ function newEntry(){
     hours: 0,
     sessions: 0,
     guests: 0,
+    note: ''
+  };
+}
+
+function newReservation(){
+  return {
+    id: uid(),
+    date: todayStr(),
+    name: '',
+    staff: '',
+    startTime: '',
+    sessions: 0,
     note: ''
   };
 }
@@ -547,7 +589,7 @@ function scheduleSave(){
       text.textContent = '已同步';
     }catch(e){
       dot.classList.remove('saving');
-      text.textContent = '儲存失敗，建議點右下角「匯出備份」保存資料';
+      text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
     }
   }, 400);
 }
@@ -617,6 +659,28 @@ function renderEntries(){
   });
 
   renderSummary();
+}
+
+function renderReservations(){
+  const tbody = document.getElementById('resTbody');
+  tbody.innerHTML = '';
+  document.getElementById('resEmptyState').style.display = state.reservations.length ? 'none' : 'block';
+  document.getElementById('resCountHint').textContent = `共 ${state.reservations.length} 筆預約`;
+
+  state.reservations.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.dataset.id = r.id;
+    tr.innerHTML = `
+      <td class="col-res-date"><input type="date" data-field="date" value="${escapeAttr(r.date)}"></td>
+      <td class="col-res-name"><input type="text" data-field="name" placeholder="姓名" value="${escapeAttr(r.name)}"></td>
+      <td class="col-res-staff"><input type="text" data-field="staff" placeholder="指名人員" value="${escapeAttr(r.staff)}"></td>
+      <td class="col-res-start"><input type="time" data-field="startTime" value="${escapeAttr(r.startTime)}"></td>
+      <td class="col-res-sessions"><input type="number" data-field="sessions" min="0" step="1" value="${r.sessions}"></td>
+      <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(r.note)}"></td>
+      <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
 function renderSummary(){
@@ -728,57 +792,40 @@ document.getElementById('dateLabel').addEventListener('input', (e) => {
   scheduleSave();
 });
 
-document.getElementById('exportBtn').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const dateTag = todayStr();
-  a.href = url;
-  a.download = `rp-payroll-備份-${dateTag}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+document.getElementById('resTbody').addEventListener('input', (e) => {
+  const field = e.target.dataset.field;
+  if(!field) return;
+  const tr = e.target.closest('tr');
+  const r = state.reservations.find(x => x.id === tr.dataset.id);
+  if(!r) return;
+  r[field] = field === 'sessions' ? (e.target.value === '' ? 0 : Number(e.target.value)) : e.target.value;
+  scheduleSave();
 });
 
-document.getElementById('importBtn').addEventListener('click', () => {
-  document.getElementById('importFile').click();
-});
-
-document.getElementById('importFile').addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try{
-      const loaded = JSON.parse(reader.result);
-      if(!loaded || typeof loaded !== 'object') throw new Error('格式錯誤');
-      if(!confirm('匯入備份會覆蓋目前畫面上的資料，確定要匯入嗎？')) return;
-      state = Object.assign(state, loaded);
-      state.rules = Object.assign({
-        '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
-        '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
-        '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
-      }, loaded.rules || {});
-      document.getElementById('dateLabel').value = state.date;
-      renderRules();
-      renderEntries();
-      scheduleSave();
-    }catch(err){
-      alert('匯入失敗，請確認檔案是本工具匯出的備份檔。');
-    }
-    e.target.value = '';
-  };
-  reader.readAsText(file);
-});
-
-document.getElementById('clearBtn').addEventListener('click', () => {
-  if(confirm('確定要清空所有紀錄嗎？此動作無法復原。')){
-    state.entries = [];
-    renderEntries();
+document.getElementById('resTbody').addEventListener('click', (e) => {
+  if(e.target.dataset.action === 'delete'){
+    const tr = e.target.closest('tr');
+    state.reservations = state.reservations.filter(x => x.id !== tr.dataset.id);
+    renderReservations();
     scheduleSave();
   }
+});
+
+document.getElementById('addResRow').addEventListener('click', () => {
+  state.reservations.push(newReservation());
+  renderReservations();
+  scheduleSave();
+  const rows = document.querySelectorAll('#resTbody tr');
+  if(rows.length){
+    const lastId = state.reservations[state.reservations.length - 1].id;
+    const targetRow = [...rows].find(r => r.dataset.id === lastId);
+    if(targetRow) targetRow.querySelector('input[data-field="name"]').focus();
+  }
+});
+
+document.getElementById('freeNotes').addEventListener('input', (e) => {
+  state.notes = e.target.value;
+  scheduleSave();
 });
 
 async function init(){
@@ -799,9 +846,13 @@ async function init(){
   }catch(e){
     state.entries = [newEntry()];
   }
+  if(!Array.isArray(state.reservations)) state.reservations = [];
+  if(typeof state.notes !== 'string') state.notes = '';
   document.getElementById('dateLabel').value = state.date;
+  document.getElementById('freeNotes').value = state.notes;
   renderRules();
   renderEntries();
+  renderReservations();
 }
 
 init();

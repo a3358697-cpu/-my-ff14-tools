@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>以太紀錄簿 ‧ FF14 Tracker</title>
+<title>乙太紀錄簿 ‧ FF14 Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
@@ -141,13 +141,13 @@
     font-weight:600;
     margin:0;
     line-height:1.4;
-    color:var(--text-parchment);
+    color:var(--sec, var(--accent-gold));
   }
   .section-label h2::before{
     content:'◆';
     display:inline-block;
     font-size:8px;
-    color:var(--accent-gold-soft);
+    color:var(--sec, var(--accent-gold-soft));
     margin-right:8px;
     vertical-align:middle;
     transform:translateY(-2px);
@@ -204,12 +204,12 @@
   }
   button:hover{border-color:var(--accent-gold-soft);color:var(--accent-gold);}
   .btn-primary{
-    background:linear-gradient(160deg, rgba(195,166,121,0.22), rgba(195,166,121,0.07));
-    border-color:var(--accent-gold-soft);
-    color:var(--accent-gold);
+    background:linear-gradient(160deg, rgba(var(--sec-rgb, 195,166,121),0.22), rgba(var(--sec-rgb, 195,166,121),0.07));
+    border-color:var(--sec, var(--accent-gold-soft));
+    color:var(--sec, var(--accent-gold));
     font-weight:600;
   }
-  .btn-primary:hover{border-color:var(--accent-gold);color:#fff;}
+  .btn-primary:hover{border-color:var(--sec, var(--accent-gold));color:#fff;}
   .btn-ghost{background:transparent;border-color:transparent;color:var(--text-dim);padding:6px 8px;font-size:17px;line-height:1;}
   .btn-ghost:hover{color:var(--accent-coral);}
 
@@ -255,12 +255,12 @@
   .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
   @media (max-width:560px){.slot-grid{grid-template-columns:repeat(2,1fr);}}
   .slot-cell{display:flex;flex-direction:column;gap:4px;}
-  .slot-countdown{font-family:'Cinzel',serif;font-weight:600;font-size:12px;color:var(--accent-aether);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .slot-countdown{font-family:'Cinzel',serif;font-weight:600;font-size:14.5px;color:var(--accent-aether);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .slot-countdown.ready{color:var(--accent-coral);}
   .slot-date-row{display:flex;align-items:center;gap:2px;}
-  .slot-date-row span{font-size:10px;color:var(--text-dim);flex:0 0 auto;}
-  .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:10.5px;text-align:center;}
-  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:10.5px;}
+  .slot-date-row span{font-size:11px;color:var(--text-dim);flex:0 0 auto;}
+  .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:12px;text-align:center;}
+  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:12px;}
 
   /* ---------- Goals ---------- */
 
@@ -320,7 +320,7 @@
       </svg>
     </div>
     <div class="title-block">
-      <h1>Aetheryte Ledger<span class="sub-cn">以太紀錄簿</span></h1>
+      <h1>Aetheryte Ledger<span class="sub-cn">乙太紀錄簿</span></h1>
     </div>
     <div class="clock" id="clockBox">--:--:--</div>
   </header>
@@ -328,7 +328,7 @@
   <div class="sheet">
 
     <!-- WEEKLY -->
-    <div class="section-row" id="panel-weekly">
+    <div class="section-row" id="panel-weekly" style="--sec:#d4b483; --sec-rgb:212,180,131;">
       <div class="section-label">
         <h2>每週任務</h2>
         <button class="section-reset-btn" id="weeklyResetBtn">重置</button>
@@ -343,7 +343,7 @@
     </div>
 
     <!-- DAILY -->
-    <div class="section-row" id="panel-daily">
+    <div class="section-row" id="panel-daily" style="--sec:#c99f7a; --sec-rgb:201,159,122;">
       <div class="section-label">
         <h2>每日任務</h2>
         <button class="section-reset-btn" id="dailyResetBtn">重置</button>
@@ -358,7 +358,7 @@
     </div>
 
     <!-- SUBMARINES -->
-    <div class="section-row" id="panel-subs">
+    <div class="section-row" id="panel-subs" style="--sec:#bd8f7e; --sec-rgb:189,143,126;">
       <div class="section-label">
         <h2>潛水艇時間</h2>
       </div>
@@ -373,7 +373,7 @@
     </div>
 
     <!-- GOALS -->
-    <div class="section-row" id="panel-goals">
+    <div class="section-row" id="panel-goals" style="--sec:#ab8a8f; --sec-rgb:171,138,143;">
       <div class="section-label">
         <h2>目標</h2>
       </div>
@@ -387,7 +387,7 @@
     </div>
 
     <!-- MISC -->
-    <div class="section-row" id="panel-misc">
+    <div class="section-row" id="panel-misc" style="--sec:#9689a0; --sec-rgb:150,137,160;">
       <div class="section-label">
         <h2>雜項</h2>
       </div>
