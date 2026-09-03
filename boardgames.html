@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>甜綿菓室丨桌遊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --accent:#d99bb0;
+    --accent-soft:#8a5f6c;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --ok:#7f9a6a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(217,155,176,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(217,155,176,0.06), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.12em;
+    color:var(--accent);
+    border:1px solid var(--accent-soft);
+    padding:4px 10px;
+    border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+  }
+  .save-status{
+    font-size:14px;color:var(--ivory-dim);
+    display:flex;align-items:center;gap:6px;
+    margin-top:6px;
+  }
+  .save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);transition:opacity .3s;}
+  .save-dot.saving{background:var(--accent);}
+
+  p.intro{font-size:13.5px;color:var(--ivory-dim);line-height:1.7;margin:0 0 24px;}
+
+  details.game{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  details.game + details.game{margin-top:12px;}
+  details.game summary{
+    list-style:none;
+    cursor:pointer;
+    padding:16px 20px;
+    font-family:'Noto Serif TC', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    transition:background .15s ease;
+  }
+  details.game summary::-webkit-details-marker{display:none;}
+  details.game summary::after{
+    content:'▾';
+    color:var(--accent);
+    font-size:13px;
+    transition:transform .2s ease;
+    margin-left:12px;
+  }
+  details.game[open] summary::after{transform:rotate(180deg);}
+  details.game summary:hover{background:var(--panel-2);}
+  .game-body{padding:2px 20px 22px;border-top:1px solid var(--line-soft);}
+
+  .macro-field{margin-top:16px;}
+  .macro-label{
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    color:var(--accent);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .macro-row{display:flex;align-items:flex-start;gap:10px;}
+  .macro-box{
+    flex:1;
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:var(--ivory-dim);
+    white-space:pre-wrap;
+    min-height:20px;
+    line-height:1.6;
+  }
+  .copy-btn{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12.5px;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+    white-space:nowrap;
+  }
+  .copy-btn:hover{border-color:var(--accent-soft);color:var(--accent);}
+  .copy-btn.copied{border-color:var(--accent);color:var(--accent);}
+
+  .field-hint{font-size:12px;color:var(--ivory-dim);margin-top:5px;line-height:1.5;}
+
+  .record-board{
+    width:100%;min-height:140px;resize:vertical;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:8px;color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;font-size:14.5px;
+    padding:12px 14px;line-height:1.7;margin-top:6px;
+  }
+  .record-board:focus{outline:none;border-color:var(--accent-soft);}
+
+  ::selection{background:var(--accent-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <span class="mark">甜綿菓室</span>
+        <h1>桌遊</h1>
+      </div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    </div>
+  </header>
+
+  <p class="intro">各遊戲的固定宏參考。點遊戲名稱展開／收合，宏內容目前是空白模板，之後確定文字後會直接補進對應欄位；每個欄位右邊的「複製」可以直接複製起來貼到遊戲裡用。</p>
+
+  <details class="game">
+    <summary>真心話大冒險</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">題庫</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">真心話</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">大冒險</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>國王遊戲</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">題庫</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>滾雪球</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>誰是臥底</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">題庫</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">普通人</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">臥底</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>即興劇場</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">題庫</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">角色</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">劇情</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>神秘委託</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">關鍵字</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">引導行為</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">趣味任務</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>流言製造機</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">題庫</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>骰運對決</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>骰運對決・團體戰</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field">
+        <div class="macro-label">題庫</div>
+        <div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div>
+        <p class="field-hint">固定內容，無須更改。</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>艾歐澤亞推理劇場</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field">
+        <div class="macro-label">紀錄板</div>
+        <textarea class="record-board" id="recordA"></textarea>
+        <p class="field-hint">其他模板確認後會再補上。</p>
+      </div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>今晚正常營業嗎？</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">開始宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box"></div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field">
+        <div class="macro-label">紀錄板</div>
+        <textarea class="record-board" id="recordB"></textarea>
+        <p class="field-hint">其他模板確認後會再補上。</p>
+      </div>
+    </div>
+  </details>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'rp-boardgames:state-v1';
+let state = { recordA: '', recordB: '' };
+
+async function persistState(){
+  const payload = JSON.stringify(state);
+  let lastError = null;
+  if(window.storage && typeof window.storage.set === 'function'){
+    try{ await window.storage.set(STORAGE_KEY, payload, false); return true; }
+    catch(e){ lastError = e; }
+  }
+  try{ localStorage.setItem(STORAGE_KEY, payload); return true; }
+  catch(e){ lastError = e; }
+  throw lastError || new Error('no storage available');
+}
+async function loadState(){
+  if(window.storage && typeof window.storage.get === 'function'){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value) return result.value;
+    }catch(e){ /* fall through */ }
+  }
+  try{
+    const v = localStorage.getItem(STORAGE_KEY);
+    if(v) return v;
+  }catch(e){ /* no storage available */ }
+  return null;
+}
+let saveTimer = null;
+function scheduleSave(){
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = '儲存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try{
+      await persistState();
+      dot.classList.remove('saving');
+      text.textContent = '已同步';
+    }catch(e){
+      dot.classList.remove('saving');
+      text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
+    }
+  }, 400);
+}
+
+document.getElementById('recordA').addEventListener('input', (e) => {
+  state.recordA = e.target.value;
+  scheduleSave();
+});
+document.getElementById('recordB').addEventListener('input', (e) => {
+  state.recordB = e.target.value;
+  scheduleSave();
+});
+
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const box = btn.closest('.macro-row').querySelector('.macro-box');
+    const text = box.textContent || '';
+    try{
+      await navigator.clipboard.writeText(text);
+    }catch(e){
+      const range = document.createRange();
+      range.selectNodeContents(box);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    btn.textContent = '已複製';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 1500);
+  });
+});
+
+async function init(){
+  try{
+    const raw = await loadState();
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+    }
+  }catch(e){ /* keep defaults */ }
+  document.getElementById('recordA').value = state.recordA || '';
+  document.getElementById('recordB').value = state.recordB || '';
+}
+init();
+</script>
+</body>
+</html>

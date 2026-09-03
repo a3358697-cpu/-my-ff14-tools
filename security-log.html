@@ -34,7 +34,7 @@
     min-height:100vh;
     padding:40px 20px 80px;
   }
-  .wrap{max-width:1160px;margin:0 auto;}
+  .wrap{max-width:900px;margin:0 auto;}
 
   header.top{
     display:flex;
@@ -89,7 +89,37 @@
     padding:18px 20px;
     margin-bottom:26px;
   }
+  .rules-panel p.hint{font-size:13px;color:var(--ivory-dim);margin:0 0 14px;line-height:1.6;}
 
+  /* process (流程) */
+  .process-list{display:flex;flex-direction:column;}
+  .process-row{
+    display:flex;align-items:center;gap:12px;
+    padding:9px 0;
+    border-bottom:1px dashed var(--line-soft);
+  }
+  .process-row:last-child{border-bottom:none;}
+  .process-num{
+    width:24px;height:24px;border-radius:50%;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    color:var(--brass);font-family:'IBM Plex Mono', monospace;font-size:12px;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  }
+  .process-row input{
+    flex:1;background:transparent;border:none;
+    border-bottom:1px solid transparent;
+    color:var(--ivory);font-family:'Noto Sans TC', sans-serif;font-size:14.5px;
+    padding:4px 4px;
+  }
+  .process-row input:hover{border-bottom-color:var(--line);}
+  .process-row input:focus{outline:none;border-bottom-color:var(--brass-soft);}
+  .process-row .del-chip{
+    background:none;border:none;color:var(--ivory-dim);
+    cursor:pointer;font-size:14px;padding:4px 8px;line-height:1;border-radius:50%;flex:0 0 auto;
+  }
+  .process-row .del-chip:hover{color:var(--wine);background:rgba(140,59,74,0.15);}
+
+  /* confirm items */
   .confirm-items{display:flex;flex-wrap:wrap;gap:8px;}
   .confirm-chip{
     display:flex;align-items:center;gap:4px;
@@ -120,6 +150,7 @@
     padding:8px 12px;
     border-radius:6px;
     min-width:180px;
+    flex:1;
   }
   .add-row-inline input:focus{outline:none;border-color:var(--brass-soft);}
   .add-btn{
@@ -132,18 +163,68 @@
     border-radius:6px;
     cursor:pointer;
     transition:background .15s, border-color .15s;
+    white-space:nowrap;
   }
   .add-btn:hover{background:rgba(201,161,93,0.1);border-color:var(--brass);}
 
+  /* counter widget */
+  .counter-card{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    padding:34px 24px 30px;
+    margin-bottom:26px;
+    text-align:center;
+  }
+  .counter-display{margin-bottom:26px;font-family:'IBM Plex Mono', monospace;}
+  .counter-display .big{font-size:46px;color:var(--brass);font-weight:600;line-height:1;}
+  .counter-display .big small{font-size:16px;color:var(--ivory-dim);font-family:'Noto Sans TC',sans-serif;margin-left:4px;}
+  .counter-display .amt{font-size:18px;color:var(--ivory-dim);margin-top:8px;}
+  .counter-display .amt b{color:var(--brass);font-weight:600;}
+  .counter-main-btn{
+    width:170px;height:170px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(201,161,93,0.32), rgba(201,161,93,0.10));
+    border:2px solid var(--brass);
+    color:var(--brass);
+    font-family:'Noto Serif TC', serif;
+    font-size:22px;font-weight:700;
+    cursor:pointer;
+    transition:transform .1s ease, background .15s ease;
+  }
+  .counter-main-btn:active{transform:scale(0.95);background:rgba(201,161,93,0.4);}
+  .counter-side{
+    margin-top:60px;
+    display:flex;justify-content:center;gap:56px;flex-wrap:wrap;
+  }
+  .counter-minor-btn{
+    min-width:88px;padding:12px 18px;border-radius:8px;
+    border:1px solid var(--line);background:transparent;
+    color:var(--ivory-dim);font-family:'Noto Sans TC', sans-serif;font-size:14px;
+    cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .counter-minor-btn:hover{border-color:var(--wine);color:var(--wine);}
+  .counter-minor-btn.undo:hover{border-color:var(--brass);color:var(--brass);}
+  .counter-price-row{
+    margin-top:22px;font-size:12.5px;color:var(--ivory-dim);
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .counter-price-row input{
+    width:90px;background:var(--panel-2);border:1px solid var(--line-soft);
+    color:var(--brass);font-family:'IBM Plex Mono', monospace;font-size:13px;
+    padding:5px 7px;border-radius:5px;text-align:right;
+  }
+  .counter-price-row input:focus{outline:none;border-color:var(--brass-soft);}
+
+  /* entries (ID log) */
   .ledger{
     background:var(--panel);
     border:1px solid var(--line-soft);
     border-radius:var(--radius);
     overflow:hidden;
-    margin-bottom:24px;
+    margin-bottom:26px;
   }
   .ledger-scroll{overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;min-width:980px;}
+  table{width:100%;border-collapse:collapse;min-width:520px;}
   thead th{
     text-align:left;
     font-size:13px;
@@ -155,7 +236,6 @@
     border-bottom:1px solid var(--brass-soft);
     white-space:nowrap;
   }
-  thead th.num{text-align:right;}
   tbody td{
     padding:11px 10px;
     border-bottom:1px solid var(--line-soft);
@@ -164,7 +244,7 @@
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{filter:brightness(1.2);}
 
-  td input[type=text], td input[type=number], td input[type=time]{
+  td input[type=text]{
     background:transparent;
     border:1px solid transparent;
     color:var(--ivory);
@@ -175,44 +255,15 @@
     width:100%;
     transition:border-color .15s, background .15s;
   }
-  td input[type=number]{font-family:'IBM Plex Mono', monospace;text-align:right;}
-  td input[type=time]{font-family:'IBM Plex Mono', monospace;font-size:14.5px;}
   td input:hover{background:rgba(255,255,255,0.03);}
   td input:focus{outline:none;border-color:var(--brass-soft);background:rgba(201,161,93,0.06);}
 
-  .visit-count{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13.5px;
-    color:var(--ivory-dim);
-  }
+  .visit-count{font-family:'IBM Plex Mono', monospace;font-size:13.5px;color:var(--ivory-dim);}
 
-  .col-time{width:88px;}
-  .col-id{width:120px;}
-  .col-visits{width:78px;}
-  .col-count{width:70px;}
-  .col-amount{width:100px;}
-  .col-confirm{min-width:220px;}
-  .col-note{min-width:130px;}
+  .col-id{width:160px;}
+  .col-visits{width:100px;}
+  .col-note{min-width:160px;}
   .col-del{width:36px;text-align:center;}
-
-  .confirm-cell{display:flex;flex-wrap:wrap;gap:4px;}
-  .confirm-toggle{
-    font-size:11.5px;
-    padding:4px 9px;
-    border-radius:12px;
-    border:1px solid var(--line);
-    background:transparent;
-    color:var(--ivory-dim);
-    cursor:pointer;
-    white-space:nowrap;
-    font-family:'Noto Sans TC', sans-serif;
-    transition:background .15s, border-color .15s, color .15s;
-  }
-  .confirm-toggle.on{
-    background:rgba(127,154,106,0.18);
-    border-color:var(--ok);
-    color:var(--ok);
-  }
 
   .del-btn{
     background:none;border:none;color:var(--ivory-dim);
@@ -240,6 +291,15 @@
     font-size:15.5px;
   }
 
+  textarea{
+    width:100%;min-height:120px;resize:vertical;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:8px;color:var(--ivory);
+    font-family:'Noto Sans TC',sans-serif;font-size:15px;
+    padding:12px 14px;line-height:1.7;
+  }
+  textarea:focus{outline:none;border-color:var(--brass-soft);}
+
   ::selection{background:var(--brass-soft);color:var(--ink);}
 </style>
 </head>
@@ -257,11 +317,38 @@
   </header>
 
   <div class="rules-panel">
-    <h2 class="section-title">確認事項設定</h2>
+    <h2 class="section-title">流程</h2>
+    <p class="hint">門口接待的標準步驟，可以自行增刪調整順序內容。</p>
+    <div class="process-list" id="processList"></div>
+    <div class="add-row-inline">
+      <input type="text" id="newProcessInput" placeholder="新增流程步驟">
+      <button class="add-btn" id="addProcessBtn">＋ 新增步驟</button>
+    </div>
+  </div>
+
+  <div class="rules-panel">
+    <h2 class="section-title">確認事項</h2>
+    <p class="hint">每位客人入場前建議確認的項目，供對照用。</p>
     <div class="confirm-items" id="confirmItemsList"></div>
     <div class="add-row-inline">
       <input type="text" id="newConfirmItemInput" placeholder="新增確認項目">
       <button class="add-btn" id="addConfirmItemBtn">＋ 新增項目</button>
+    </div>
+  </div>
+
+  <div class="counter-card">
+    <h2 class="section-title" style="text-align:left;">今日人數與金額</h2>
+    <div class="counter-display">
+      <div class="big"><span id="counterCount">0</span><small>人</small></div>
+      <div class="amt">目前金額　<b id="counterAmount">$0</b></div>
+    </div>
+    <button class="counter-main-btn" id="plusBtn" type="button">+1</button>
+    <div class="counter-side">
+      <button class="counter-minor-btn" id="minusBtn" type="button">－1</button>
+      <button class="counter-minor-btn undo" id="undoBtn" type="button">復原</button>
+    </div>
+    <div class="counter-price-row">
+      每人金額　<input type="number" id="priceEachInput" min="0" step="1000">　Gil
     </div>
   </div>
 
@@ -271,12 +358,8 @@
     <table>
       <thead>
         <tr>
-          <th class="col-time">時間</th>
           <th class="col-id">ID</th>
           <th class="col-visits">到訪次數</th>
-          <th class="num col-count">人數</th>
-          <th class="num col-amount">金額</th>
-          <th class="col-confirm">確認事項</th>
           <th class="col-note">備註</th>
           <th class="col-del"></th>
         </tr>
@@ -287,25 +370,29 @@
     <div class="empty" id="emptyState" style="display:none;">目前沒有紀錄，點下方按鈕新增第一筆。</div>
     <div class="ledger-foot">
       <button class="add-btn" id="addRow">＋ 新增紀錄</button>
-      <span class="foot-hint" id="countHint">共 0 筆・人數 0・總金額 $0</span>
+      <span class="foot-hint" id="countHint">共 0 筆</span>
     </div>
+  </div>
+
+  <div class="rules-panel">
+    <h2 class="section-title">自由筆記</h2>
+    <textarea id="freeNotes"></textarea>
   </div>
 
 </div>
 
 <script>
-const STORAGE_KEY = 'rp-security:state-v1';
+const STORAGE_KEY = 'rp-security:state-v2';
 
 let state = {
+  process: ['迎賓問候', '確認身分與年齡', '說明店內規則', '完成收費', '引導入座'],
+  confirmItems: ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒'],
+  counter: { count: 0, priceEach: 30000, history: [] },
   entries: [],
-  confirmItems: ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒']
+  notes: ''
 };
 
 function uid(){ return 's' + Math.random().toString(36).slice(2, 9); }
-function nowTimeStr(){
-  const d = new Date();
-  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
 function fmtMoney(n){
   n = Math.round(Number(n) || 0);
   return '$' + n.toLocaleString('en-US');
@@ -315,15 +402,7 @@ function escapeAttr(s){
 }
 
 function newEntry(){
-  return {
-    id: uid(),
-    time: nowTimeStr(),
-    guestId: '',
-    guestCount: 1,
-    amount: 0,
-    confirmed: {},
-    note: ''
-  };
+  return { id: uid(), guestId: '', note: '' };
 }
 
 async function persistState(){
@@ -375,37 +454,72 @@ function scheduleSave(){
   }, 400);
 }
 
+/* ---------- 流程 process ---------- */
+function renderProcess(){
+  const wrap = document.getElementById('processList');
+  wrap.innerHTML = '';
+  state.process.forEach((step, idx) => {
+    const row = document.createElement('div');
+    row.className = 'process-row';
+    row.innerHTML = `
+      <span class="process-num">${idx + 1}</span>
+      <input type="text" value="${escapeAttr(step)}" data-idx="${idx}">
+      <button class="del-chip" data-idx="${idx}" aria-label="刪除步驟">×</button>
+    `;
+    wrap.appendChild(row);
+  });
+}
+document.getElementById('processList').addEventListener('change', (e) => {
+  const idx = e.target.dataset.idx;
+  if(idx === undefined) return;
+  state.process[idx] = e.target.value;
+  scheduleSave();
+});
+document.getElementById('processList').addEventListener('click', (e) => {
+  if(e.target.classList.contains('del-chip')){
+    const idx = Number(e.target.dataset.idx);
+    state.process.splice(idx, 1);
+    renderProcess();
+    scheduleSave();
+  }
+});
+document.getElementById('addProcessBtn').addEventListener('click', () => {
+  const input = document.getElementById('newProcessInput');
+  const v = input.value.trim();
+  if(!v) return;
+  state.process.push(v);
+  input.value = '';
+  renderProcess();
+  scheduleSave();
+});
+
+/* ---------- 確認事項 ---------- */
 function renderConfirmSettings(){
   const wrap = document.getElementById('confirmItemsList');
   wrap.innerHTML = '';
   state.confirmItems.forEach((label, idx) => {
     const chip = document.createElement('div');
     chip.className = 'confirm-chip';
-    chip.innerHTML = `<input type="text" value="${escapeAttr(label)}" data-idx="${idx}"><button class="del-chip" data-idx="${idx}" aria-label="刪除項目">×</button>`;
+    chip.innerHTML = `<input type="text" value="${escapeAttr(label)}" data-idx="${idx}"><button class="del-chip" data-idx="${idx}" aria-label="刪除">×</button>`;
     wrap.appendChild(chip);
   });
 }
-
 document.getElementById('confirmItemsList').addEventListener('change', (e) => {
   const idx = e.target.dataset.idx;
   if(idx === undefined) return;
   const v = e.target.value.trim();
   if(v) state.confirmItems[idx] = v;
   else e.target.value = state.confirmItems[idx];
-  renderEntries();
   scheduleSave();
 });
-
 document.getElementById('confirmItemsList').addEventListener('click', (e) => {
   if(e.target.classList.contains('del-chip')){
     const idx = Number(e.target.dataset.idx);
     state.confirmItems.splice(idx, 1);
     renderConfirmSettings();
-    renderEntries();
     scheduleSave();
   }
 });
-
 document.getElementById('addConfirmItemBtn').addEventListener('click', () => {
   const input = document.getElementById('newConfirmItemInput');
   const v = input.value.trim();
@@ -413,17 +527,46 @@ document.getElementById('addConfirmItemBtn').addEventListener('click', () => {
   state.confirmItems.push(v);
   input.value = '';
   renderConfirmSettings();
-  renderEntries();
   scheduleSave();
 });
 
-function updateSummary(){
-  const count = state.entries.length;
-  const totalGuests = state.entries.reduce((s,e)=> s + (Number(e.guestCount)||0), 0);
-  const totalAmount = state.entries.reduce((s,e)=> s + (Number(e.amount)||0), 0);
-  document.getElementById('countHint').textContent = `共 ${count} 筆・人數 ${totalGuests}・總金額 ${fmtMoney(totalAmount)}`;
+/* ---------- 人數與金額計數器 ---------- */
+function updateCounterDisplay(){
+  document.getElementById('counterCount').textContent = state.counter.count;
+  document.getElementById('counterAmount').textContent = fmtMoney(state.counter.count * (Number(state.counter.priceEach) || 0));
 }
+document.getElementById('plusBtn').addEventListener('click', () => {
+  state.counter.count += 1;
+  state.counter.history.push(1);
+  if(state.counter.history.length > 50) state.counter.history.shift();
+  updateCounterDisplay();
+  scheduleSave();
+});
+document.getElementById('minusBtn').addEventListener('click', () => {
+  if(state.counter.count <= 0) return;
+  state.counter.count -= 1;
+  state.counter.history.push(-1);
+  if(state.counter.history.length > 50) state.counter.history.shift();
+  updateCounterDisplay();
+  scheduleSave();
+});
+document.getElementById('undoBtn').addEventListener('click', () => {
+  if(!state.counter.history.length) return;
+  const last = state.counter.history.pop();
+  state.counter.count = Math.max(0, state.counter.count - last);
+  updateCounterDisplay();
+  scheduleSave();
+});
+document.getElementById('priceEachInput').addEventListener('input', (e) => {
+  state.counter.priceEach = Number(e.target.value) || 0;
+  updateCounterDisplay();
+  scheduleSave();
+});
 
+/* ---------- 入場紀錄 (ID log) ---------- */
+function updateSummary(){
+  document.getElementById('countHint').textContent = `共 ${state.entries.length} 筆`;
+}
 function updateVisitCounts(){
   const counts = {};
   state.entries.forEach(e => {
@@ -439,7 +582,6 @@ function updateVisitCounts(){
     if(el) el.textContent = key ? `共 ${counts[key]} 次` : '—';
   });
 }
-
 function renderEntries(){
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
@@ -448,17 +590,9 @@ function renderEntries(){
   state.entries.forEach(entry => {
     const tr = document.createElement('tr');
     tr.dataset.id = entry.id;
-    const confirmHtml = state.confirmItems.map(label => {
-      const on = !!entry.confirmed[label];
-      return `<button type="button" class="confirm-toggle ${on ? 'on' : ''}" data-label="${escapeAttr(label)}">${escapeAttr(label)}</button>`;
-    }).join('');
     tr.innerHTML = `
-      <td class="col-time"><input type="time" data-field="time" value="${escapeAttr(entry.time)}"></td>
       <td class="col-id"><input type="text" data-field="guestId" placeholder="ID" value="${escapeAttr(entry.guestId)}"></td>
       <td class="col-visits"><span class="visit-count">—</span></td>
-      <td class="col-count"><input type="number" data-field="guestCount" min="0" step="1" value="${entry.guestCount}"></td>
-      <td class="col-amount"><input type="number" data-field="amount" min="0" step="100" value="${entry.amount}"></td>
-      <td class="col-confirm"><div class="confirm-cell">${confirmHtml}</div></td>
       <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(entry.note)}"></td>
       <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
     `;
@@ -468,44 +602,24 @@ function renderEntries(){
   updateVisitCounts();
   updateSummary();
 }
-
 document.getElementById('tbody').addEventListener('input', (e) => {
   const field = e.target.dataset.field;
   if(!field) return;
   const tr = e.target.closest('tr');
   const entry = state.entries.find(x => x.id === tr.dataset.id);
   if(!entry) return;
-  if(field === 'guestCount' || field === 'amount'){
-    entry[field] = e.target.value === '' ? 0 : Number(e.target.value);
-    updateSummary();
-  } else if(field === 'guestId'){
-    entry.guestId = e.target.value;
-    updateVisitCounts();
-  } else {
-    entry[field] = e.target.value;
-  }
+  entry[field] = e.target.value;
+  if(field === 'guestId') updateVisitCounts();
   scheduleSave();
 });
-
 document.getElementById('tbody').addEventListener('click', (e) => {
   if(e.target.dataset.action === 'delete'){
     const tr = e.target.closest('tr');
     state.entries = state.entries.filter(x => x.id !== tr.dataset.id);
     renderEntries();
     scheduleSave();
-    return;
-  }
-  if(e.target.classList.contains('confirm-toggle')){
-    const tr = e.target.closest('tr');
-    const entry = state.entries.find(x => x.id === tr.dataset.id);
-    if(!entry) return;
-    const label = e.target.dataset.label;
-    entry.confirmed[label] = !entry.confirmed[label];
-    e.target.classList.toggle('on', entry.confirmed[label]);
-    scheduleSave();
   }
 });
-
 document.getElementById('addRow').addEventListener('click', () => {
   state.entries.push(newEntry());
   renderEntries();
@@ -518,23 +632,36 @@ document.getElementById('addRow').addEventListener('click', () => {
   }
 });
 
+/* ---------- 自由筆記 ---------- */
+document.getElementById('freeNotes').addEventListener('input', (e) => {
+  state.notes = e.target.value;
+  scheduleSave();
+});
+
 async function init(){
   try{
     const raw = await loadState();
     if(raw){
       const loaded = JSON.parse(raw);
       state = Object.assign(state, loaded);
+      if(!Array.isArray(state.process) || !state.process.length){
+        state.process = ['迎賓問候', '確認身分與年齡', '說明店內規則', '完成收費', '引導入座'];
+      }
       if(!Array.isArray(state.confirmItems) || !state.confirmItems.length){
         state.confirmItems = ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒'];
       }
-      state.entries.forEach(e => { if(!e.confirmed) e.confirmed = {}; });
-    } else {
-      state.entries = [newEntry()];
+      if(!state.counter) state.counter = { count: 0, priceEach: 30000, history: [] };
+      if(!Array.isArray(state.counter.history)) state.counter.history = [];
+      if(!Array.isArray(state.entries)) state.entries = [];
+      if(typeof state.notes !== 'string') state.notes = '';
     }
-  }catch(e){
-    state.entries = [newEntry()];
-  }
+  }catch(e){ /* keep defaults */ }
+
+  document.getElementById('priceEachInput').value = state.counter.priceEach;
+  document.getElementById('freeNotes').value = state.notes;
+  renderProcess();
   renderConfirmSettings();
+  updateCounterDisplay();
   renderEntries();
 }
 

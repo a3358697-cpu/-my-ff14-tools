@@ -32,7 +32,7 @@
     font-family:'Noto Sans TC','Noto Serif TC',serif;
     -webkit-font-smoothing:antialiased;
   }
-  .stage{max-width:720px;margin:0 auto;padding:60px 20px 80px;}
+  .stage{max-width:980px;margin:0 auto;padding:60px 20px 80px;}
   h1{
     font-family:'Cinzel','Noto Serif TC',serif;
     font-weight:600;
@@ -48,37 +48,50 @@
     margin:0 0 44px;
     letter-spacing:0.05em;
   }
-  .grid{display:flex;flex-direction:column;gap:14px;}
+  .categories{display:grid;grid-template-columns:repeat(3, 1fr);gap:22px;align-items:start;}
+  @media (max-width:760px){.categories{grid-template-columns:1fr;}}
+  .category{display:flex;flex-direction:column;gap:12px;}
+  .category-title{
+    font-family:'Noto Serif TC',serif;
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--accent-gold);
+    text-align:center;
+    letter-spacing:0.1em;
+    margin:0 0 2px;
+    padding-bottom:10px;
+    border-bottom:1px solid var(--border-soft);
+  }
   a.tool-card{
     display:flex;
     align-items:center;
-    gap:16px;
+    gap:14px;
     background:linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
     border:1px solid var(--border-soft);
     border-radius:14px;
-    padding:20px 22px;
+    padding:16px 16px;
     text-decoration:none;
     color:var(--text-parchment);
     transition:border-color .15s ease, transform .15s ease;
   }
   a.tool-card:hover{border-color:var(--accent-gold-soft);transform:translateY(-2px);}
   .tool-icon{
-    width:40px;height:40px;flex:0 0 auto;
+    width:34px;height:34px;flex:0 0 auto;
     display:flex;align-items:center;justify-content:center;
-    font-size:20px;color:var(--accent-gold);
+    font-size:17px;color:var(--accent-gold);
     border:1px solid var(--border-soft);
-    border-radius:10px;
+    border-radius:9px;
   }
-  .tool-name{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:600;margin:0 0 3px;}
-  .tool-desc{font-size:13px;color:var(--text-muted);margin:0;}
-  .placeholder{
+  .tool-name{font-family:'Noto Serif TC',serif;font-size:15.5px;font-weight:600;margin:0 0 3px;}
+  .tool-desc{font-size:12px;color:var(--text-muted);margin:0;line-height:1.5;}
+  .placeholder-card{
     border:1px dashed var(--border-soft);
     border-radius:14px;
-    padding:20px 22px;
-    color:var(--text-dim);
-    font-size:13.5px;
+    padding:16px 16px;
     text-align:center;
   }
+  .placeholder-card .tool-name{color:var(--text-dim);}
+  .placeholder-card .tool-desc{color:var(--text-dim);opacity:0.75;}
   .backup-panel{
     margin-top:40px;
     padding-top:28px;
@@ -118,29 +131,58 @@
 <div class="stage">
   <h1>工具箱</h1>
   <p class="sub">你的個人小工具入口</p>
-  <div class="grid">
-    <a class="tool-card" href="ff14-tracker.html">
-      <div class="tool-icon">◆</div>
-      <div>
-        <div class="tool-name">乙太紀錄簿 · FF14 Tracker</div>
-        <p class="tool-desc">每週／每日任務、潛水艇時間、目標、雜項筆記</p>
+  <div class="categories">
+    <div class="category">
+      <div class="category-title">日常個人</div>
+      <a class="tool-card" href="ff14-tracker.html">
+        <div class="tool-icon">◆</div>
+        <div>
+          <div class="tool-name">乙太紀錄簿</div>
+          <p class="tool-desc">每週／每日任務、潛水艇時間、目標、雜項</p>
+        </div>
+      </a>
+      <div class="placeholder-card">
+        <div class="tool-name">潛水艇</div>
+        <p class="tool-desc">即將推出</p>
       </div>
-    </a>
-    <a class="tool-card" href="salary-tracker.html">
-      <div class="tool-icon">￥</div>
-      <div>
-        <div class="tool-name">RP店丨接待台帳</div>
-        <p class="tool-desc">每日紀錄、預約、自由筆記</p>
+    </div>
+
+    <div class="category">
+      <div class="category-title">夜酌</div>
+      <a class="tool-card" href="salary-tracker.html">
+        <div class="tool-icon">￥</div>
+        <div>
+          <div class="tool-name">接待台帳</div>
+          <p class="tool-desc">每日紀錄、預約、自由筆記</p>
+        </div>
+      </a>
+      <a class="tool-card" href="security-log.html">
+        <div class="tool-icon">✚</div>
+        <div>
+          <div class="tool-name">保安紀錄</div>
+          <p class="tool-desc">流程、確認事項、人數金額、ID到訪次數</p>
+        </div>
+      </a>
+      <div class="placeholder-card">
+        <div class="tool-name">巨集/宏</div>
+        <p class="tool-desc">即將推出</p>
       </div>
-    </a>
-    <a class="tool-card" href="security-log.html">
-      <div class="tool-icon">✚</div>
-      <div>
-        <div class="tool-name">RP店丨保安紀錄</div>
-        <p class="tool-desc">門口收費、人數、ID到訪次數、確認事項</p>
+    </div>
+
+    <div class="category">
+      <div class="category-title">甜綿菓室</div>
+      <a class="tool-card" href="boardgames.html">
+        <div class="tool-icon">♣</div>
+        <div>
+          <div class="tool-name">桌遊</div>
+          <p class="tool-desc">各遊戲固定宏參考</p>
+        </div>
+      </a>
+      <div class="placeholder-card">
+        <div class="tool-name">巨集/宏</div>
+        <p class="tool-desc">即將推出</p>
       </div>
-    </a>
-    <div class="placeholder">之後新增的工具會放在這裡</div>
+    </div>
   </div>
 
   <div class="backup-panel">
@@ -162,8 +204,9 @@
   // Known storage keys used by each tool in this toolbox.
   const TOOL_KEYS = [
     { label: '乙太紀錄簿', key: 'ff14-tracker-state-v2' },
-    { label: 'RP店丨接待台帳', key: 'rp-payroll:state-v2' },
-    { label: 'RP店丨保安紀錄', key: 'rp-security:state-v1' }
+    { label: '接待台帳', key: 'rp-payroll:state-v2' },
+    { label: '保安紀錄', key: 'rp-security:state-v2' },
+    { label: '桌遊', key: 'rp-boardgames:state-v1' }
   ];
 
   const hasCloudStorage = !!(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function');
