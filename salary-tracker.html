@@ -236,11 +236,14 @@
   .col-calc{width:112px;}
   .col-total{width:122px;}
   .col-note{min-width:130px;}
-  .col-res-date{width:130px;}
+  .col-res-date{width:100px;}
   .col-res-name{width:120px;}
   .col-res-staff{width:120px;}
-  .col-res-start{width:110px;}
+  .col-res-start{width:90px;}
   .col-res-sessions{width:80px;}
+  .res-date-row, .res-time-row{display:flex;align-items:center;gap:3px;}
+  .res-date-row span, .res-time-row span{font-size:12px;color:var(--ivory-dim);flex:0 0 auto;}
+  .res-date-row input, .res-time-row input{width:0;flex:1;min-width:28px;text-align:center;padding:6px 3px;font-size:13.5px;}
   table.table-compact{min-width:760px;}
   .col-del{width:36px;text-align:center;}
 
@@ -521,12 +524,15 @@ function newEntry(){
 }
 
 function newReservation(){
+  const now = new Date();
   return {
     id: uid(),
-    date: todayStr(),
+    month: now.getMonth() + 1,
+    day: now.getDate(),
     name: '',
     staff: '',
-    startTime: '',
+    hour: '',
+    minute: '',
     sessions: 0,
     note: ''
   };
@@ -671,10 +677,22 @@ function renderReservations(){
     const tr = document.createElement('tr');
     tr.dataset.id = r.id;
     tr.innerHTML = `
-      <td class="col-res-date"><input type="date" data-field="date" value="${escapeAttr(r.date)}"></td>
+      <td class="col-res-date">
+        <div class="res-date-row">
+          <input type="number" data-field="month" min="1" max="12" value="${r.month ?? ''}">
+          <span>/</span>
+          <input type="number" data-field="day" min="1" max="31" value="${r.day ?? ''}">
+        </div>
+      </td>
       <td class="col-res-name"><input type="text" data-field="name" placeholder="姓名" value="${escapeAttr(r.name)}"></td>
       <td class="col-res-staff"><input type="text" data-field="staff" placeholder="指名人員" value="${escapeAttr(r.staff)}"></td>
-      <td class="col-res-start"><input type="time" data-field="startTime" value="${escapeAttr(r.startTime)}"></td>
+      <td class="col-res-start">
+        <div class="res-time-row">
+          <input type="number" data-field="hour" min="0" max="23" value="${r.hour ?? ''}">
+          <span>:</span>
+          <input type="number" data-field="minute" min="0" max="59" value="${r.minute ?? ''}">
+        </div>
+      </td>
       <td class="col-res-sessions"><input type="number" data-field="sessions" min="0" step="1" value="${r.sessions}"></td>
       <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(r.note)}"></td>
       <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
@@ -798,7 +816,12 @@ document.getElementById('resTbody').addEventListener('input', (e) => {
   const tr = e.target.closest('tr');
   const r = state.reservations.find(x => x.id === tr.dataset.id);
   if(!r) return;
-  r[field] = field === 'sessions' ? (e.target.value === '' ? 0 : Number(e.target.value)) : e.target.value;
+  const numericFields = ['sessions', 'month', 'day', 'hour', 'minute'];
+  if(numericFields.includes(field)){
+    r[field] = e.target.value === '' ? (field === 'sessions' ? 0 : '') : Number(e.target.value);
+  } else {
+    r[field] = e.target.value;
+  }
   scheduleSave();
 });
 

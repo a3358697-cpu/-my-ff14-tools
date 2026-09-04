@@ -117,6 +117,11 @@
     grid-template-columns:120px 1fr;
     border-top:1px solid var(--border-soft);
     position:relative;
+    background:linear-gradient(100deg,
+      rgba(var(--sec-rgb, 195,166,121), 0.22) 0%,
+      rgba(var(--sec-rgb, 195,166,121), 0.08) 40%,
+      rgba(var(--sec-rgb, 195,166,121), 0.02) 70%,
+      transparent 100%);
   }
   .section-row:first-child{border-top:none;}
   .section-row:not(:first-child)::before{
@@ -327,19 +332,6 @@
           <button class="btn-primary" id="dailyAddBtn">新增</button>
         </div>
         <ul class="item-list" id="dailyList"></ul>
-      </div>
-    </div>
-
-    <!-- SUBMARINES (moved to its own tool) -->
-    <div class="section-row" id="panel-subs" style="--sec:#bd8f7e; --sec-rgb:189,143,126;">
-      <div class="section-label">
-        <h2>潛水艇時間</h2>
-      </div>
-      <div class="section-content">
-        <p style="margin:0;font-size:14px;color:var(--text-muted);line-height:1.7;">
-          潛水艇追蹤已經搬到獨立的「潛水艇」工具囉，裡面還多了路線時間表和點位開圖樹。
-          <a href="submarine.html" style="color:var(--sec, var(--accent-gold));">前往潛水艇工具 →</a>
-        </p>
       </div>
     </div>
 

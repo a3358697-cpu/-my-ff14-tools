@@ -127,8 +127,9 @@
   .slot-countdown.ready{color:var(--accent-coral);}
   .slot-date-row{display:flex;align-items:center;gap:2px;}
   .slot-date-row span{font-size:11px;color:var(--text-dim);flex:0 0 auto;}
+  .slot-time-row{display:flex;align-items:center;gap:2px;}
+  .slot-time-row span{font-size:11px;color:var(--text-dim);flex:0 0 auto;}
   .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:12px;text-align:center;}
-  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:12px;}
 
   /* reference tables */
   details.ref-table{
@@ -404,7 +405,8 @@ B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
         <h3 style="margin-top:18px;">翠浪海（Sea of Jade）</h3>
         <pre>A ─── C ─── E ─── G ─── J ─── M ─── R ─── T ──→ 妖歌海
 （支線省略）</pre>
-        <div class="progress-line">1111 → (15級)1121 → (25級)3113 → (50級進灰海)1123 → (85級)3124不改 → 溺沒海OJ撈金</div>
+        <div class="progress-line">1111 → (15級)1121 → (25級)3113 → (50級進灰海)1123 → 
+(85級)3124不改 → 溺沒海OJ撈金</div>
       </div>
     </div>
   </div>
@@ -532,15 +534,21 @@ B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
           <span>/</span>
           <input type="number" class="slot-day" min="1" max="31">
         </div>
-        <input type="time" class="slot-time">
+        <div class="slot-time-row">
+          <input type="number" class="slot-hour" min="0" max="23">
+          <span>:</span>
+          <input type="number" class="slot-minute" min="0" max="59">
+        </div>
       `;
       const monthInput = cell.querySelector('.slot-month');
       const dayInput = cell.querySelector('.slot-day');
-      const timeInput = cell.querySelector('.slot-time');
+      const hourInput = cell.querySelector('.slot-hour');
+      const minuteInput = cell.querySelector('.slot-minute');
       function commit(){
-        const m = Number(monthInput.value), d = Number(dayInput.value), t = timeInput.value;
-        if(!m || !d || !t) return;
-        const [hh, mm] = t.split(':').map(Number);
+        const m = Number(monthInput.value), d = Number(dayInput.value);
+        const hh = hourInput.value === '' ? NaN : Number(hourInput.value);
+        const mm = minuteInput.value === '' ? NaN : Number(minuteInput.value);
+        if(!m || !d || Number.isNaN(hh) || Number.isNaN(mm)) return;
         const now = new Date();
         let candidate = new Date(now.getFullYear(), m-1, d, hh, mm, 0, 0);
         while(candidate.getTime() <= Date.now()) candidate.setFullYear(candidate.getFullYear()+1);
@@ -548,9 +556,9 @@ B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
         updateSubOrderAndCountdowns();
         scheduleSave();
       }
-      [monthInput, dayInput, timeInput].forEach(inp => inp.addEventListener('change', commit));
+      [monthInput, dayInput, hourInput, minuteInput].forEach(inp => inp.addEventListener('change', commit));
       grid.appendChild(cell);
-      slotEls.push({ countdownEl: cell.querySelector('.slot-countdown'), monthInput, dayInput, timeInput });
+      slotEls.push({ countdownEl: cell.querySelector('.slot-countdown'), monthInput, dayInput, hourInput, minuteInput });
     });
     card.appendChild(grid);
 
@@ -595,11 +603,12 @@ B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
           }
           s.countdownEl.title = '返航 ' + fmtClock(new Date(sub.returnAt));
           const active = document.activeElement;
-          if(active !== s.monthInput && active !== s.dayInput && active !== s.timeInput){
+          if(active !== s.monthInput && active !== s.dayInput && active !== s.hourInput && active !== s.minuteInput){
             const d = new Date(sub.returnAt);
             s.monthInput.value = d.getMonth()+1;
             s.dayInput.value = d.getDate();
-            s.timeInput.value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+            s.hourInput.value = d.getHours();
+            s.minuteInput.value = String(d.getMinutes()).padStart(2,'0');
           }
         }else{
           s.countdownEl.textContent = '未出發';
@@ -610,6 +619,13 @@ B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
       refs.sortKey = anyReady ? -1e15 : minRemain;
       refs.badgeEl.classList.toggle('show', anyReady);
     });
+
+    // Skip reordering while the person is actively working inside the submarine list —
+    // otherwise a card can jump away from under their cursor mid-edit.
+    const activeEl = document.activeElement;
+    const charListEl = document.getElementById('charList');
+    if(activeEl && charListEl.contains(activeEl)) return;
+
     const ranked = [...state.characters].sort((a,b)=>(subRefs[a.id]?.sortKey ?? Infinity) - (subRefs[b.id]?.sortKey ?? Infinity));
     ranked.forEach((ch, idx)=>{ if(subRefs[ch.id]) subRefs[ch.id].cardEl.style.order = idx; });
   }
