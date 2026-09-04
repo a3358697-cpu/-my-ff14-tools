@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>潛水艇 ‧ 乙太紀錄簿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#0a0807;
+    --bg-void-2:#120e0c;
+    --bg-panel:#1a1411;
+    --bg-panel-2:#221a16;
+    --bg-panel-3:#2a201b;
+    --border-soft:#54453a;
+    --border-gold:#7d6a54;
+    --text-parchment:#e8ddd0;
+    --text-muted:#a4917f;
+    --text-dim:#6b5c4d;
+    --accent-gold:#c3a679;
+    --accent-gold-soft:#87715a;
+    --accent-aether:#6fd3e0;
+    --accent-aether-dim:#3a7d8a;
+    --accent-coral:#e0876a;
+    --shadow-deep: 0 20px 60px rgba(0,0,0,0.55);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    font-size:17px;
+    background:
+      radial-gradient(circle, rgba(195,166,121,0.05) 1px, transparent 1.5px) 0 0/28px 28px,
+      radial-gradient(circle at 15% 0%, rgba(195,166,121,0.045), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(58,125,138,0.04), transparent 40%),
+      linear-gradient(180deg, var(--bg-void) 0%, var(--bg-void-2) 100%);
+    color:var(--text-parchment);
+    font-family:'Noto Sans TC','Noto Serif TC',serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .stage{max-width:960px;margin:0 auto;padding:26px 18px 70px;}
+
+  header.top{
+    display:flex;align-items:center;gap:16px;
+    margin-bottom:18px;padding-bottom:18px;
+    border-bottom:1px solid var(--border-soft);
+  }
+  .crystal{width:36px;height:36px;flex:0 0 auto;position:relative;animation:spin 14s linear infinite;}
+  .crystal svg{width:100%;height:100%;filter:drop-shadow(0 0 6px rgba(111,211,224,0.55));}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion: reduce){.crystal{animation:none;}}
+  .title-block{flex:1;min-width:0;}
+  h1{
+    font-family:'Cinzel','Noto Serif TC',serif;font-weight:600;font-size:26px;
+    letter-spacing:0.06em;margin:0 0 3px;color:var(--text-parchment);
+  }
+  h1 .sub-cn{
+    font-family:'Noto Serif TC',serif;font-size:16px;font-weight:500;
+    color:var(--accent-aether);letter-spacing:0.15em;margin-left:8px;
+  }
+  .save-status{font-size:13px;color:var(--text-dim);text-align:right;line-height:1.6;}
+  .save-status b{color:var(--accent-gold);font-weight:600;}
+
+  .block{
+    background:linear-gradient(160deg, var(--bg-panel) 0%, var(--bg-panel-2) 100%);
+    border:1px solid var(--border-soft);
+    border-radius:16px;
+    box-shadow:var(--shadow-deep);
+    padding:24px;
+    margin-bottom:24px;
+  }
+  .block h2{
+    font-family:'Noto Serif TC',serif;font-size:19px;font-weight:600;
+    color:var(--accent-gold);margin:0 0 6px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .block h2::before{content:'◆';font-size:8px;color:var(--accent-gold-soft);}
+  .block p.desc{margin:0 0 16px;font-size:13.5px;color:var(--text-muted);line-height:1.6;}
+
+  .add-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+  input[type=text], input[type=number], input[type=time]{
+    background:var(--bg-void-2);border:1px solid var(--border-soft);color:var(--text-parchment);
+    font-family:'Noto Sans TC',sans-serif;font-size:15.5px;padding:10px 13px;border-radius:8px;outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input[type=text]{flex:1;min-width:140px;}
+  input:focus{border-color:var(--accent-aether-dim);box-shadow:0 0 0 2px rgba(111,211,224,0.15);}
+  button{
+    font-family:'Noto Sans TC',sans-serif;cursor:pointer;border-radius:8px;border:1px solid var(--border-soft);
+    background:var(--bg-panel-3);color:var(--text-parchment);font-size:14.5px;padding:10px 16px;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  button:hover{border-color:var(--accent-gold-soft);color:var(--accent-gold);}
+  .btn-primary{
+    background:linear-gradient(160deg, rgba(195,166,121,0.22), rgba(195,166,121,0.07));
+    border-color:var(--accent-gold-soft);color:var(--accent-gold);font-weight:600;
+  }
+  .btn-primary:hover{border-color:var(--accent-gold);color:#fff;}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--text-dim);padding:6px 8px;font-size:17px;line-height:1;}
+  .btn-ghost:hover{color:var(--accent-coral);}
+
+  .empty-state{text-align:center;padding:26px 12px;color:var(--text-dim);font-size:14px;border:1px dashed var(--border-soft);border-radius:10px;}
+  .empty-state .glyph{font-size:20px;display:block;margin-bottom:6px;color:var(--accent-gold-soft);}
+
+  /* submarines */
+  .char-list{display:flex;flex-direction:column;gap:8px;}
+  .char-card{
+    background:var(--bg-void-2);border:1px solid var(--border-soft);
+    border-left:4px solid var(--char-color, var(--accent-gold));
+    border-radius:9px;padding:9px 12px 10px;
+  }
+  .char-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+  .char-color-input{width:22px;height:22px;flex:0 0 auto;padding:0;border:1px solid var(--border-soft);border-radius:5px;background:none;cursor:pointer;}
+  .char-name-input{flex:1;min-width:60px;background:transparent;border:none;border-bottom:1px solid transparent;font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;color:var(--text-parchment);padding:3px 2px;}
+  .char-name-input:focus{border-bottom-color:var(--accent-aether-dim);box-shadow:none;outline:none;}
+  .char-badge{font-size:10.5px;background:rgba(224,135,106,0.16);color:var(--accent-coral);border:1px solid rgba(224,135,106,0.4);padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;display:none;}
+  .char-badge.show{display:inline-block;}
+  .char-del{margin-left:auto;}
+
+  .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+  @media (max-width:560px){.slot-grid{grid-template-columns:repeat(2,1fr);}}
+  .slot-cell{display:flex;flex-direction:column;gap:4px;}
+  .slot-countdown{font-family:'Cinzel',serif;font-weight:600;font-size:14.5px;color:var(--accent-aether);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .slot-countdown.ready{color:var(--accent-coral);}
+  .slot-date-row{display:flex;align-items:center;gap:2px;}
+  .slot-date-row span{font-size:11px;color:var(--text-dim);flex:0 0 auto;}
+  .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:12px;text-align:center;}
+  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:12px;}
+
+  /* reference tables */
+  details.ref-table{
+    background:var(--bg-void-2);border:1px solid var(--border-soft);border-radius:10px;
+    margin-bottom:10px;overflow:hidden;
+  }
+  details.ref-table:last-child{margin-bottom:0;}
+  details.ref-table summary{
+    list-style:none;cursor:pointer;padding:13px 16px;
+    font-family:'Noto Serif TC',serif;font-size:14.5px;font-weight:600;color:var(--text-parchment);
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  details.ref-table summary::-webkit-details-marker{display:none;}
+  details.ref-table summary::after{content:'▾';color:var(--accent-gold);font-size:12px;transition:transform .2s ease;}
+  details.ref-table[open] summary::after{transform:rotate(180deg);}
+  details.ref-table summary:hover{background:var(--bg-panel-3);}
+  .table-scroll{overflow-x:auto;border-top:1px solid var(--border-soft);}
+  table{width:100%;border-collapse:collapse;min-width:420px;}
+  table thead th{
+    text-align:left;font-size:11.5px;letter-spacing:0.04em;color:var(--accent-gold);
+    font-weight:600;padding:9px 12px;border-bottom:1px solid var(--border-gold);white-space:nowrap;
+  }
+  table tbody td{
+    padding:7px 12px;font-size:13.5px;color:var(--text-parchment);
+    border-bottom:1px solid var(--border-soft);white-space:nowrap;
+  }
+  table tbody tr:last-child td{border-bottom:none;}
+  table tbody tr:hover td{background:rgba(195,166,121,0.05);}
+  table td.mono, table td.route{font-family:'IBM Plex Mono',monospace;color:var(--text-muted);}
+
+  /* route trees */
+  .tree-columns{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media (max-width:700px){.tree-columns{grid-template-columns:1fr;}}
+  .tree-box{
+    background:var(--bg-void-2);border:1px solid var(--border-soft);border-radius:10px;
+    padding:16px 18px;overflow-x:auto;
+  }
+  .tree-box h3{
+    margin:0 0 10px;font-family:'Noto Serif TC',serif;font-size:14px;font-weight:600;color:var(--accent-gold);
+  }
+  .tree-box pre{
+    margin:0;font-family:'IBM Plex Mono',monospace;font-size:12.5px;line-height:1.65;
+    color:var(--text-parchment);white-space:pre;
+  }
+  .tree-box .progress-line{
+    margin-top:14px;padding-top:12px;border-top:1px dashed var(--border-soft);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);
+    white-space:pre-wrap;line-height:1.7;
+  }
+
+  footer.foot{text-align:center;margin-top:30px;font-size:12.5px;color:var(--text-dim);letter-spacing:0.05em;}
+
+  @media (max-width:520px){ h1{font-size:21px;} }
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <header class="top">
+    <div class="crystal" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <polygon points="50,4 90,30 90,70 50,96 10,70 10,30" fill="none" stroke="#6fd3e0" stroke-width="3"/>
+        <polygon points="50,20 74,35 74,65 50,80 26,65 26,35" fill="rgba(111,211,224,0.15)" stroke="#c9ab7c" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="6" fill="#6fd3e0"/>
+      </svg>
+    </div>
+    <div class="title-block">
+      <h1>Submersible<span class="sub-cn">潛水艇</span></h1>
+    </div>
+    <div class="save-status" id="saveStatus">已載入</div>
+  </header>
+
+  <div class="block">
+    <h2>潛水艇時間</h2>
+    <p class="desc">每個角色 4 艘，依返航時間自動排序，可回收的角色會顯示標籤。</p>
+    <div class="add-row">
+      <input type="text" id="charNameInput" maxlength="30">
+      <input type="color" id="charColorInput" class="char-color-input" value="#6fd3e0" title="選擇顏色">
+      <button class="btn-primary" id="charAddBtn">新增角色</button>
+    </div>
+    <div class="char-list" id="charList"></div>
+  </div>
+
+  <div class="block">
+    <h2>擺爛艦訣路線時間表</h2>
+    <p class="desc">內容為固定參考資料，不會更改。點標題展開／收合各張表。</p>
+    <div id="refTables">
+  <details class="ref-table">
+    <summary>擺爛艦訣 50-85 半日收</summary>
+    <div class="table-scroll">
+    <table id="tbl-50-85-half">
+      <thead><tr><th>等級段</th><th>配置</th><th>航線</th><th>時間</th><th>收艇間隔</th></tr></thead>
+      <tbody>
+        <tr><td>50</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>51</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>52</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>53</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:42</td><td>一天</td></tr>
+        <tr><td>54</td><td>1121</td><td class="route">ACD</td><td class="mono">1:07:01</td><td>一天半</td></tr>
+        <tr><td>55</td><td>1121</td><td class="route">ACD</td><td class="mono">1:06:43</td><td>一天半</td></tr>
+        <tr><td>56</td><td>1121</td><td class="route">ACD</td><td class="mono">1:06:43</td><td>一天半</td></tr>
+        <tr><td>57</td><td>1121</td><td class="route">AFE</td><td class="mono">1:10:44</td><td>一天半</td></tr>
+        <tr><td>58</td><td>1121</td><td class="route">AFE</td><td class="mono">1:10:44</td><td>一天半</td></tr>
+        <tr><td>59</td><td>1121</td><td class="route">CFE</td><td class="mono">1:11:12</td><td>一天半</td></tr>
+        <tr><td>60</td><td>1121</td><td class="route">IJH</td><td class="mono">1:11:50</td><td>一天半</td></tr>
+        <tr><td>61</td><td>1121</td><td class="route">BACD</td><td class="mono">1:12:00</td><td>一天半</td></tr>
+        <tr><td>62</td><td>1121</td><td class="route">BACD</td><td class="mono">1:11:38</td><td>一天半</td></tr>
+        <tr><td>63</td><td>1121</td><td class="route">BACD</td><td class="mono">1:11:38</td><td>一天半</td></tr>
+        <tr><td>64</td><td>1121</td><td class="route">BACF</td><td class="mono">1:11:46</td><td>一天半</td></tr>
+        <tr><td>65</td><td>1121</td><td class="route">BACF</td><td class="mono">1:11:46</td><td>一天半</td></tr>
+        <tr><td>66</td><td>1121</td><td class="route">BACG</td><td class="mono">1:11:59</td><td>一天半</td></tr>
+        <tr><td>67</td><td>1121</td><td class="route">ACGD</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>68</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>69</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>70</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>71</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>72</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:34</td><td>一天半</td></tr>
+        <tr><td>73</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:23</td><td>一天半</td></tr>
+        <tr><td>74</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:03</td><td>一天半</td></tr>
+        <tr><td>75</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:03</td><td>一天半</td></tr>
+        <tr><td>76</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:11:03</td><td>一天半</td></tr>
+        <tr><td>77</td><td>1121</td><td class="route">ACGK</td><td class="mono">1:11:53</td><td>一天半</td></tr>
+        <tr><td>78</td><td>1121</td><td class="route">AGFK</td><td class="mono">1:11:54</td><td>一天半</td></tr>
+        <tr><td>79</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:11:58</td><td>一天半</td></tr>
+        <tr><td>80</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:11:58</td><td>一天半</td></tr>
+        <tr><td>81</td><td>1121</td><td class="route">ADEQ</td><td class="mono">1:11:44</td><td>一天半</td></tr>
+        <tr><td>82</td><td>1121</td><td class="route">DIJH</td><td class="mono">1:11:53</td><td>一天半</td></tr>
+        <tr><td>83</td><td>1121</td><td class="route">DIJH</td><td class="mono">1:11:53</td><td>一天半</td></tr>
+        <tr><td>84</td><td>1121</td><td class="route">OIJHL</td><td class="mono">1:20:42</td><td>兩天</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </details>
+
+  <details class="ref-table">
+    <summary>擺爛艦訣 50-85 整日收</summary>
+    <div class="table-scroll">
+    <table id="tbl-50-85-full">
+      <thead><tr><th>等級段</th><th>配置</th><th>航線</th><th>時間</th><th>收艇間隔</th></tr></thead>
+      <tbody>
+        <tr><td>50</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>51</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>52</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:48</td><td>一天</td></tr>
+        <tr><td>53</td><td>1121</td><td class="route">AB</td><td class="mono">0:23:42</td><td>一天</td></tr>
+        <tr><td>54</td><td>3121</td><td class="route">AC</td><td class="mono">0:23:00</td><td>一天</td></tr>
+        <tr><td>55</td><td>3121</td><td class="route">AC</td><td class="mono">0:22:50</td><td>一天</td></tr>
+        <tr><td>56</td><td>3121</td><td class="route">AC</td><td class="mono">0:22:50</td><td>一天</td></tr>
+        <tr><td>57</td><td>3121</td><td class="route">AC</td><td class="mono">0:22:50</td><td>一天</td></tr>
+        <tr><td>58</td><td>1121</td><td class="route">BACF</td><td class="mono">1:13:07</td><td>兩天</td></tr>
+        <tr><td>59</td><td>1121</td><td class="route">BACF</td><td class="mono">1:13:07</td><td>兩天</td></tr>
+        <tr><td>60</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:13:37</td><td>兩天</td></tr>
+        <tr><td>61</td><td>1121</td><td class="route">ACFK</td><td class="mono">1:13:37</td><td>兩天</td></tr>
+        <tr><td>62</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:15:09</td><td>兩天</td></tr>
+        <tr><td>63</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:15:09</td><td>兩天</td></tr>
+        <tr><td>64</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:14:44</td><td>兩天</td></tr>
+        <tr><td>65</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:14:44</td><td>兩天</td></tr>
+        <tr><td>66</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:14:32</td><td>兩天</td></tr>
+        <tr><td>67</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:14:08</td><td>兩天</td></tr>
+        <tr><td>68</td><td>1121</td><td class="route">DGFK</td><td class="mono">1:13:35</td><td>兩天</td></tr>
+        <tr><td>69</td><td>1121</td><td class="route">AGHL</td><td class="mono">1:15:18</td><td>兩天</td></tr>
+        <tr><td>70</td><td>1121</td><td class="route">DGHL</td><td class="mono">1:15:43</td><td>兩天</td></tr>
+        <tr><td>71</td><td>1121</td><td class="route">DGHL</td><td class="mono">1:15:43</td><td>兩天</td></tr>
+        <tr><td>72</td><td>1121</td><td class="route">ACGS</td><td class="mono">1:14:50</td><td>兩天</td></tr>
+        <tr><td>73</td><td>1121</td><td class="route">ACGS</td><td class="mono">1:14:38</td><td>兩天</td></tr>
+        <tr><td>74</td><td>1121</td><td class="route">ACGS</td><td class="mono">1:14:16</td><td>兩天</td></tr>
+        <tr><td>75</td><td>1121</td><td class="route">ACGS</td><td class="mono">1:14:16</td><td>兩天</td></tr>
+        <tr><td>76</td><td>1121</td><td class="route">ACGS</td><td class="mono">1:14:16</td><td>兩天</td></tr>
+        <tr><td>77</td><td>1121</td><td class="route">DOMN</td><td class="mono">1:16:39</td><td>兩天</td></tr>
+        <tr><td>78</td><td>1121</td><td class="route">ACGFK</td><td class="mono">1:16:38</td><td>兩天</td></tr>
+        <tr><td>79</td><td>1121</td><td class="route">ACGFK</td><td class="mono">1:16:14</td><td>兩天</td></tr>
+        <tr><td>80</td><td>1121</td><td class="route">ACGHL</td><td class="mono">1:18:04</td><td>兩天</td></tr>
+        <tr><td>81</td><td>1121</td><td class="route">ACGHL</td><td class="mono">1:17:04</td><td>兩天</td></tr>
+        <tr><td>82</td><td>1121</td><td class="route">DIJHL</td><td class="mono">1:18:07</td><td>兩天</td></tr>
+        <tr><td>83</td><td>1121</td><td class="route">ADOMN</td><td class="mono">1:18:51</td><td>兩天</td></tr>
+        <tr><td>84</td><td>1121</td><td class="route">OIJHL</td><td class="mono">1:20:42</td><td>兩天</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </details>
+
+  <details class="ref-table">
+    <summary>擺爛艦訣 1-50 半日收</summary>
+    <div class="table-scroll">
+    <table id="tbl-1-50-half">
+      <thead><tr><th>等級段</th><th>配置</th><th>航線</th><th>時間</th><th>收艇間隔</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>1111</td><td class="route">AB</td><td class="mono">0:18:28</td><td>一天</td></tr>
+        <tr><td>4</td><td>1111</td><td class="route">CD</td><td class="mono">0:22:23</td><td>一天</td></tr>
+        <tr><td>7</td><td>1111</td><td class="route">EF</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>10</td><td>1111</td><td class="route">GE</td><td class="mono">0:23:23</td><td>一天</td></tr>
+        <tr><td>14</td><td>1111</td><td class="route">GH</td><td class="mono">0:23:02</td><td>一天</td></tr>
+        <tr><td>15</td><td>1111</td><td class="route">GH</td><td class="mono">0:23:02</td><td>一天</td></tr>
+        <tr><td>17</td><td>1111</td><td class="route">IGH</td><td class="mono">1:04:28</td><td>一天半</td></tr>
+        <tr><td>20</td><td>1111</td><td class="route">HIK</td><td class="mono">1:07:51</td><td>一天半</td></tr>
+        <tr><td>24</td><td>1111</td><td class="route">IKL</td><td class="mono">1:09:07</td><td>一天半</td></tr>
+        <tr><td>25</td><td>1111</td><td class="route">IKL</td><td class="mono">1:09:07</td><td>一天半</td></tr>
+        <tr><td>27</td><td>1111</td><td class="route">IKN</td><td class="mono">1:09:09</td><td>一天半</td></tr>
+        <tr><td>30</td><td>1111</td><td class="route">IMP</td><td class="mono">1:11:25</td><td>一天半</td></tr>
+        <tr><td>34</td><td>1111</td><td class="route">IPQ</td><td class="mono">1:12:00</td><td>一天半</td></tr>
+        <tr><td>35</td><td>1111</td><td class="route">IPQ</td><td class="mono">1:12:00</td><td>一天半</td></tr>
+        <tr><td>37</td><td>1111</td><td class="route">IPQ</td><td class="mono">1:12:00</td><td>一天半</td></tr>
+        <tr><td>40</td><td>1121</td><td class="route">IPU</td><td class="mono">1:11:02</td><td>一天半</td></tr>
+        <tr><td>44</td><td>1121</td><td class="route">WV</td><td class="mono">1:11:15</td><td>一天半</td></tr>
+        <tr><td>47</td><td>1121</td><td class="route">WV</td><td class="mono">1:11:15</td><td>一天半</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </details>
+
+  <details class="ref-table">
+    <summary>擺爛艦訣 1-50 整日收</summary>
+    <div class="table-scroll">
+    <table id="tbl-1-50-full">
+      <thead><tr><th>等級段</th><th>配置</th><th>航線</th><th>時間</th><th>收艇間隔</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>1111</td><td class="route">AB</td><td class="mono">0:18:28</td><td>一天</td></tr>
+        <tr><td>4</td><td>1111</td><td class="route">CD</td><td class="mono">0:22:23</td><td>一天</td></tr>
+        <tr><td>7</td><td>1111</td><td class="route">EF</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>10</td><td>1111</td><td class="route">GE</td><td class="mono">0:23:23</td><td>一天</td></tr>
+        <tr><td>14</td><td>1111</td><td class="route">GH</td><td class="mono">0:23:02</td><td>一天</td></tr>
+        <tr><td>15</td><td>1111</td><td class="route">GH</td><td class="mono">0:23:02</td><td>一天</td></tr>
+        <tr><td>17</td><td>1111</td><td class="route">GI</td><td class="mono">0:23:00</td><td>一天</td></tr>
+        <tr><td>20</td><td>1121</td><td class="route">IK</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>24</td><td>1121</td><td class="route">IK</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>25</td><td>1121</td><td class="route">IK</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>27</td><td>1121</td><td class="route">IK</td><td class="mono">0:23:54</td><td>一天</td></tr>
+        <tr><td>30</td><td>1111</td><td class="route">KON</td><td class="mono">1:12:02</td><td>兩天</td></tr>
+        <tr><td>34</td><td>1121</td><td class="route">MQP</td><td class="mono">1:12:48</td><td>兩天</td></tr>
+        <tr><td>35</td><td>1121</td><td class="route">MQP</td><td class="mono">1:12:48</td><td>兩天</td></tr>
+        <tr><td>37</td><td>1121</td><td class="route">MPS</td><td class="mono">1:13:24</td><td>兩天</td></tr>
+        <tr><td>40</td><td>1121</td><td class="route">MQT</td><td class="mono">1:14:32</td><td>兩天</td></tr>
+        <tr><td>44</td><td>1121</td><td class="route">IUW</td><td class="mono">1:14:20</td><td>兩天</td></tr>
+        <tr><td>47</td><td>1121</td><td class="route">ITY</td><td class="mono">1:14:55</td><td>兩天</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </details>
+  </div>
+  </div>
+
+  <div class="block">
+    <h2>點位開圖樹</h2>
+    <p class="desc">各海域探索點解鎖順序，內容為固定參考資料。</p>
+    <div class="tree-columns">
+      <div class="tree-box">
+        <h3>溺沒海（Deep-sea Site）點位開圖樹</h3>
+        <pre>A ─── C ─── F
+│
+B ─┬─ D ─── G ─── H ─── (M) ─── L ─── R
+│  │
+│  └─ E ─┬─ I ─── K ─── P ─── Q
+│        │
+│        └─ J（解鎖第2艘）
+│             │
+│             └─ N ─── O（解鎖第3艘）
+│                       │
+│                       └─ S ─── T（解鎖第4艘）
+│                                 │
+│                                 └─ U ─── V
+│                                           │
+│                                           └─ Y ─── Z ─── AA ─── AB ─── AD
+│                                                                          │
+│                                                                     灰海 A</pre>
+      </div>
+      <div class="tree-box">
+        <h3>灰海（Sea of Ash）</h3>
+        <pre>A ─── B ─── C ─┬─ D ─── E ─── Q（支線）
+               │
+               └─ F ─── G ─┬─ H ─── K ─── L ─── P ─── R ──→ 翠浪海
+                            │
+                            └─ I ─── J ─── M ─── N ─── O
+                                                         │
+                                                         └─ S</pre>
+        <h3 style="margin-top:18px;">翠浪海（Sea of Jade）</h3>
+        <pre>A ─── C ─── E ─── G ─── J ─── M ─── R ─── T ──→ 妖歌海
+（支線省略）</pre>
+        <div class="progress-line">1111 → (15級)1121 → (25級)3113 → (50級進灰海)1123 → (85級)3124不改 → 溺沒海OJ撈金</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">資料存在你目前使用的瀏覽器裡，換裝置或清除瀏覽器資料需另外處理。</footer>
+</div>
+
+<script>
+(function(){
+  const STORE_KEY = 'ff14-submarine-state-v1';
+  let state = null;
+  let saveTimer = null;
+  const subRefs = {};
+
+  const hasCloudStorage = !!(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function');
+
+  async function storeGet(key){
+    if(hasCloudStorage){
+      try{ const r = await window.storage.get(key, false); return r ? r.value : null; }
+      catch(e){ return null; }
+    }
+    try{ return localStorage.getItem(key); }catch(e){ return null; }
+  }
+  async function storeSet(key, value){
+    if(hasCloudStorage){
+      try{ await window.storage.set(key, value, false); return true; }
+      catch(e){ console.error('雲端儲存失敗', e); return false; }
+    }
+    try{ localStorage.setItem(key, value); return true; }catch(e){ console.error('本機儲存失敗', e); return false; }
+  }
+
+  function defaultState(){ return { characters: [] }; }
+  function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+  async function migrateFromFF14Tracker(){
+    // If the submarine data still lives inside the old FF14 tracker key, pull it in once.
+    const raw = await storeGet('ff14-tracker-state-v2');
+    if(raw){
+      try{
+        const old = JSON.parse(raw);
+        if(Array.isArray(old.characters) && old.characters.length){
+          return { characters: old.characters };
+        }
+      }catch(e){}
+    }
+    return defaultState();
+  }
+
+  async function load(){
+    const raw = await storeGet(STORE_KEY);
+    state = raw ? JSON.parse(raw) : null;
+    if(!state) state = await migrateFromFF14Tracker();
+    if(!Array.isArray(state.characters)) state.characters = [];
+  }
+
+  function scheduleSave(){
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 400);
+  }
+  async function save(){
+    const ok = await storeSet(STORE_KEY, JSON.stringify(state));
+    const statusEl = document.getElementById('saveStatus');
+    if(statusEl) statusEl.innerHTML = ok ? '已儲存 · <b>' + new Date().toLocaleTimeString('zh-TW',{hour12:false}) + '</b>' : '儲存失敗，請確認網路或儲存權限';
+  }
+
+  function fmtCountdown(ms){
+    const s = Math.max(0, Math.floor(ms/1000));
+    const d = Math.floor(s/86400);
+    const h = Math.floor((s%86400)/3600);
+    const m = Math.floor((s%3600)/60);
+    const sec = s%60;
+    if(d>0) return `${d}天 ${h}小時 ${m}分`;
+    if(h>0) return `${h}小時 ${m}分 ${sec}秒`;
+    return `${m}分 ${sec}秒`;
+  }
+  function fmtClock(dt){
+    return dt.toLocaleString('zh-TW',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  }
+
+  function buildCharCard(ch){
+    const card = document.createElement('div');
+    card.className = 'char-card';
+    card.style.setProperty('--char-color', ch.color || '#c3a679');
+    card.dataset.id = ch.id;
+
+    const head = document.createElement('div');
+    head.className = 'char-head';
+    head.innerHTML = `
+      <input type="color" class="char-color-input" value="${ch.color||'#6fd3e0'}" title="選擇顏色">
+      <input type="text" class="char-name-input" maxlength="30">
+      <span class="char-badge">可回收</span>
+      <button class="btn-ghost char-del" aria-label="刪除角色">✕</button>
+    `;
+    const nameInput = head.querySelector('.char-name-input');
+    nameInput.value = ch.name;
+    nameInput.addEventListener('input', ()=>{ ch.name = nameInput.value; scheduleSave(); });
+
+    const colorInput = head.querySelector('.char-color-input');
+    colorInput.addEventListener('input', ()=>{
+      ch.color = colorInput.value;
+      card.style.setProperty('--char-color', ch.color);
+      scheduleSave();
+    });
+
+    head.querySelector('.char-del').addEventListener('click', ()=>{
+      state.characters.splice(state.characters.indexOf(ch),1);
+      delete subRefs[ch.id];
+      renderCharacters(true);
+      scheduleSave();
+    });
+
+    card.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'slot-grid';
+
+    const slotEls = [];
+    ch.subs.forEach((sub, i)=>{
+      const cell = document.createElement('div');
+      cell.className = 'slot-cell';
+      cell.innerHTML = `
+        <div class="slot-countdown"></div>
+        <div class="slot-date-row">
+          <input type="number" class="slot-month" min="1" max="12">
+          <span>/</span>
+          <input type="number" class="slot-day" min="1" max="31">
+        </div>
+        <input type="time" class="slot-time">
+      `;
+      const monthInput = cell.querySelector('.slot-month');
+      const dayInput = cell.querySelector('.slot-day');
+      const timeInput = cell.querySelector('.slot-time');
+      function commit(){
+        const m = Number(monthInput.value), d = Number(dayInput.value), t = timeInput.value;
+        if(!m || !d || !t) return;
+        const [hh, mm] = t.split(':').map(Number);
+        const now = new Date();
+        let candidate = new Date(now.getFullYear(), m-1, d, hh, mm, 0, 0);
+        while(candidate.getTime() <= Date.now()) candidate.setFullYear(candidate.getFullYear()+1);
+        sub.returnAt = candidate.getTime();
+        updateSubOrderAndCountdowns();
+        scheduleSave();
+      }
+      [monthInput, dayInput, timeInput].forEach(inp => inp.addEventListener('change', commit));
+      grid.appendChild(cell);
+      slotEls.push({ countdownEl: cell.querySelector('.slot-countdown'), monthInput, dayInput, timeInput });
+    });
+    card.appendChild(grid);
+
+    subRefs[ch.id] = { cardEl: card, badgeEl: head.querySelector('.char-badge'), slots: slotEls, sortKey: Infinity };
+    return card;
+  }
+
+  function renderCharacters(rebuild){
+    const wrap = document.getElementById('charList');
+    if(rebuild){
+      wrap.innerHTML = '';
+      Object.keys(subRefs).forEach(k=>delete subRefs[k]);
+      if(!state.characters.length){
+        wrap.innerHTML = `<div class="empty-state"><span class="glyph">⚓</span>還沒有角色，新增一位開始追蹤潛水艇吧。</div>`;
+      }else{
+        state.characters.forEach(ch=> wrap.appendChild(buildCharCard(ch)));
+        wrap.style.display = 'flex';
+      }
+    }
+    updateSubOrderAndCountdowns();
+  }
+
+  function updateSubOrderAndCountdowns(){
+    const now = Date.now();
+    state.characters.forEach(ch=>{
+      const refs = subRefs[ch.id];
+      if(!refs) return;
+      let minRemain = Infinity;
+      let anyReady = false;
+      ch.subs.forEach((sub, i)=>{
+        const s = refs.slots[i];
+        if(sub.returnAt){
+          const remain = sub.returnAt - now;
+          if(remain <= 0){
+            s.countdownEl.textContent = '已返航';
+            s.countdownEl.classList.add('ready');
+            anyReady = true;
+          }else{
+            s.countdownEl.textContent = fmtCountdown(remain);
+            s.countdownEl.classList.remove('ready');
+            if(remain < minRemain) minRemain = remain;
+          }
+          s.countdownEl.title = '返航 ' + fmtClock(new Date(sub.returnAt));
+          const active = document.activeElement;
+          if(active !== s.monthInput && active !== s.dayInput && active !== s.timeInput){
+            const d = new Date(sub.returnAt);
+            s.monthInput.value = d.getMonth()+1;
+            s.dayInput.value = d.getDate();
+            s.timeInput.value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+          }
+        }else{
+          s.countdownEl.textContent = '未出發';
+          s.countdownEl.classList.remove('ready');
+          s.countdownEl.title = '';
+        }
+      });
+      refs.sortKey = anyReady ? -1e15 : minRemain;
+      refs.badgeEl.classList.toggle('show', anyReady);
+    });
+    const ranked = [...state.characters].sort((a,b)=>(subRefs[a.id]?.sortKey ?? Infinity) - (subRefs[b.id]?.sortKey ?? Infinity));
+    ranked.forEach((ch, idx)=>{ if(subRefs[ch.id]) subRefs[ch.id].cardEl.style.order = idx; });
+  }
+
+  document.getElementById('charAddBtn').addEventListener('click', ()=>{
+    const nameInput = document.getElementById('charNameInput');
+    const colorInput = document.getElementById('charColorInput');
+    const name = nameInput.value.trim();
+    if(!name) return;
+    state.characters.push({
+      id: uid(), name, color: colorInput.value,
+      subs: [{returnAt:null},{returnAt:null},{returnAt:null},{returnAt:null}]
+    });
+    nameInput.value = '';
+    renderCharacters(true);
+    scheduleSave();
+  });
+  document.getElementById('charNameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('charAddBtn').click(); });
+
+  async function init(){
+    await load();
+    renderCharacters(true);
+    setInterval(()=>{ updateSubOrderAndCountdowns(); }, 1000);
+  }
+  init();
+})();
+</script>
+</body>
+</html>

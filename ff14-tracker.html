@@ -235,33 +235,6 @@
   .empty-state{text-align:center;padding:26px 12px;color:var(--text-dim);font-size:14px;border:1px dashed var(--border-soft);border-radius:10px;width:100%;}
   .empty-state .glyph{font-size:20px;display:block;margin-bottom:6px;color:var(--accent-gold-soft);}
 
-  /* ---------- Submarines: character-based, compact ---------- */
-  .char-list{display:flex;flex-direction:column;gap:8px;}
-  .char-card{
-    background:var(--bg-void-2);
-    border:1px solid var(--border-soft);
-    border-left:4px solid var(--char-color, var(--accent-gold));
-    border-radius:9px;
-    padding:9px 12px 10px;
-  }
-  .char-head{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
-  .char-color-input{width:22px;height:22px;flex:0 0 auto;padding:0;border:1px solid var(--border-soft);border-radius:5px;background:none;cursor:pointer;}
-  .char-name-input{flex:1;min-width:60px;background:transparent;border:none;border-bottom:1px solid transparent;font-family:'Noto Serif TC',serif;font-size:15px;font-weight:600;color:var(--text-parchment);padding:3px 2px;}
-  .char-name-input:focus{border-bottom-color:var(--accent-aether-dim);box-shadow:none;}
-  .char-badge{font-size:10.5px;background:rgba(224,135,106,0.16);color:var(--accent-coral);border:1px solid rgba(224,135,106,0.4);padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap;display:none;}
-  .char-badge.show{display:inline-block;}
-  .char-del{margin-left:auto;}
-
-  .slot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
-  @media (max-width:560px){.slot-grid{grid-template-columns:repeat(2,1fr);}}
-  .slot-cell{display:flex;flex-direction:column;gap:4px;}
-  .slot-countdown{font-family:'Cinzel',serif;font-weight:600;font-size:14.5px;color:var(--accent-aether);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .slot-countdown.ready{color:var(--accent-coral);}
-  .slot-date-row{display:flex;align-items:center;gap:2px;}
-  .slot-date-row span{font-size:11px;color:var(--text-dim);flex:0 0 auto;}
-  .slot-cell input[type=number]{width:0;flex:1;padding:5px 2px;font-size:12px;text-align:center;}
-  .slot-cell input[type=time]{width:100%;padding:5px 4px;font-size:12px;}
-
   /* ---------- Goals ---------- */
 
   /* ---------- Misc / notes ---------- */
@@ -357,18 +330,16 @@
       </div>
     </div>
 
-    <!-- SUBMARINES -->
+    <!-- SUBMARINES (moved to its own tool) -->
     <div class="section-row" id="panel-subs" style="--sec:#bd8f7e; --sec-rgb:189,143,126;">
       <div class="section-label">
         <h2>潛水艇時間</h2>
       </div>
       <div class="section-content">
-        <div class="add-row">
-          <input type="text" id="charNameInput" maxlength="30">
-          <input type="color" id="charColorInput" class="char-color-input" value="#6fd3e0" title="選擇顏色">
-          <button class="btn-primary" id="charAddBtn">新增角色</button>
-        </div>
-        <div class="char-list" id="charList"></div>
+        <p style="margin:0;font-size:14px;color:var(--text-muted);line-height:1.7;">
+          潛水艇追蹤已經搬到獨立的「潛水艇」工具囉，裡面還多了路線時間表和點位開圖樹。
+          <a href="submarine.html" style="color:var(--sec, var(--accent-gold));">前往潛水艇工具 →</a>
+        </p>
       </div>
     </div>
 
@@ -422,7 +393,6 @@
   const STORE_KEY = 'ff14-tracker-state-v2';
   let state = null;
   let saveTimer = null;
-  const subRefs = {}; // characterId -> { cardEl, badgeEl, slots:[{countdownEl, monthInput, dayInput, timeInput}] }
 
   const hasCloudStorage = !!(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function');
 
@@ -446,7 +416,6 @@
       settings:{ dailyResetHour:23, weeklyResetHour:23, weeklyResetDay:2 },
       daily:{ periodStart:null, items:[] },
       weekly:{ periodStart:null, items:[] },
-      characters:[],
       goals:[],
       misc:{ notes:'', items:[], images:[] }
     };
@@ -465,7 +434,6 @@
     if(!state.settings) state.settings = d.settings;
     if(!state.daily) state.daily = d.daily;
     if(!state.weekly) state.weekly = d.weekly;
-    if(!state.characters) state.characters = [];
     if(!state.goals) state.goals = [];
     state.goals = state.goals.map(g => g.text!==undefined ? g : { id:g.id||uid(), text:g.title||'', done:!!g.done });
     if(!state.misc) state.misc = { notes:'', items:[], images:[] };
@@ -555,137 +523,6 @@
     renderChecklist(document.getElementById('miscList'), state.misc.items, '目前沒有雜項待辦。', '✦');
   }
 
-  // ---------- submarines (character based, compact) ----------
-  function buildCharCard(ch){
-    const card = document.createElement('div');
-    card.className = 'char-card';
-    card.style.setProperty('--char-color', ch.color || '#c3a679');
-    card.dataset.id = ch.id;
-
-    const head = document.createElement('div');
-    head.className = 'char-head';
-    head.innerHTML = `
-      <input type="color" class="char-color-input" value="${ch.color||'#6fd3e0'}" title="選擇顏色">
-      <input type="text" class="char-name-input" maxlength="30">
-      <span class="char-badge">可回收</span>
-      <button class="btn-ghost char-del" aria-label="刪除角色">✕</button>
-    `;
-    const nameInput = head.querySelector('.char-name-input');
-    nameInput.value = ch.name;
-    nameInput.addEventListener('input', ()=>{ ch.name = nameInput.value; scheduleSave(); });
-
-    const colorInput = head.querySelector('.char-color-input');
-    colorInput.addEventListener('input', ()=>{
-      ch.color = colorInput.value;
-      card.style.setProperty('--char-color', ch.color);
-      scheduleSave();
-    });
-
-    head.querySelector('.char-del').addEventListener('click', ()=>{
-      state.characters.splice(state.characters.indexOf(ch),1);
-      delete subRefs[ch.id];
-      renderCharacters(true);
-      scheduleSave();
-    });
-
-    card.appendChild(head);
-
-    const grid = document.createElement('div');
-    grid.className = 'slot-grid';
-
-    const slotEls = [];
-    ch.subs.forEach((sub, i)=>{
-      const cell = document.createElement('div');
-      cell.className = 'slot-cell';
-      cell.innerHTML = `
-        <div class="slot-countdown"></div>
-        <div class="slot-date-row">
-          <input type="number" class="slot-month" min="1" max="12">
-          <span>/</span>
-          <input type="number" class="slot-day" min="1" max="31">
-        </div>
-        <input type="time" class="slot-time">
-      `;
-      const monthInput = cell.querySelector('.slot-month');
-      const dayInput = cell.querySelector('.slot-day');
-      const timeInput = cell.querySelector('.slot-time');
-      function commit(){
-        const m = Number(monthInput.value), d = Number(dayInput.value), t = timeInput.value;
-        if(!m || !d || !t) return;
-        const [hh, mm] = t.split(':').map(Number);
-        const now = new Date();
-        let candidate = new Date(now.getFullYear(), m-1, d, hh, mm, 0, 0);
-        while(candidate.getTime() <= Date.now()) candidate.setFullYear(candidate.getFullYear()+1);
-        sub.returnAt = candidate.getTime();
-        updateSubOrderAndCountdowns();
-        scheduleSave();
-      }
-      [monthInput, dayInput, timeInput].forEach(inp => inp.addEventListener('change', commit));
-      grid.appendChild(cell);
-      slotEls.push({ countdownEl: cell.querySelector('.slot-countdown'), monthInput, dayInput, timeInput });
-    });
-    card.appendChild(grid);
-
-    subRefs[ch.id] = { cardEl: card, badgeEl: head.querySelector('.char-badge'), slots: slotEls, sortKey: Infinity };
-    return card;
-  }
-
-  function renderCharacters(rebuild){
-    const wrap = document.getElementById('charList');
-    if(rebuild){
-      wrap.innerHTML = '';
-      Object.keys(subRefs).forEach(k=>delete subRefs[k]);
-      if(!state.characters.length){
-        wrap.innerHTML = `<div class="empty-state"><span class="glyph">⚓</span>還沒有角色，新增一位開始追蹤潛水艇吧。</div>`;
-      }else{
-        state.characters.forEach(ch=> wrap.appendChild(buildCharCard(ch)));
-        wrap.style.display = 'flex';
-      }
-    }
-    updateSubOrderAndCountdowns();
-  }
-
-  function updateSubOrderAndCountdowns(){
-    const now = Date.now();
-    state.characters.forEach(ch=>{
-      const refs = subRefs[ch.id];
-      if(!refs) return;
-      let minRemain = Infinity;
-      let anyReady = false;
-      ch.subs.forEach((sub, i)=>{
-        const s = refs.slots[i];
-        if(sub.returnAt){
-          const remain = sub.returnAt - now;
-          if(remain <= 0){
-            s.countdownEl.textContent = '已返航';
-            s.countdownEl.classList.add('ready');
-            anyReady = true;
-          }else{
-            s.countdownEl.textContent = fmtCountdown(remain);
-            s.countdownEl.classList.remove('ready');
-            if(remain < minRemain) minRemain = remain;
-          }
-          s.countdownEl.title = '返航 ' + fmtClock(new Date(sub.returnAt));
-          const active = document.activeElement;
-          if(active !== s.monthInput && active !== s.dayInput && active !== s.timeInput){
-            const d = new Date(sub.returnAt);
-            s.monthInput.value = d.getMonth()+1;
-            s.dayInput.value = d.getDate();
-            s.timeInput.value = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
-          }
-        }else{
-          s.countdownEl.textContent = '未出發';
-          s.countdownEl.classList.remove('ready');
-          s.countdownEl.title = '';
-        }
-      });
-      refs.sortKey = anyReady ? -1e15 : minRemain;
-      refs.badgeEl.classList.toggle('show', anyReady);
-    });
-    const ranked = [...state.characters].sort((a,b)=>(subRefs[a.id]?.sortKey ?? Infinity) - (subRefs[b.id]?.sortKey ?? Infinity));
-    ranked.forEach((ch, idx)=>{ if(subRefs[ch.id]) subRefs[ch.id].cardEl.style.order = idx; });
-  }
-
   // ---------- goals ----------
   function renderGoals(){
     renderChecklist(document.getElementById('goalList'), state.goals, '還沒有目標，新增你想達成的第一件事吧。', '✦');
@@ -694,7 +531,6 @@
   function renderAll(){
     renderWeekly();
     renderDaily();
-    renderCharacters(false);
     renderGoals();
     renderMisc();
   }
@@ -721,21 +557,6 @@
 
   document.getElementById('miscAddBtn').addEventListener('click', ()=>addFromInput('miscInput', state.misc.items));
   document.getElementById('miscInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('miscInput', state.misc.items); });
-
-  document.getElementById('charAddBtn').addEventListener('click', ()=>{
-    const nameInput = document.getElementById('charNameInput');
-    const colorInput = document.getElementById('charColorInput');
-    const name = nameInput.value.trim();
-    if(!name) return;
-    state.characters.push({
-      id: uid(), name, color: colorInput.value,
-      subs: [{returnAt:null},{returnAt:null},{returnAt:null},{returnAt:null}]
-    });
-    nameInput.value='';
-    renderCharacters(true);
-    scheduleSave();
-  });
-  document.getElementById('charNameInput').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('charAddBtn').click(); });
 
   document.getElementById('goalAddBtn').addEventListener('click', ()=>addFromInput('goalTitleInput', state.goals));
   document.getElementById('goalTitleInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addFromInput('goalTitleInput', state.goals); });
@@ -831,12 +652,11 @@
     document.getElementById('miscNotes').value = state.misc.notes || '';
     renderWeekly();
     renderDaily();
-    renderCharacters(true);
     renderGoals();
     renderMisc();
     renderImages();
     renderClock();
-    setInterval(()=>{ updateSubOrderAndCountdowns(); renderClock(); }, 1000);
+    setInterval(()=>{ renderClock(); }, 1000);
   }
   init();
 })();

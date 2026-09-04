@@ -138,14 +138,18 @@
         <div class="tool-icon">◆</div>
         <div>
           <div class="tool-name">乙太紀錄簿</div>
-          <p class="tool-desc">每週／每日任務、潛水艇時間、目標、雜項</p>
+          <p class="tool-desc">每週／每日任務、目標、雜項</p>
         </div>
       </a>
-      <div class="placeholder-card">
-        <div class="tool-name">潛水艇</div>
-        <p class="tool-desc">即將推出</p>
-      </div>
+      <a class="tool-card" href="submarine.html">
+        <div class="tool-icon">⚓</div>
+        <div>
+          <div class="tool-name">潛水艇</div>
+          <p class="tool-desc">潛水艇時間、路線時間表、點位開圖樹</p>
+        </div>
+      </a>
     </div>
+
 
     <div class="category">
       <div class="category-title">夜酌</div>
@@ -204,6 +208,7 @@
   // Known storage keys used by each tool in this toolbox.
   const TOOL_KEYS = [
     { label: '乙太紀錄簿', key: 'ff14-tracker-state-v2' },
+    { label: '潛水艇', key: 'ff14-submarine-state-v1' },
     { label: '接待台帳', key: 'rp-payroll:state-v2' },
     { label: '保安紀錄', key: 'rp-security:state-v2' },
     { label: '桌遊', key: 'rp-boardgames:state-v1' }
