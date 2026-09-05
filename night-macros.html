@@ -153,6 +153,24 @@
     padding:12px 14px;line-height:1.6;
   }
   .editable-box:focus{outline:none;border-color:var(--brass-soft);}
+  .editable-box::placeholder{color:var(--ivory-dim);opacity:0.55;}
+
+  .macro-label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;}
+  .macro-label-row .macro-label{margin-bottom:0;}
+  .reset-btn{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:11.5px;
+    padding:4px 10px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+    white-space:nowrap;
+  }
+  .reset-btn:hover{border-color:var(--brass-soft);color:var(--brass);}
 
   ::selection{background:var(--brass-soft);color:var(--ink);}
 </style>
@@ -232,18 +250,47 @@
     <summary>公關範本</summary>
     <div class="game-body">
       <p class="game-note" style="margin-top:0;">以下內容都可以直接編輯成自己的用詞，會自動儲存。</p>
-      <div class="macro-field"><div class="macro-label">公關入組隊後</div><textarea class="editable-box" id="host1">/p 客人晚上好，由我帶您前往今晚的座位。 
-/行禮 motion </textarea></div>
-      <div class="macro-field"><div class="macro-label">帶客人到位置</div><textarea class="editable-box" id="host2">/p 這是今晚為您準備的座位。
-/行禮 motion </textarea></div>
-      <div class="macro-field"><div class="macro-label">與客人確認好時間後</div><textarea class="editable-box" id="host3">/p 接下來將開始本次服務。 &lt;wait.2&gt;
-/p 若希望續時，可以隨時告訴我，或向接待提出。</textarea></div>
-      <div class="macro-field"><div class="macro-label">自我介紹範本參考 需要改成自己的</div><textarea class="editable-box" id="host4">/p 晚上好，我是今晚陪同您的調酒──溫柔失眠。 &lt;wait.2&gt;
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">公關入組隊後</div><button class="reset-btn" type="button" data-target="host1">重設為預設</button></div>
+        <textarea class="editable-box" id="host1" data-default="/p 客人晚上好，由我帶您前往今晚的座位。 
+/行禮 motion " placeholder="/p 客人晚上好，由我帶您前往今晚的座位。 
+/行禮 motion ">/p 客人晚上好，由我帶您前往今晚的座位。 
+/行禮 motion </textarea>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">帶客人到位置</div><button class="reset-btn" type="button" data-target="host2">重設為預設</button></div>
+        <textarea class="editable-box" id="host2" data-default="/p 這是今晚為您準備的座位。
+/行禮 motion " placeholder="/p 這是今晚為您準備的座位。
+/行禮 motion ">/p 這是今晚為您準備的座位。
+/行禮 motion </textarea>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">與客人確認好時間後</div><button class="reset-btn" type="button" data-target="host3">重設為預設</button></div>
+        <textarea class="editable-box" id="host3" data-default="/p 接下來將開始本次服務。 &lt;wait.2&gt;
+/p 若希望續時，可以隨時告訴我，或向接待提出。" placeholder="/p 接下來將開始本次服務。 &lt;wait.2&gt;
+/p 若希望續時，可以隨時告訴我，或向接待提出。">/p 接下來將開始本次服務。 &lt;wait.2&gt;
+/p 若希望續時，可以隨時告訴我，或向接待提出。</textarea>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">自我介紹範本參考 需要改成自己的</div><button class="reset-btn" type="button" data-target="host4">重設為預設</button></div>
+        <textarea class="editable-box" id="host4" data-default="/p 晚上好，我是今晚陪同您的調酒──溫柔失眠。 &lt;wait.2&gt;
 /p 威士忌帶來淡淡微醺，白可可與蜂蜜添了柔和甜味，椰香輕盈，最後由牛奶收尾——不濃烈，也不張揚。 &lt;wait.3&gt;
-/p 如果今晚睡不著，那就讓我陪你，把這份清醒過得溫柔一點。</textarea></div>
-      <div class="macro-field"><div class="macro-label">與客人告知時間結束後!!再使用</div><textarea class="editable-box" id="host5">/p 很高興今晚能陪您度過這段時光。 &lt;wait.2&gt;
+/p 如果今晚睡不著，那就讓我陪你，把這份清醒過得溫柔一點。" placeholder="/p 晚上好，我是今晚陪同您的調酒──溫柔失眠。 &lt;wait.2&gt;
+/p 威士忌帶來淡淡微醺，白可可與蜂蜜添了柔和甜味，椰香輕盈，最後由牛奶收尾——不濃烈，也不張揚。 &lt;wait.3&gt;
+/p 如果今晚睡不著，那就讓我陪你，把這份清醒過得溫柔一點。">/p 晚上好，我是今晚陪同您的調酒──溫柔失眠。 &lt;wait.2&gt;
+/p 威士忌帶來淡淡微醺，白可可與蜂蜜添了柔和甜味，椰香輕盈，最後由牛奶收尾——不濃烈，也不張揚。 &lt;wait.3&gt;
+/p 如果今晚睡不著，那就讓我陪你，把這份清醒過得溫柔一點。</textarea>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">與客人告知時間結束後!!再使用</div><button class="reset-btn" type="button" data-target="host5">重設為預設</button></div>
+        <textarea class="editable-box" id="host5" data-default="/p 很高興今晚能陪您度過這段時光。 &lt;wait.2&gt;
 /p 若今晚還意猶未盡，歡迎向接待詢問是否能安排續時。
-/行禮 motion</textarea></div>
+/行禮 motion" placeholder="/p 很高興今晚能陪您度過這段時光。 &lt;wait.2&gt;
+/p 若今晚還意猶未盡，歡迎向接待詢問是否能安排續時。
+/行禮 motion">/p 很高興今晚能陪您度過這段時光。 &lt;wait.2&gt;
+/p 若今晚還意猶未盡，歡迎向接待詢問是否能安排續時。
+/行禮 motion</textarea>
+      </div>
     </div>
   </details>
 
@@ -301,6 +348,18 @@ HOST_FIELD_IDS.forEach(id => {
   const el = document.getElementById(id);
   if(!el) return;
   el.addEventListener('input', () => {
+    state[id] = el.value;
+    scheduleSave();
+  });
+});
+
+document.querySelectorAll('.reset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.target;
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(el.value.trim() && !confirm('確定要把這欄改回預設內容嗎？目前輸入的內容會被覆蓋。')) return;
+    el.value = el.dataset.default || '';
     state[id] = el.value;
     scheduleSave();
   });
