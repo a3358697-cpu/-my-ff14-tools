@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RP店丨巨集/宏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --brass:#c9a15d;
+    --brass-soft:#8a744a;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --ok:#7f9a6a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(201,161,93,0.08), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(140,59,74,0.10), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.12em;
+    color:var(--brass);
+    border:1px solid var(--brass-soft);
+    padding:4px 10px;
+    border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+  }
+  .save-status{
+    font-size:14px;color:var(--ivory-dim);
+    display:flex;align-items:center;gap:6px;
+    margin-top:6px;
+  }
+  .save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);transition:opacity .3s;}
+  .save-dot.saving{background:var(--brass);}
+
+  p.intro{font-size:13.5px;color:var(--ivory-dim);line-height:1.7;margin:0 0 24px;}
+
+  details.game{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  details.game + details.game{margin-top:12px;}
+  details.game summary{
+    list-style:none;
+    cursor:pointer;
+    padding:16px 20px;
+    font-family:'Noto Serif TC', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    transition:background .15s ease;
+  }
+  details.game summary::-webkit-details-marker{display:none;}
+  details.game summary::after{
+    content:'▾';
+    color:var(--brass);
+    font-size:13px;
+    transition:transform .2s ease;
+    margin-left:12px;
+  }
+  details.game[open] summary::after{transform:rotate(180deg);}
+  details.game summary:hover{background:var(--panel-2);}
+  .game-body{padding:2px 20px 22px;border-top:1px solid var(--line-soft);}
+
+  .game-note{font-size:12px;color:var(--ivory-dim);margin:14px 0 0;line-height:1.6;}
+
+  .macro-field{margin-top:16px;}
+  .macro-label{
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    color:var(--brass);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .macro-row{display:flex;align-items:flex-start;gap:10px;}
+  .macro-box{
+    flex:1;
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:var(--ivory-dim);
+    white-space:pre-wrap;
+    min-height:20px;
+    line-height:1.6;
+  }
+  .copy-btn{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12.5px;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+    white-space:nowrap;
+  }
+  .copy-btn:hover{border-color:var(--brass-soft);color:var(--brass);}
+  .copy-btn.copied{border-color:var(--brass);color:var(--brass);}
+
+  .editable-box{
+    width:100%;min-height:70px;resize:vertical;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:8px;color:var(--ivory);
+    font-family:'IBM Plex Mono', monospace;font-size:13.5px;
+    padding:12px 14px;line-height:1.6;
+  }
+  .editable-box:focus{outline:none;border-color:var(--brass-soft);}
+
+  ::selection{background:var(--brass-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <span class="mark">RP店</span>
+        <h1>巨集/宏</h1>
+      </div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    </div>
+  </header>
+
+  <p class="intro">夜酌的常用宏都放在這裡。「保安」跟「接待」是固定內容，直接複製使用；「公關範本」的內容都可以自己改成自己的用詞。</p>
+
+  <details class="game" open>
+    <summary>保安</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">大喊注意事項</div><div class="macro-row"><div class="macro-box">/yell 歡迎來臨【夜酌】 &lt;wait.2&gt;
+/yell 請各位在收費人員正前方依序排隊等候。 &lt;wait.3&gt;
+/yell 我們會依照排隊順序，逐一為大家辦理入場手續，請耐心稍候。 &lt;wait.3&gt;
+/yell 請幫我收起寵物、武器，並使用數字鍵盤「/」切換成走路模式。 &lt;wait.2&gt;</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">詢問人數</div><div class="macro-row"><div class="macro-box">您好，歡迎來到【夜酌】。 &lt;wait.2&gt;
+請問今天一共是幾位呢？</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">單人 需組隊</div><div class="macro-row"><div class="macro-box">/p 好的，先跟您收取入場費 30,000 Gil</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">客人已有組隊</div><div class="macro-row"><div class="macro-box">客人方便加我進組隊嗎？</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">已加入客人組隊</div><div class="macro-row"><div class="macro-box">/p 感謝您，本店每位入場費為 30,000 Gil
+/p 請問是要一起結帳，還是分開付款呢？</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">收款完成</div><div class="macro-row"><div class="macro-box">/p 收款完成，謝謝您！ &lt;wait.2&gt;
+/p 請往裡面走，稍後會有接待人員為您安排座位。
+/行禮 motion</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">臨檢 卡客人用 以防人流太多 僅供參考</div><div class="macro-row"><div class="macro-box">/bm &lt;wait.3&gt;
+/s 就算是員工  也不能偷帶違禁品入場。 &lt;wait.3&gt;
+/s 請讓我使用紅外線工具掃瞄。 &lt;wait.3&gt;
+/s 站好，不用緊張。&lt;wait.3&gt;
+/bm &lt;wait.3&gt;
+/點頭 motion &lt;wait.2&gt;
+/s 很好，記得把貴重物品收好。 &lt;wait.2&gt;
+/s 請在隊伍中耐心等候，謝謝。</div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>接待</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">客人入店</div><div class="macro-row"><div class="macro-box">/sh 歡迎來到【夜酌】 &lt;wait.2&gt;
+/sh 客人請至吧檯座位稍作休息。 &lt;wait.2&gt;
+/sh 如需安排"調酒"，請洽吧檯人員協助安排。 &lt;wait.3&gt;
+/sh 每次點單僅開放品味一杯調酒。 &lt;wait.3&gt;
+/sh 本店調酒名冊:https://night-lounge.vercel.app/</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">價格 任意時間喊</div><div class="macro-row"><div class="macro-box">/sh 【夜酌 調酒單價】 &lt;wait.2&gt;
+/sh 實習調酒20分鐘｜100,000 Gil &lt;wait.3&gt;
+/sh 正式調酒20分鐘｜150,000 Gil &lt;wait.3&gt;
+/sh 每次點單僅開放品味一杯調酒。 &lt;wait.3&gt;
+/sh 若多位客人一同指名同點一杯調酒，每增加一位客人+50,000 Gil。</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">指名實習 需先組隊</div><div class="macro-row"><div class="macro-box">/p 謝您指名本店的調酒服務。 &lt;wait.2&gt;
+/p 服務時間為 20 分鐘一節，將由調酒確認後開始計時。 &lt;wait.3&gt;
+/p 另外提醒，實習調酒經驗較少，若有招待不周之處，還請多多見諒。 &lt;wait.3&gt;
+/p 小費由調酒全額收取，店家不另外抽成。 &lt;wait.3&gt;
+/p 時間結束後，可以選擇是否續時。 &lt;wait.2&gt;
+/p 那麼，祝您度過美好的夜晚。
+/行禮 motion</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">指名正式 需先組隊</div><div class="macro-row"><div class="macro-box">/p 謝您指名本店的調酒服務。 &lt;wait.2&gt;
+/p 服務時間為 20 分鐘一節，將由調酒確認後開始計時。 &lt;wait.3&gt;
+/p 小費由調酒全額收取，店家不另外抽成。 &lt;wait.3&gt;
+/p 時間結束後，可以選擇是否續時。 &lt;wait.2&gt;
+/p 那麼，祝您度過美好的夜晚。
+/行禮 motion</div><button class="copy-btn" type="button">複製</button></div></div>
+    </div>
+  </details>
+
+  <details class="game">
+    <summary>公關範本</summary>
+    <div class="game-body">
+      <p class="game-note" style="margin-top:0;">以下內容都可以直接編輯成自己的用詞，會自動儲存。</p>
+      <div class="macro-field"><div class="macro-label">公關入組隊後</div><textarea class="editable-box" id="host1">/p 客人晚上好，由我帶您前往今晚的座位。 
+/行禮 motion </textarea></div>
+      <div class="macro-field"><div class="macro-label">帶客人到位置</div><textarea class="editable-box" id="host2">/p 這是今晚為您準備的座位。
+/行禮 motion </textarea></div>
+      <div class="macro-field"><div class="macro-label">與客人確認好時間後</div><textarea class="editable-box" id="host3">/p 接下來將開始本次服務。 &lt;wait.2&gt;
+/p 若希望續時，可以隨時告訴我，或向接待提出。</textarea></div>
+      <div class="macro-field"><div class="macro-label">自我介紹範本參考 需要改成自己的</div><textarea class="editable-box" id="host4">/p 晚上好，我是今晚陪同您的調酒──溫柔失眠。 &lt;wait.2&gt;
+/p 威士忌帶來淡淡微醺，白可可與蜂蜜添了柔和甜味，椰香輕盈，最後由牛奶收尾——不濃烈，也不張揚。 &lt;wait.3&gt;
+/p 如果今晚睡不著，那就讓我陪你，把這份清醒過得溫柔一點。</textarea></div>
+      <div class="macro-field"><div class="macro-label">與客人告知時間結束後!!再使用</div><textarea class="editable-box" id="host5">/p 很高興今晚能陪您度過這段時光。 &lt;wait.2&gt;
+/p 若今晚還意猶未盡，歡迎向接待詢問是否能安排續時。
+/行禮 motion</textarea></div>
+    </div>
+  </details>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'rp-night-macros:state-v1';
+const HOST_FIELD_IDS = ['host1','host2','host3','host4','host5'];
+let state = {};
+
+async function persistState(){
+  const payload = JSON.stringify(state);
+  let lastError = null;
+  if(window.storage && typeof window.storage.set === 'function'){
+    try{ await window.storage.set(STORAGE_KEY, payload, false); return true; }
+    catch(e){ lastError = e; }
+  }
+  try{ localStorage.setItem(STORAGE_KEY, payload); return true; }
+  catch(e){ lastError = e; }
+  throw lastError || new Error('no storage available');
+}
+async function loadState(){
+  if(window.storage && typeof window.storage.get === 'function'){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value) return result.value;
+    }catch(e){ /* fall through */ }
+  }
+  try{
+    const v = localStorage.getItem(STORAGE_KEY);
+    if(v) return v;
+  }catch(e){ /* no storage available */ }
+  return null;
+}
+let saveTimer = null;
+function scheduleSave(){
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = '儲存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try{
+      await persistState();
+      dot.classList.remove('saving');
+      text.textContent = '已同步';
+    }catch(e){
+      dot.classList.remove('saving');
+      text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
+    }
+  }, 400);
+}
+
+HOST_FIELD_IDS.forEach(id => {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('input', () => {
+    state[id] = el.value;
+    scheduleSave();
+  });
+});
+
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const box = btn.closest('.macro-row').querySelector('.macro-box');
+    const text = box.textContent || '';
+    try{
+      await navigator.clipboard.writeText(text);
+    }catch(e){
+      const range = document.createRange();
+      range.selectNodeContents(box);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    btn.textContent = '已複製';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 1500);
+  });
+});
+
+async function init(){
+  try{
+    const raw = await loadState();
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+    }
+  }catch(e){ /* keep defaults already in the textareas */ }
+  HOST_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if(el && typeof state[id] === 'string') el.value = state[id];
+  });
+}
+init();
+</script>
+</body>
+</html>
