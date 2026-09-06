@@ -228,7 +228,7 @@
   td input:focus, td select:focus{outline:none;border-color:var(--brass-soft);background:rgba(201,161,93,0.06);}
 
   .col-date{width:118px;}
-  .col-name{width:112px;}
+  .col-name{width:132px;}
   .col-pos{width:100px;}
   .col-hours{width:82px;}
   .col-sessions{width:74px;}
@@ -392,7 +392,7 @@
   </header>
 
   <div class="rules-panel">
-    <h2 class="section-title">職位規則設定</h2>
+    <h2 class="section-title">職位薪水計算</h2>
     <div class="rules-grid" id="rulesGrid"></div>
   </div>
 
@@ -467,6 +467,7 @@
         <div class="receipt-line"><span>總工時</span><span class="v" id="sumHours">0</span></div>
         <div class="receipt-line"><span>總節數</span><span class="v" id="sumSessions">0</span></div>
         <div class="receipt-line"><span>總業績（指名+人頭）</span><span class="v" id="sumRevenue">$0</span></div>
+        <div class="receipt-line" id="sumReceptionLine" style="display:none;"><span>接待抽成應得</span><span class="v" id="sumReception">$0</span></div>
         <div class="receipt-line grand"><span class="k">應發薪資總額</span><span class="v" id="sumTotal">$0</span></div>
       </div>
     </div>
@@ -477,12 +478,28 @@
 <script>
 const STORAGE_KEY = 'rp-payroll:state-v2';
 
-const POSITIONS = ['正式','實習','前臺','攝影'];
+const POSITIONS = ['正式','實習','保安','攝影','接待'];
 const POSITION_COLORS = {
   '正式': '#c9a15d',
   '實習': '#7f9a6a',
-  '前臺': '#6f8fae',
-  '攝影': '#a3607e'
+  '保安': '#6f8fae',
+  '攝影': '#a3607e',
+  '接待': '#d1874a'
+};
+
+// 員工名冊：每位員工只能選擇這裡列出的職位（多職位的員工可在紀錄裡切換）
+const EMPLOYEE_ROSTER = {
+  '阿希': ['正式'],
+  '瑪萩': ['正式'],
+  '梅洛': ['正式'],
+  '梅菲斯': ['正式'],
+  '生鮮雞蛋': ['實習'],
+  '犬本丸': ['實習'],
+  '哈瓦特': ['實習'],
+  '耶夢加德': ['實習'],
+  '珀洛托': ['正式','接待'],
+  '神聖吉娃娃': ['實習','保安'],
+  '呼啊啊': ['保安']
 };
 
 let state = {
@@ -490,8 +507,9 @@ let state = {
   rules: {
     '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
     '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
-    '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-    '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
+    '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
+    '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true },
+    '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
   },
   entries: [],
   reservations: [],
@@ -515,7 +533,7 @@ function newEntry(){
   return {
     id: uid(),
     name: '',
-    position: '正式',
+    position: '',
     hours: 0,
     sessions: 0,
     guests: 0,
@@ -539,7 +557,7 @@ function newReservation(){
 }
 
 function calcEntry(entry){
-  const r = state.rules[entry.position] || state.rules['正式'];
+  const r = state.rules[entry.position] || { hourly:0, sessionFee:0, guestBonus:0, cutRate:0, hasSession:false };
   const hourlyPay = (Number(entry.hours) || 0) * (Number(r.hourly) || 0);
   let revenue = 0, cut = 0, share = 0;
   if(r.hasSession){
@@ -610,13 +628,22 @@ function renderRules(){
     card.className = 'rule-card';
     card.style.boxShadow = `inset 4px 0 0 ${color}`;
     card.style.background = `${color}1f`;
-    card.innerHTML = `
-      <div class="pos-name" style="color:${color};">${pos}<span class="pos-tag">${r.hasSession ? '時薪＋抽成' : '純時薪'}</span></div>
-      <div class="rule-field"><span>時薪</span><input type="number" data-pos="${pos}" data-key="hourly" value="${r.hourly}" min="0" step="1000"></div>
-      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>指名一節</span><input type="number" data-pos="${pos}" data-key="sessionFee" value="${r.sessionFee}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
-      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>每加一位人頭</span><input type="number" data-pos="${pos}" data-key="guestBonus" value="${r.guestBonus}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
-      <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>店家抽成 %</span><input type="number" data-pos="${pos}" data-key="cutRate" value="${r.cutRate}" min="0" max="100" step="1" ${r.hasSession ? '' : 'disabled'}></div>
-    `;
+    if(r.mode === 'revenue_share'){
+      card.innerHTML = `
+        <div class="pos-name" style="color:${color};">${pos}<span class="pos-tag">營收分潤</span></div>
+        <div class="rule-field"><span>店家總營收抽成 %</span><input type="number" data-pos="${pos}" data-key="sharePercent" value="${r.sharePercent}" min="0" max="100" step="1"></div>
+        <div class="rule-field"><span>入場費金額（手動輸入）</span><input type="number" data-pos="${pos}" data-key="entranceFee" value="${r.entranceFee}" min="0" step="1000"></div>
+        <p style="margin:8px 2px 0;font-size:12px;color:var(--ivory-dim);line-height:1.5;">應得＝今日總業績 × 抽成% ＋ 入場費金額。今日總業績會自動抓「每日紀錄」裡指名＋人頭的加總。</p>
+      `;
+    }else{
+      card.innerHTML = `
+        <div class="pos-name" style="color:${color};">${pos}<span class="pos-tag">${r.hasSession ? '時薪＋抽成' : '純時薪'}</span></div>
+        <div class="rule-field"><span>時薪</span><input type="number" data-pos="${pos}" data-key="hourly" value="${r.hourly}" min="0" step="1000"></div>
+        <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>指名一節</span><input type="number" data-pos="${pos}" data-key="sessionFee" value="${r.sessionFee}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
+        <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>每加一位人頭</span><input type="number" data-pos="${pos}" data-key="guestBonus" value="${r.guestBonus}" min="0" step="1000" ${r.hasSession ? '' : 'disabled'}></div>
+        <div class="rule-field ${r.hasSession ? '' : 'disabled'}"><span>店家抽成 %</span><input type="number" data-pos="${pos}" data-key="cutRate" value="${r.cutRate}" min="0" max="100" step="1" ${r.hasSession ? '' : 'disabled'}></div>
+      `;
+    }
     grid.appendChild(card);
   });
 }
@@ -630,8 +657,44 @@ document.getElementById('rulesGrid').addEventListener('input', (e) => {
   scheduleSave();
 });
 
-function positionOptions(selected){
-  return POSITIONS.map(p => `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`).join('');
+function nameOptions(selected){
+  const names = Object.keys(EMPLOYEE_ROSTER);
+  const opts = ['<option value=""' + (selected ? '' : ' selected') + '>請選擇員工</option>']
+    .concat(names.map(n => `<option value="${escapeAttr(n)}" ${n === selected ? 'selected' : ''}>${escapeAttr(n)}</option>`));
+  return opts.join('');
+}
+
+function positionOptionsForEmployee(name, selected){
+  const allowed = EMPLOYEE_ROSTER[name] || POSITIONS;
+  return allowed.map(p => `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`).join('');
+}
+
+function computeReceptionPay(){
+  const rule = state.rules['接待'] || { sharePercent: 0, entranceFee: 0 };
+  let sumRevenue = 0;
+  state.entries.forEach(e => {
+    const rr = state.rules[e.position];
+    if(rr && rr.hasSession){
+      sumRevenue += (Number(e.sessions) || 0) * (Number(rr.sessionFee) || 0) + (Number(e.guests) || 0) * (Number(rr.guestBonus) || 0);
+    }
+  });
+  const pct = Number(rule.sharePercent) || 0;
+  const fee = Number(rule.entranceFee) || 0;
+  const total = Math.round(sumRevenue * pct / 100) + fee;
+  const count = state.entries.filter(e => e.position === '接待').length;
+  const perEntry = count ? Math.round(total / count) : 0;
+  return { total, perEntry, count, sumRevenue };
+}
+
+function refreshReceptionRowTotals(){
+  const info = computeReceptionPay();
+  document.querySelectorAll('#tbody tr').forEach(tr => {
+    const entry = state.entries.find(x => x.id === tr.dataset.id);
+    if(entry && entry.position === '接待'){
+      const totalCell = tr.querySelector('td.col-total .computed');
+      if(totalCell) totalCell.textContent = fmtMoney(info.perEntry);
+    }
+  });
 }
 
 function renderEntries(){
@@ -640,24 +703,30 @@ function renderEntries(){
   document.getElementById('emptyState').style.display = state.entries.length ? 'none' : 'block';
   document.getElementById('countHint').textContent = `共 ${state.entries.length} 筆紀錄`;
 
+  const receptionInfo = computeReceptionPay();
+
   state.entries.forEach(entry => {
     const c = calcEntry(entry);
-    const r = state.rules[entry.position] || state.rules['正式'];
+    const r = state.rules[entry.position] || { hourly:0, sessionFee:0, guestBonus:0, cutRate:0, hasSession:false };
+    const isReception = entry.position === '接待';
     const posColor = POSITION_COLORS[entry.position] || 'var(--brass)';
+    const allowedPositions = EMPLOYEE_ROSTER[entry.name] || POSITIONS;
+    const posLocked = allowedPositions.length <= 1;
     const tr = document.createElement('tr');
     tr.dataset.id = entry.id;
     tr.style.background = `${posColor}2e`;
     tr.style.boxShadow = `inset 4px 0 0 ${posColor}`;
+    const totalDisplay = isReception ? receptionInfo.perEntry : c.total;
     tr.innerHTML = `
-      <td class="col-name"><input type="text" data-field="name" placeholder="姓名" value="${escapeAttr(entry.name)}"></td>
-      <td class="col-pos"><select data-field="position" style="color:${posColor};border-color:${posColor}88;background:${posColor}3d;font-weight:700;border-radius:5px;">${positionOptions(entry.position)}</select></td>
-      <td class="col-hours"><input type="number" data-field="hours" min="0" step="0.5" value="${entry.hours}"></td>
+      <td class="col-name"><select data-field="name">${nameOptions(entry.name)}</select></td>
+      <td class="col-pos"><select data-field="position" ${posLocked ? 'disabled' : ''} style="color:${posColor};border-color:${posColor}88;background:${posColor}3d;font-weight:700;border-radius:5px;">${positionOptionsForEmployee(entry.name, entry.position)}</select></td>
+      <td class="col-hours"><input type="number" data-field="hours" min="0" step="0.5" value="${entry.hours}" ${isReception ? 'disabled' : ''}></td>
       <td class="col-sessions"><input type="number" data-field="sessions" min="0" step="1" value="${entry.sessions}" ${r.hasSession ? '' : 'disabled'}></td>
       <td class="col-guests"><input type="number" data-field="guests" min="0" step="1" value="${entry.guests}" ${r.hasSession ? '' : 'disabled'}></td>
-      <td class="col-calc"><div class="computed dim">${fmtMoney(c.hourlyPay)}</div></td>
+      <td class="col-calc"><div class="computed dim">${isReception ? '—' : fmtMoney(c.hourlyPay)}</div></td>
       <td class="col-calc"><div class="computed dim">${r.hasSession ? fmtMoney(c.revenue) : '—'}</div></td>
       <td class="col-calc"><div class="computed cut">${r.hasSession ? '－' + fmtMoney(c.cut) : '—'}</div></td>
-      <td class="col-total"><div class="computed total">${fmtMoney(c.total)}</div></td>
+      <td class="col-total"><div class="computed total">${fmtMoney(totalDisplay)}</div></td>
       <td class="col-note"><input type="text" data-field="note" placeholder="備註" value="${escapeAttr(entry.note)}"></td>
       <td class="col-del"><button class="del-btn" data-action="delete" aria-label="刪除">×</button></td>
     `;
@@ -704,19 +773,21 @@ function renderReservations(){
 function renderSummary(){
   let sumHours = 0, sumSessions = 0, sumRevenue = 0, sumCut = 0, sumTotal = 0;
   const byEmp = {};
+  const receptionInfo = computeReceptionPay();
 
   state.entries.forEach(entry => {
     const c = calcEntry(entry);
-    const r = state.rules[entry.position] || state.rules['正式'];
+    const r = state.rules[entry.position] || { hourly:0, sessionFee:0, guestBonus:0, cutRate:0, hasSession:false };
+    const entryTotal = entry.position === '接待' ? receptionInfo.perEntry : c.total;
     sumHours += Number(entry.hours) || 0;
     sumSessions += r.hasSession ? (Number(entry.sessions) || 0) : 0;
     sumRevenue += c.revenue;
     sumCut += c.cut;
-    sumTotal += c.total;
+    sumTotal += entryTotal;
 
-    const key = entry.name.trim() || '（未填姓名）';
+    const key = entry.name.trim() || '（未選員工）';
     if(!byEmp[key]) byEmp[key] = { total: 0, hours: 0, sessions: 0, guests: 0, records: 0, position: entry.position };
-    byEmp[key].total += c.total;
+    byEmp[key].total += entryTotal;
     byEmp[key].hours += Number(entry.hours) || 0;
     byEmp[key].sessions += r.hasSession ? (Number(entry.sessions) || 0) : 0;
     byEmp[key].guests += r.hasSession ? (Number(entry.guests) || 0) : 0;
@@ -727,6 +798,13 @@ function renderSummary(){
   document.getElementById('sumHours').textContent = sumHours.toLocaleString('en-US');
   document.getElementById('sumSessions').textContent = sumSessions.toLocaleString('en-US');
   document.getElementById('sumRevenue').textContent = fmtMoney(sumRevenue);
+  const receptionLine = document.getElementById('sumReceptionLine');
+  if(receptionInfo.count > 0){
+    receptionLine.style.display = '';
+    document.getElementById('sumReception').textContent = fmtMoney(receptionInfo.total);
+  }else{
+    receptionLine.style.display = 'none';
+  }
   document.getElementById('sumTotal').textContent = fmtMoney(sumTotal);
 
   const empList = document.getElementById('empList');
@@ -748,7 +826,7 @@ function renderSummary(){
 
 function updateRowComputed(tr, entry){
   const c = calcEntry(entry);
-  const r = state.rules[entry.position] || state.rules['正式'];
+  const r = state.rules[entry.position] || { hourly:0, sessionFee:0, guestBonus:0, cutRate:0, hasSession:false };
   const calcCells = tr.querySelectorAll('td.col-calc .computed');
   calcCells[0].textContent = fmtMoney(c.hourlyPay);
   calcCells[1].textContent = r.hasSession ? fmtMoney(c.revenue) : '—';
@@ -765,8 +843,9 @@ document.getElementById('tbody').addEventListener('input', (e) => {
   if(field === 'hours' || field === 'sessions' || field === 'guests'){
     entry[field] = e.target.value === '' ? 0 : Number(e.target.value);
     updateRowComputed(tr, entry);
-  } else {
-    // name / note / date: just store the value, no re-render, so focus is never lost mid-typing
+    refreshReceptionRowTotals();
+  } else if(field === 'note'){
+    // note: just store the value, no re-render, so focus is never lost mid-typing
     entry[field] = e.target.value;
   }
   renderSummary();
@@ -774,10 +853,17 @@ document.getElementById('tbody').addEventListener('input', (e) => {
 });
 
 document.getElementById('tbody').addEventListener('change', (e) => {
-  if(e.target.dataset.field === 'position'){
-    const tr = e.target.closest('tr');
-    const entry = state.entries.find(x => x.id === tr.dataset.id);
-    if(!entry) return;
+  const field = e.target.dataset.field;
+  const tr = e.target.closest('tr');
+  const entry = state.entries.find(x => x.id === tr.dataset.id);
+  if(!entry) return;
+  if(field === 'name'){
+    entry.name = e.target.value;
+    const allowed = EMPLOYEE_ROSTER[entry.name] || POSITIONS;
+    if(!allowed.includes(entry.position)) entry.position = allowed[0] || '';
+    renderEntries();
+    scheduleSave();
+  } else if(field === 'position'){
     entry.position = e.target.value;
     renderEntries();
     scheduleSave();
@@ -860,9 +946,14 @@ async function init(){
       state.rules = Object.assign({
         '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
         '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
-        '前臺': { hourly: 50000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true }
+        '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
+        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true },
+        '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
       }, loaded.rules || {});
+      delete state.rules['前臺'];
+      if(Array.isArray(state.entries)){
+        state.entries.forEach(e => { if(e.position === '前臺') e.position = '保安'; });
+      }
     } else {
       state.entries = [newEntry()];
     }
