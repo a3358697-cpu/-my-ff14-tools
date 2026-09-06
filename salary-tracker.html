@@ -633,7 +633,7 @@ function renderRules(){
         <div class="pos-name" style="color:${color};">${pos}<span class="pos-tag">營收分潤</span></div>
         <div class="rule-field"><span>店家總營收抽成 %</span><input type="number" data-pos="${pos}" data-key="sharePercent" value="${r.sharePercent}" min="0" max="100" step="1"></div>
         <div class="rule-field"><span>入場費金額（手動輸入）</span><input type="number" data-pos="${pos}" data-key="entranceFee" value="${r.entranceFee}" min="0" step="1000"></div>
-        <p style="margin:8px 2px 0;font-size:12px;color:var(--ivory-dim);line-height:1.5;">應得＝今日總業績 × 抽成% ＋ 入場費金額。今日總業績會自動抓「每日紀錄」裡指名＋人頭的加總。</p>
+        <p style="margin:8px 2px 0;font-size:12px;color:var(--ivory-dim);line-height:1.5;">應得＝（店家抽成收入＋入場費金額－其他職位時薪支出）× 抽成%。店家抽成收入與時薪支出會自動抓「每日紀錄」裡其他職位的數字。</p>
       `;
     }else{
       card.innerHTML = `
@@ -671,19 +671,23 @@ function positionOptionsForEmployee(name, selected){
 
 function computeReceptionPay(){
   const rule = state.rules['接待'] || { sharePercent: 0, entranceFee: 0 };
-  let sumRevenue = 0;
+  let storeKept = 0;   // 店家從指名/人頭營收中留下的抽成（已扣除給員工的節數分潤）
+  let staffWages = 0;  // 其他職位要付的底薪（時薪成本）
   state.entries.forEach(e => {
+    if(e.position === '接待') return;
     const rr = state.rules[e.position];
-    if(rr && rr.hasSession){
-      sumRevenue += (Number(e.sessions) || 0) * (Number(rr.sessionFee) || 0) + (Number(e.guests) || 0) * (Number(rr.guestBonus) || 0);
-    }
+    if(!rr) return;
+    const c = calcEntry(e);
+    storeKept += c.cut;
+    staffWages += c.hourlyPay;
   });
-  const pct = Number(rule.sharePercent) || 0;
   const fee = Number(rule.entranceFee) || 0;
-  const total = Math.round(sumRevenue * pct / 100) + fee;
+  const netRevenue = Math.max(0, storeKept + fee - staffWages);
+  const pct = Number(rule.sharePercent) || 0;
+  const total = Math.round(netRevenue * pct / 100);
   const count = state.entries.filter(e => e.position === '接待').length;
   const perEntry = count ? Math.round(total / count) : 0;
-  return { total, perEntry, count, sumRevenue };
+  return { total, perEntry, count, netRevenue, storeKept, staffWages, fee };
 }
 
 function refreshReceptionRowTotals(){
