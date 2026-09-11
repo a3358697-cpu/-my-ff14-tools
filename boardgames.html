@@ -154,6 +154,47 @@
   }
   .record-board:focus{outline:none;border-color:var(--accent-soft);}
 
+  .role-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+  .role-chip{
+    display:flex;align-items:center;gap:7px;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:20px;padding:7px 14px 7px 10px;
+    font-size:13px;color:var(--ivory-dim);cursor:pointer;
+    transition:border-color .15s, color .15s, background .15s;
+  }
+  .role-chip input{accent-color:var(--accent);cursor:pointer;}
+  .role-chip:has(input:checked){border-color:var(--accent-soft);color:var(--ivory);background:rgba(217,155,176,0.1);}
+
+  .board-table-scroll{overflow-x:auto;margin-top:8px;border:1px solid var(--line-soft);border-radius:8px;}
+  table.board-table{width:100%;border-collapse:collapse;min-width:920px;}
+  table.board-table thead th{
+    text-align:left;font-size:11.5px;letter-spacing:0.03em;color:var(--accent);
+    font-weight:600;padding:9px 8px;background:var(--panel-2);
+    border-bottom:1px solid var(--line);white-space:nowrap;
+  }
+  table.board-table tbody td{
+    padding:5px 6px;border-bottom:1px solid var(--line-soft);
+  }
+  table.board-table tbody tr:last-child td{border-bottom:none;}
+  table.board-table td.fixed-cell{
+    font-family:'IBM Plex Mono', monospace;font-size:12.5px;color:var(--ivory-dim);
+    text-align:center;white-space:nowrap;
+  }
+  .round-input{
+    width:100%;min-width:64px;background:transparent;border:1px solid transparent;
+    border-radius:5px;color:var(--ivory);font-family:'Noto Sans TC', sans-serif;
+    font-size:13px;padding:6px 7px;
+  }
+  .round-input:hover{background:rgba(255,255,255,0.03);}
+  .round-input:focus{outline:none;border-color:var(--accent-soft);background:rgba(217,155,176,0.06);}
+
+  .reset-btn{
+    background:transparent;border:1px solid var(--line);color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;font-size:12.5px;padding:7px 14px;
+    border-radius:6px;cursor:pointer;transition:border-color .15s,color .15s;
+  }
+  .reset-btn:hover{border-color:var(--accent-soft);color:var(--accent);}
+
   ::selection{background:var(--accent-soft);color:var(--ink);}
 </style>
 </head>
@@ -565,9 +606,51 @@ MVP是誰？
 /sh 若遊戲結束後需要道歉、絕交或申請歡樂殯葬服務，請至櫃台辦理。 &lt;wait.4&gt;
 /sh 若您對今日小遊戲十分滿意，歡迎點餐外帶，或是打賞主持人支持我們。 &lt;wait.3&gt;
 /sh 本店菜單:https://sweet-cotton-cafeff14.vercel.app/</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">人數配置參考 1</div><div class="macro-row"><div class="macro-box">/sh 【6人局】暗黑騎士×1 占星術士×1 白魔法師×1 冒險者×3</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">人數配置參考 2</div><div class="macro-row"><div class="macro-box">/sh 【8人局】暗黑騎士×2 占星術士×1 白魔法師×1 機工士×1 冒險者×3 (青魔法師x1)</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">人數配置參考 3</div><div class="macro-row"><div class="macro-box">/sh 【10人以上】暗黑騎士×2 占星術士×1 白魔法師×1 機工士×1 騎士×1 冒險者×4(青魔法師×1 莫古禮儀師×1 漁夫×1)</div><button class="copy-btn" type="button">複製</button></div></div>
       <div class="macro-field">
-        <div class="macro-label">紀錄板</div>
-        <textarea class="record-board" id="recordA"></textarea>
+        <div class="macro-label">本場在場角色（勾選當場實際使用的角色）</div>
+        <div class="role-chips">
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r0"><span>暗黑騎士</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r1"><span>占星術士</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r2"><span>白魔法師</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r3"><span>機工</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r4"><span>騎士</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r5"><span>冒險者</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r6"><span>冒險者(青魔)</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r7"><span>冒險者(魚師)</span></label>
+        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r8"><span>冒險者(禮儀師)</span></label>
+        </div>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label">結算時確認事項</div>
+        <div class="role-chips">
+        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c0"><span>青魔是否被白天放逐？</span></label>
+        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c1"><span>漁夫是否存活到最後？</span></label>
+        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c2"><span>遊戲結束時莫古禮儀師仍存活？</span></label>
+        </div>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label">夜晚／白天紀錄表</div>
+        <div class="board-table-scroll">
+        <table class="board-table">
+          <thead><tr><th>夜晚</th><th>暗黑騎士</th><th>占星</th><th>騎士</th><th>白魔:復生/制裁</th><th>機工帶走人</th><th>名單</th><th>白天</th><th>放逐對象</th><th>死亡名單</th><th>存活數量</th><th>陣營人數</th></tr></thead>
+          <tbody id="mysteryRoundsBody">
+        <tr><td class="fixed-cell">N1</td><td><input type="text" class="round-input" data-round="1" data-key="dk"></td><td><input type="text" class="round-input" data-round="1" data-key="astro"></td><td><input type="text" class="round-input" data-round="1" data-key="knight"></td><td><input type="text" class="round-input" data-round="1" data-key="wmage"></td><td><input type="text" class="round-input" data-round="1" data-key="mch"></td><td><input type="text" class="round-input" data-round="1" data-key="roster"></td><td class="fixed-cell">D1</td><td><input type="text" class="round-input" data-round="1" data-key="exile"></td><td><input type="text" class="round-input" data-round="1" data-key="death"></td><td><input type="text" class="round-input" data-round="1" data-key="alive"></td><td><input type="text" class="round-input" data-round="1" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N2</td><td><input type="text" class="round-input" data-round="2" data-key="dk"></td><td><input type="text" class="round-input" data-round="2" data-key="astro"></td><td><input type="text" class="round-input" data-round="2" data-key="knight"></td><td><input type="text" class="round-input" data-round="2" data-key="wmage"></td><td><input type="text" class="round-input" data-round="2" data-key="mch"></td><td><input type="text" class="round-input" data-round="2" data-key="roster"></td><td class="fixed-cell">D2</td><td><input type="text" class="round-input" data-round="2" data-key="exile"></td><td><input type="text" class="round-input" data-round="2" data-key="death"></td><td><input type="text" class="round-input" data-round="2" data-key="alive"></td><td><input type="text" class="round-input" data-round="2" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N3</td><td><input type="text" class="round-input" data-round="3" data-key="dk"></td><td><input type="text" class="round-input" data-round="3" data-key="astro"></td><td><input type="text" class="round-input" data-round="3" data-key="knight"></td><td><input type="text" class="round-input" data-round="3" data-key="wmage"></td><td><input type="text" class="round-input" data-round="3" data-key="mch"></td><td><input type="text" class="round-input" data-round="3" data-key="roster"></td><td class="fixed-cell">D3</td><td><input type="text" class="round-input" data-round="3" data-key="exile"></td><td><input type="text" class="round-input" data-round="3" data-key="death"></td><td><input type="text" class="round-input" data-round="3" data-key="alive"></td><td><input type="text" class="round-input" data-round="3" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N4</td><td><input type="text" class="round-input" data-round="4" data-key="dk"></td><td><input type="text" class="round-input" data-round="4" data-key="astro"></td><td><input type="text" class="round-input" data-round="4" data-key="knight"></td><td><input type="text" class="round-input" data-round="4" data-key="wmage"></td><td><input type="text" class="round-input" data-round="4" data-key="mch"></td><td><input type="text" class="round-input" data-round="4" data-key="roster"></td><td class="fixed-cell">D4</td><td><input type="text" class="round-input" data-round="4" data-key="exile"></td><td><input type="text" class="round-input" data-round="4" data-key="death"></td><td><input type="text" class="round-input" data-round="4" data-key="alive"></td><td><input type="text" class="round-input" data-round="4" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N5</td><td><input type="text" class="round-input" data-round="5" data-key="dk"></td><td><input type="text" class="round-input" data-round="5" data-key="astro"></td><td><input type="text" class="round-input" data-round="5" data-key="knight"></td><td><input type="text" class="round-input" data-round="5" data-key="wmage"></td><td><input type="text" class="round-input" data-round="5" data-key="mch"></td><td><input type="text" class="round-input" data-round="5" data-key="roster"></td><td class="fixed-cell">D5</td><td><input type="text" class="round-input" data-round="5" data-key="exile"></td><td><input type="text" class="round-input" data-round="5" data-key="death"></td><td><input type="text" class="round-input" data-round="5" data-key="alive"></td><td><input type="text" class="round-input" data-round="5" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N6</td><td><input type="text" class="round-input" data-round="6" data-key="dk"></td><td><input type="text" class="round-input" data-round="6" data-key="astro"></td><td><input type="text" class="round-input" data-round="6" data-key="knight"></td><td><input type="text" class="round-input" data-round="6" data-key="wmage"></td><td><input type="text" class="round-input" data-round="6" data-key="mch"></td><td><input type="text" class="round-input" data-round="6" data-key="roster"></td><td class="fixed-cell">D6</td><td><input type="text" class="round-input" data-round="6" data-key="exile"></td><td><input type="text" class="round-input" data-round="6" data-key="death"></td><td><input type="text" class="round-input" data-round="6" data-key="alive"></td><td><input type="text" class="round-input" data-round="6" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N7</td><td><input type="text" class="round-input" data-round="7" data-key="dk"></td><td><input type="text" class="round-input" data-round="7" data-key="astro"></td><td><input type="text" class="round-input" data-round="7" data-key="knight"></td><td><input type="text" class="round-input" data-round="7" data-key="wmage"></td><td><input type="text" class="round-input" data-round="7" data-key="mch"></td><td><input type="text" class="round-input" data-round="7" data-key="roster"></td><td class="fixed-cell">D7</td><td><input type="text" class="round-input" data-round="7" data-key="exile"></td><td><input type="text" class="round-input" data-round="7" data-key="death"></td><td><input type="text" class="round-input" data-round="7" data-key="alive"></td><td><input type="text" class="round-input" data-round="7" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N8</td><td><input type="text" class="round-input" data-round="8" data-key="dk"></td><td><input type="text" class="round-input" data-round="8" data-key="astro"></td><td><input type="text" class="round-input" data-round="8" data-key="knight"></td><td><input type="text" class="round-input" data-round="8" data-key="wmage"></td><td><input type="text" class="round-input" data-round="8" data-key="mch"></td><td><input type="text" class="round-input" data-round="8" data-key="roster"></td><td class="fixed-cell">D8</td><td><input type="text" class="round-input" data-round="8" data-key="exile"></td><td><input type="text" class="round-input" data-round="8" data-key="death"></td><td><input type="text" class="round-input" data-round="8" data-key="alive"></td><td><input type="text" class="round-input" data-round="8" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N9</td><td><input type="text" class="round-input" data-round="9" data-key="dk"></td><td><input type="text" class="round-input" data-round="9" data-key="astro"></td><td><input type="text" class="round-input" data-round="9" data-key="knight"></td><td><input type="text" class="round-input" data-round="9" data-key="wmage"></td><td><input type="text" class="round-input" data-round="9" data-key="mch"></td><td><input type="text" class="round-input" data-round="9" data-key="roster"></td><td class="fixed-cell">D9</td><td><input type="text" class="round-input" data-round="9" data-key="exile"></td><td><input type="text" class="round-input" data-round="9" data-key="death"></td><td><input type="text" class="round-input" data-round="9" data-key="alive"></td><td><input type="text" class="round-input" data-round="9" data-key="faction"></td></tr>
+        <tr><td class="fixed-cell">N10</td><td><input type="text" class="round-input" data-round="10" data-key="dk"></td><td><input type="text" class="round-input" data-round="10" data-key="astro"></td><td><input type="text" class="round-input" data-round="10" data-key="knight"></td><td><input type="text" class="round-input" data-round="10" data-key="wmage"></td><td><input type="text" class="round-input" data-round="10" data-key="mch"></td><td><input type="text" class="round-input" data-round="10" data-key="roster"></td><td class="fixed-cell">D10</td><td><input type="text" class="round-input" data-round="10" data-key="exile"></td><td><input type="text" class="round-input" data-round="10" data-key="death"></td><td><input type="text" class="round-input" data-round="10" data-key="alive"></td><td><input type="text" class="round-input" data-round="10" data-key="faction"></td></tr>
+          </tbody>
+        </table>
+        </div>
+        <button class="reset-btn" id="resetMysteryBoard" type="button" style="margin-top:10px;">清空這張紀錄表</button>
       </div>
     </div>
   </details>
@@ -660,7 +743,12 @@ MVP是誰？
 
 <script>
 const STORAGE_KEY = 'rp-boardgames:state-v1';
-let state = { recordA: '', recordB: '' };
+let state = {
+  recordB: '',
+  mysteryRoles: {},
+  mysteryConditions: {},
+  mysteryRounds: {}
+};
 
 async function persistState(){
   const payload = JSON.stringify(state);
@@ -705,12 +793,36 @@ function scheduleSave(){
   }, 400);
 }
 
-document.getElementById('recordA').addEventListener('input', (e) => {
-  state.recordA = e.target.value;
-  scheduleSave();
-});
 document.getElementById('recordB').addEventListener('input', (e) => {
   state.recordB = e.target.value;
+  scheduleSave();
+});
+
+document.querySelectorAll('.role-check').forEach(cb => {
+  cb.addEventListener('change', () => {
+    state.mysteryRoles[cb.dataset.role] = cb.checked;
+    scheduleSave();
+  });
+});
+document.querySelectorAll('.cond-check').forEach(cb => {
+  cb.addEventListener('change', () => {
+    state.mysteryConditions[cb.dataset.cond] = cb.checked;
+    scheduleSave();
+  });
+});
+document.querySelectorAll('.round-input').forEach(inp => {
+  inp.addEventListener('input', () => {
+    const round = inp.dataset.round;
+    const key = inp.dataset.key;
+    if(!state.mysteryRounds[round]) state.mysteryRounds[round] = {};
+    state.mysteryRounds[round][key] = inp.value;
+    scheduleSave();
+  });
+});
+document.getElementById('resetMysteryBoard').addEventListener('click', () => {
+  if(!confirm('確定要清空這張紀錄表嗎？角色勾選與確認事項不會被清空。')) return;
+  state.mysteryRounds = {};
+  document.querySelectorAll('.round-input').forEach(inp => { inp.value = ''; });
   scheduleSave();
 });
 
@@ -739,10 +851,24 @@ async function init(){
     if(raw){
       const loaded = JSON.parse(raw);
       state = Object.assign(state, loaded);
+      if(!state.mysteryRoles) state.mysteryRoles = {};
+      if(!state.mysteryConditions) state.mysteryConditions = {};
+      if(!state.mysteryRounds) state.mysteryRounds = {};
     }
   }catch(e){ /* keep defaults */ }
-  document.getElementById('recordA').value = state.recordA || '';
   document.getElementById('recordB').value = state.recordB || '';
+  document.querySelectorAll('.role-check').forEach(cb => {
+    cb.checked = !!state.mysteryRoles[cb.dataset.role];
+  });
+  document.querySelectorAll('.cond-check').forEach(cb => {
+    cb.checked = !!state.mysteryConditions[cb.dataset.cond];
+  });
+  document.querySelectorAll('.round-input').forEach(inp => {
+    const round = inp.dataset.round;
+    const key = inp.dataset.key;
+    const saved = state.mysteryRounds[round];
+    if(saved && saved[key]) inp.value = saved[key];
+  });
 }
 init();
 </script>
