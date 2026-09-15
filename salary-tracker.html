@@ -36,6 +36,13 @@
   }
   .wrap{max-width:1160px;margin:0 auto;}
 
+  .home-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:13px;color:var(--ivory-dim);text-decoration:none;
+    margin-bottom:12px;transition:color .15s ease;
+  }
+  .home-link:hover{color:var(--brass);}
+
   header.top{
     display:flex;
     justify-content:space-between;
@@ -155,6 +162,42 @@
   .rule-field input:focus{outline:none;border-bottom-color:var(--brass);}
   .rule-field.disabled{opacity:0.4;}
   .rule-field.disabled input{pointer-events:none;}
+
+  .hint{font-size:13px;color:var(--ivory-dim);line-height:1.6;margin:0 0 14px;}
+
+  .employee-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .employee-row{
+    display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:var(--panel-2);border:1px solid var(--line-soft);
+    border-radius:8px;padding:10px 14px;
+  }
+  .employee-row .emp-name{
+    font-family:'Noto Serif TC', serif;font-size:15px;font-weight:700;
+    color:var(--ivory);min-width:80px;
+  }
+  .employee-row .emp-positions{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+  .pos-checkbox{
+    display:flex;align-items:center;gap:5px;
+    background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:14px;padding:4px 10px 4px 8px;
+    font-size:12.5px;color:var(--ivory-dim);cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .pos-checkbox input{accent-color:var(--brass);cursor:pointer;}
+  .pos-checkbox:has(input:checked){border-color:var(--brass-soft);color:var(--ivory);}
+  .employee-row .del-emp-btn{
+    flex:0 0 auto;background:none;border:none;color:var(--ivory-dim);
+    cursor:pointer;font-size:17px;line-height:1;padding:4px 6px;border-radius:5px;
+  }
+  .employee-row .del-emp-btn:hover{color:var(--wine);background:rgba(140,59,74,0.15);}
+
+  .add-employee-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-top:6px;border-top:1px dashed var(--line-soft);}
+  .add-employee-row input[type=text]{
+    background:var(--panel-2);border:1px solid var(--line-soft);color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;font-size:14px;padding:8px 12px;
+    border-radius:6px;min-width:120px;
+  }
+  .add-employee-positions{display:flex;flex-wrap:wrap;gap:6px;}
 
   .note-card{
     background:var(--panel-2);
@@ -376,6 +419,7 @@
 </head>
 <body>
 <div class="wrap">
+  <a href="index.html" class="home-link">← 回工具箱</a>
 
   <header class="top">
     <div>
@@ -394,6 +438,17 @@
   <div class="rules-panel">
     <h2 class="section-title">職位薪水計算</h2>
     <div class="rules-grid" id="rulesGrid"></div>
+  </div>
+
+  <div class="rules-panel">
+    <h2 class="section-title">員工管理</h2>
+    <p class="hint">在這裡新增／刪除員工、調整每位員工可選的職位，不用再找我改程式碼。刪除員工不會刪掉他過去的每日紀錄。</p>
+    <div id="employeeList" class="employee-list"></div>
+    <div class="add-employee-row">
+      <input type="text" id="newEmployeeName" placeholder="新員工姓名" maxlength="20">
+      <div class="add-employee-positions" id="newEmployeePositions"></div>
+      <button class="add-btn" id="addEmployeeBtn" type="button">＋ 新增員工</button>
+    </div>
   </div>
 
   <div class="ledger">
@@ -487,8 +542,9 @@ const POSITION_COLORS = {
   '接待': '#d1874a'
 };
 
-// 員工名冊：每位員工只能選擇這裡列出的職位（多職位的員工可在紀錄裡切換）
-const EMPLOYEE_ROSTER = {
+// 員工名冊預設值：每位員工只能選擇這裡列出的職位（多職位的員工可在紀錄裡切換）
+// 實際使用的名冊存在 state.employeeRoster 裡，可以透過「員工管理」面板編輯
+const DEFAULT_EMPLOYEE_ROSTER = {
   '阿希': ['正式'],
   '瑪萩': ['正式'],
   '梅洛': ['正式'],
@@ -511,6 +567,7 @@ let state = {
     '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true },
     '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
   },
+  employeeRoster: JSON.parse(JSON.stringify(DEFAULT_EMPLOYEE_ROSTER)),
   entries: [],
   reservations: [],
   notes: ''
@@ -657,15 +714,91 @@ document.getElementById('rulesGrid').addEventListener('input', (e) => {
   scheduleSave();
 });
 
+function renderEmployeeList(){
+  const wrap = document.getElementById('employeeList');
+  wrap.innerHTML = '';
+  const names = Object.keys(state.employeeRoster);
+  if(!names.length){
+    wrap.innerHTML = `<p class="hint" style="margin:0;">目前沒有員工，請在下方新增第一位。</p>`;
+    return;
+  }
+  names.forEach(name => {
+    const row = document.createElement('div');
+    row.className = 'employee-row';
+    const posChecks = POSITIONS.map(p => {
+      const checked = state.employeeRoster[name].includes(p);
+      return `<label class="pos-checkbox"><input type="checkbox" data-emp="${escapeAttr(name)}" data-pos="${p}" ${checked ? 'checked' : ''}><span>${p}</span></label>`;
+    }).join('');
+    row.innerHTML = `
+      <span class="emp-name">${escapeAttr(name)}</span>
+      <div class="emp-positions">${posChecks}</div>
+      <button class="del-emp-btn" data-emp="${escapeAttr(name)}" type="button" aria-label="刪除員工">×</button>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+function renderNewEmployeePositionCheckboxes(){
+  const wrap = document.getElementById('newEmployeePositions');
+  wrap.innerHTML = POSITIONS.map(p => `<label class="pos-checkbox"><input type="checkbox" class="new-emp-pos" value="${p}"><span>${p}</span></label>`).join('');
+}
+
+document.getElementById('employeeList').addEventListener('change', (e) => {
+  const emp = e.target.dataset.emp;
+  const pos = e.target.dataset.pos;
+  if(!emp || !pos) return;
+  const list = state.employeeRoster[emp];
+  if(e.target.checked){
+    if(!list.includes(pos)) list.push(pos);
+  } else {
+    if(list.length <= 1){
+      alert('每位員工至少要保留一個職位。');
+      e.target.checked = true;
+      return;
+    }
+    state.employeeRoster[emp] = list.filter(p => p !== pos);
+  }
+  renderEntries();
+  scheduleSave();
+});
+
+document.getElementById('employeeList').addEventListener('click', (e) => {
+  if(!e.target.classList.contains('del-emp-btn')) return;
+  const emp = e.target.dataset.emp;
+  if(!confirm(`確定要刪除員工「${emp}」嗎？他過去的每日紀錄不會被刪除，但之後無法再從名單選到他。`)) return;
+  delete state.employeeRoster[emp];
+  renderEmployeeList();
+  renderEntries();
+  scheduleSave();
+});
+
+document.getElementById('addEmployeeBtn').addEventListener('click', () => {
+  const nameInput = document.getElementById('newEmployeeName');
+  const name = nameInput.value.trim();
+  if(!name) return;
+  if(state.employeeRoster[name]){ alert('這個姓名已經存在名冊裡了。'); return; }
+  const checked = [...document.querySelectorAll('.new-emp-pos:checked')].map(cb => cb.value);
+  if(!checked.length){ alert('請至少勾選一個職位。'); return; }
+  state.employeeRoster[name] = checked;
+  nameInput.value = '';
+  document.querySelectorAll('.new-emp-pos').forEach(cb => { cb.checked = false; });
+  renderEmployeeList();
+  renderEntries();
+  scheduleSave();
+});
+document.getElementById('newEmployeeName').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter'){ e.preventDefault(); document.getElementById('addEmployeeBtn').click(); }
+});
+
 function nameOptions(selected){
-  const names = Object.keys(EMPLOYEE_ROSTER);
+  const names = Object.keys(state.employeeRoster);
   const opts = ['<option value=""' + (selected ? '' : ' selected') + '>請選擇員工</option>']
     .concat(names.map(n => `<option value="${escapeAttr(n)}" ${n === selected ? 'selected' : ''}>${escapeAttr(n)}</option>`));
   return opts.join('');
 }
 
 function positionOptionsForEmployee(name, selected){
-  const allowed = EMPLOYEE_ROSTER[name] || POSITIONS;
+  const allowed = state.employeeRoster[name] || POSITIONS;
   return allowed.map(p => `<option value="${p}" ${p === selected ? 'selected' : ''}>${p}</option>`).join('');
 }
 
@@ -714,7 +847,7 @@ function renderEntries(){
     const r = state.rules[entry.position] || { hourly:0, sessionFee:0, guestBonus:0, cutRate:0, hasSession:false };
     const isReception = entry.position === '接待';
     const posColor = POSITION_COLORS[entry.position] || 'var(--brass)';
-    const allowedPositions = EMPLOYEE_ROSTER[entry.name] || POSITIONS;
+    const allowedPositions = state.employeeRoster[entry.name] || POSITIONS;
     const posLocked = allowedPositions.length <= 1;
     const tr = document.createElement('tr');
     tr.dataset.id = entry.id;
@@ -863,7 +996,7 @@ document.getElementById('tbody').addEventListener('change', (e) => {
   if(!entry) return;
   if(field === 'name'){
     entry.name = e.target.value;
-    const allowed = EMPLOYEE_ROSTER[entry.name] || POSITIONS;
+    const allowed = state.employeeRoster[entry.name] || POSITIONS;
     if(!allowed.includes(entry.position)) entry.position = allowed[0] || '';
     renderEntries();
     scheduleSave();
@@ -966,9 +1099,14 @@ async function init(){
   }
   if(!Array.isArray(state.reservations)) state.reservations = [];
   if(typeof state.notes !== 'string') state.notes = '';
+  if(!state.employeeRoster || !Object.keys(state.employeeRoster).length){
+    state.employeeRoster = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEE_ROSTER));
+  }
   document.getElementById('dateLabel').value = state.date;
   document.getElementById('freeNotes').value = state.notes;
   renderRules();
+  renderNewEmployeePositionCheckboxes();
+  renderEmployeeList();
   renderEntries();
   renderReservations();
 }

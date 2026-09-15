@@ -36,6 +36,13 @@
   }
   .wrap{max-width:900px;margin:0 auto;}
 
+  .home-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:13px;color:var(--ivory-dim);text-decoration:none;
+    margin-bottom:12px;transition:color .15s ease;
+  }
+  .home-link:hover{color:var(--brass);}
+
   header.top{
     display:flex;
     justify-content:space-between;
@@ -215,6 +222,15 @@
   }
   .counter-price-row input:focus{outline:none;border-color:var(--brass-soft);}
 
+  .counter-reset-row{margin-top:26px;padding-top:16px;border-top:1px dashed var(--line-soft);text-align:center;}
+  .reset-count-btn{
+    background:transparent;border:1px solid var(--line);color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;font-size:12px;
+    padding:7px 14px;border-radius:6px;cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .reset-count-btn:hover{border-color:var(--wine);color:var(--wine);}
+
   /* entries (ID log) */
   .ledger{
     background:var(--panel);
@@ -305,6 +321,7 @@
 </head>
 <body>
 <div class="wrap">
+  <a href="index.html" class="home-link">← 回工具箱</a>
 
   <header class="top">
     <div>
@@ -349,6 +366,9 @@
     </div>
     <div class="counter-price-row">
       每人金額　<input type="number" id="priceEachInput" min="0" step="1000">　Gil
+    </div>
+    <div class="counter-reset-row">
+      <button class="reset-count-btn" id="resetCounterBtn" type="button">重置計數（歸零，供新一天開始使用）</button>
     </div>
   </div>
 
@@ -559,6 +579,13 @@ document.getElementById('undoBtn').addEventListener('click', () => {
 });
 document.getElementById('priceEachInput').addEventListener('input', (e) => {
   state.counter.priceEach = Number(e.target.value) || 0;
+  updateCounterDisplay();
+  scheduleSave();
+});
+document.getElementById('resetCounterBtn').addEventListener('click', () => {
+  if(!confirm(`確定要把人數與金額歸零嗎？目前是 ${state.counter.count} 人，此動作無法復原。`)) return;
+  state.counter.count = 0;
+  state.counter.history = [];
   updateCounterDisplay();
   scheduleSave();
 });

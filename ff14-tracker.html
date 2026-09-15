@@ -49,6 +49,13 @@
   }
 
   /* ---------- Header ---------- */
+  .home-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:13px;color:var(--text-dim);text-decoration:none;
+    margin-bottom:12px;transition:color .15s ease;
+  }
+  .home-link:hover{color:var(--accent-gold);}
+
   header.top{
     display:flex;
     align-items:center;
@@ -288,7 +295,7 @@
 </head>
 <body>
 <div class="stage">
-
+  <a href="index.html" class="home-link">← 回工具箱</a>
   <header class="top">
     <div class="crystal" aria-hidden="true">
       <svg viewBox="0 0 100 100">
