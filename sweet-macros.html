@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>甜綿菓室丨巨集/宏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --accent:#d99bb0;
+    --accent-soft:#8a5f6c;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --ok:#7f9a6a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(217,155,176,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(217,155,176,0.06), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+
+  .home-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:13px;color:var(--ivory-dim);text-decoration:none;
+    margin-bottom:12px;transition:color .15s ease;
+  }
+  .home-link:hover{color:var(--accent);}
+
+  header.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;
+    margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.12em;
+    color:var(--accent);
+    border:1px solid var(--accent-soft);
+    padding:4px 10px;
+    border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;
+    font-weight:700;
+    font-size:30px;
+    margin:0;
+    letter-spacing:0.03em;
+    color:var(--ivory);
+  }
+  .save-status{
+    font-size:14px;color:var(--ivory-dim);
+    display:flex;align-items:center;gap:6px;
+    margin-top:6px;
+  }
+  .save-dot{width:6px;height:6px;border-radius:50%;background:var(--ok);transition:opacity .3s;}
+  .save-dot.saving{background:var(--accent);}
+
+  p.intro{font-size:13.5px;color:var(--ivory-dim);line-height:1.7;margin:0 0 24px;}
+
+  details.game{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  details.game + details.game{margin-top:12px;}
+  details.game summary{
+    list-style:none;
+    cursor:pointer;
+    padding:16px 20px;
+    font-family:'Noto Serif TC', serif;
+    font-size:16px;
+    font-weight:700;
+    color:var(--ivory);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    transition:background .15s ease;
+  }
+  details.game summary::-webkit-details-marker{display:none;}
+  details.game summary::after{
+    content:'▾';
+    color:var(--accent);
+    font-size:13px;
+    transition:transform .2s ease;
+    margin-left:12px;
+  }
+  details.game[open] summary::after{transform:rotate(180deg);}
+  details.game summary:hover{background:var(--panel-2);}
+  .game-body{padding:2px 20px 22px;border-top:1px solid var(--line-soft);}
+
+  .macro-field{margin-top:16px;}
+  .macro-label{
+    font-size:12.5px;
+    letter-spacing:0.05em;
+    color:var(--accent);
+    margin-bottom:6px;
+    font-weight:600;
+  }
+  .macro-label-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;}
+  .macro-label-row .macro-label{margin-bottom:0;}
+  .ref-badge{
+    flex:0 0 auto;
+    font-size:11px;
+    color:var(--ivory-dim);
+    background:rgba(217,155,176,0.1);
+    border:1px solid var(--accent-soft);
+    border-radius:12px;
+    padding:3px 10px;
+    white-space:nowrap;
+  }
+  .macro-row{display:flex;align-items:flex-start;gap:10px;}
+  .macro-box{
+    flex:1;
+    background:var(--panel-2);
+    border:1px solid var(--line-soft);
+    border-radius:8px;
+    padding:12px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13.5px;
+    color:var(--ivory-dim);
+    white-space:pre-wrap;
+    min-height:20px;
+    line-height:1.6;
+  }
+  .copy-btn{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12.5px;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+    white-space:nowrap;
+  }
+  .copy-btn:hover{border-color:var(--accent-soft);color:var(--accent);}
+  .copy-btn.copied{border-color:var(--accent);color:var(--accent);}
+
+  ::selection{background:var(--accent-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="home-link">← 回工具箱</a>
+
+  <header class="top">
+    <div>
+      <div class="brand">
+        <span class="mark">甜綿菓室</span>
+        <h1>巨集/宏</h1>
+      </div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    </div>
+  </header>
+
+  <p class="intro">甜綿菓室店員常用的接待宏都放在這裡。標示「僅供參考」的是別人自用的示範宏，請不要直接照抄，可以參考語氣跟結構改成自己的版本。</p>
+
+  <details class="game" open>
+    <summary>範本參考</summary>
+    <div class="game-body">
+      <div class="macro-field"><div class="macro-label">客人進店招呼</div><div class="macro-row"><div class="macro-box">/micon 歡迎 emote
+/y 歡迎光臨甜綿菓室
+/歡迎 motion &lt;wait.4&gt;
+/y 本店一樓二樓皆可隨意入座 &lt;wait.2&gt;
+/y 入座稍後會有人來為您服務
+/行禮 motion</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field"><div class="macro-label">客人入座</div><div class="macro-row"><div class="macro-box">/y 您好~這是本店的菜單:https://sweet-cotton-cafeff14.vercel.app/
+/遞交 motion &lt;wait.2&gt;
+/y 菜單除餐點外 下方有1對1聊天服務項目 &lt;wait.2&gt;
+/y 有任何需要請再告訴我們店員
+/行禮 motion
+/micon 行禮 emote</div><button class="copy-btn" type="button">複製</button></div></div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">上餐</div><span class="ref-badge">僅供參考，請勿照抄</span></div>
+        <div class="macro-box">/micon 遞交 emote
+/歡迎 motion
+/s 「久等啦~您的餐點來囉！」&lt;wait.3&gt;
+/笑容 motion
+/em 將好吃餐點送上給客人 &lt;wait.1&gt;
+/遞交 motion</div>
+      </div>
+      <div class="macro-field">
+        <div class="macro-label-row"><div class="macro-label">好吃魔法</div><span class="ref-badge">僅供參考，請勿照抄</span></div>
+        <div class="macro-box">/s 「變好吃魔法發動！」
+/稱讚 motion &lt;wait.3&gt;
+/em 注入美味能量中！
+/飛吻 motion &lt;wait.4&gt;
+/em 讓餐點的美味度 UP UP !
+/飛吻 motion &lt;wait.4&gt;
+/em 讓餐點的美味度 UP UP !
+/表達愛意 motion &lt;wait.5&gt;
+/em 美味能量注入完成！！
+/肯定 motion &lt;wait.3&gt;
+/s 「今天也請&lt;t&gt;好好享受甜甜時光～」
+/比心 motion &lt;wait.1&gt;
+/拋媚眼左</div>
+      </div>
+    </div>
+  </details>
+
+</div>
+
+<script>
+const STORAGE_KEY = 'sweet-macros:state-v1';
+let state = {};
+
+async function persistState(){
+  const payload = JSON.stringify(state);
+  let lastError = null;
+  if(window.storage && typeof window.storage.set === 'function'){
+    try{ await window.storage.set(STORAGE_KEY, payload, false); return true; }
+    catch(e){ lastError = e; }
+  }
+  try{ localStorage.setItem(STORAGE_KEY, payload); return true; }
+  catch(e){ lastError = e; }
+  throw lastError || new Error('no storage available');
+}
+async function loadState(){
+  if(window.storage && typeof window.storage.get === 'function'){
+    try{
+      const result = await window.storage.get(STORAGE_KEY, false);
+      if(result && result.value) return result.value;
+    }catch(e){ /* fall through */ }
+  }
+  try{
+    const v = localStorage.getItem(STORAGE_KEY);
+    if(v) return v;
+  }catch(e){ /* no storage available */ }
+  return null;
+}
+let saveTimer = null;
+function scheduleSave(){
+  const dot = document.getElementById('saveDot');
+  const text = document.getElementById('saveText');
+  dot.classList.add('saving');
+  text.textContent = '儲存中…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    try{
+      await persistState();
+      dot.classList.remove('saving');
+      text.textContent = '已同步';
+    }catch(e){
+      dot.classList.remove('saving');
+      text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
+    }
+  }, 400);
+}
+
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const box = btn.closest('.macro-row').querySelector('.macro-box');
+    const text = box.textContent || '';
+    try{
+      await navigator.clipboard.writeText(text);
+    }catch(e){
+      const range = document.createRange();
+      range.selectNodeContents(box);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+    btn.textContent = '已複製';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 1500);
+  });
+});
+
+async function init(){
+  try{
+    const raw = await loadState();
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign(state, loaded);
+    }
+  }catch(e){ /* keep defaults */ }
+}
+init();
+</script>
+</body>
+</html>
