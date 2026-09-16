@@ -113,6 +113,30 @@
     padding:18px 20px;
     margin-bottom:26px;
   }
+
+  /* collapsible employee panel */
+  details.rules-panel{padding:0;}
+  details.rules-panel > summary{
+    list-style:none;
+    cursor:pointer;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-family:'Noto Serif TC', serif;
+    font-size:17px;
+    font-weight:700;
+    color:var(--brass);
+    letter-spacing:0.04em;
+  }
+  details.rules-panel > summary::-webkit-details-marker{display:none;}
+  details.rules-panel > summary .emp-arrow{
+    font-size:13px;color:var(--brass-soft);transition:transform .2s ease;flex:0 0 auto;
+  }
+  details.rules-panel[open] > summary .emp-arrow{transform:rotate(180deg);}
+  details.rules-panel > summary:hover{background:var(--panel-2);}
+  .emp-collapsible-body{padding:16px 20px 18px;border-top:1px solid var(--line-soft);}
+
   .rules-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(230px, 1fr));
@@ -324,6 +348,18 @@
     transition:background .15s, border-color .15s;
   }
   .add-btn:hover{background:rgba(201,161,93,0.1);border-color:var(--brass);}
+  .clear-entries-btn{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;
+    font-size:12.5px;
+    padding:8px 14px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:border-color .15s, color .15s;
+  }
+  .clear-entries-btn:hover{border-color:var(--wine);color:var(--wine);}
   .foot-hint{font-size:14px;color:var(--ivory-dim);}
 
   .empty{
@@ -440,17 +476,6 @@
     <div class="rules-grid" id="rulesGrid"></div>
   </div>
 
-  <div class="rules-panel">
-    <h2 class="section-title">員工管理</h2>
-    <p class="hint">在這裡新增／刪除員工、調整每位員工可選的職位，不用再找我改程式碼。刪除員工不會刪掉他過去的每日紀錄。</p>
-    <div id="employeeList" class="employee-list"></div>
-    <div class="add-employee-row">
-      <input type="text" id="newEmployeeName" placeholder="新員工姓名" maxlength="20">
-      <div class="add-employee-positions" id="newEmployeePositions"></div>
-      <button class="add-btn" id="addEmployeeBtn" type="button">＋ 新增員工</button>
-    </div>
-  </div>
-
   <div class="ledger">
     <h2 class="section-title" style="padding:18px 20px 0;">每日紀錄（日結）</h2>
     <div class="ledger-scroll">
@@ -477,6 +502,7 @@
     <div class="ledger-foot">
       <button class="add-btn" id="addRow">+ 新增每日紀錄</button>
       <span class="foot-hint" id="countHint">共 0 筆紀錄</span>
+      <button class="clear-entries-btn" id="clearEntriesBtn" type="button">清空本日紀錄</button>
     </div>
   </div>
 
@@ -528,6 +554,19 @@
     </div>
   </div>
 
+  <details class="rules-panel">
+    <summary>員工管理 <span class="emp-arrow">▾</span></summary>
+    <div class="emp-collapsible-body">
+      <p class="hint">在這裡新增／刪除員工、調整每位員工可選的職位，不用再找我改程式碼。刪除員工不會刪掉他過去的每日紀錄。</p>
+      <div id="employeeList" class="employee-list"></div>
+      <div class="add-employee-row">
+        <input type="text" id="newEmployeeName" placeholder="新員工姓名" maxlength="20">
+        <div class="add-employee-positions" id="newEmployeePositions"></div>
+        <button class="add-btn" id="addEmployeeBtn" type="button">＋ 新增員工</button>
+      </div>
+    </div>
+  </details>
+
 </div>
 
 <script>
@@ -555,7 +594,8 @@ const DEFAULT_EMPLOYEE_ROSTER = {
   '耶夢加德': ['實習'],
   '珀洛托': ['正式','接待'],
   '神聖吉娃娃': ['實習','保安'],
-  '呼啊啊': ['保安']
+  '呼啊啊': ['保安'],
+  '傑傑諾利': ['攝影']
 };
 
 let state = {
@@ -564,7 +604,7 @@ let state = {
     '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
     '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
     '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-    '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true },
+    '攝影': { hourly: 0, sessionFee: 500000, guestBonus: 0, cutRate: 20, hasSession: true },
     '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
   },
   employeeRoster: JSON.parse(JSON.stringify(DEFAULT_EMPLOYEE_ROSTER)),
@@ -1028,6 +1068,14 @@ document.getElementById('addRow').addEventListener('click', () => {
   }
 });
 
+document.getElementById('clearEntriesBtn').addEventListener('click', () => {
+  if(!state.entries.length) return;
+  if(!confirm(`確定要清空本日全部 ${state.entries.length} 筆每日紀錄嗎？此動作無法復原。`)) return;
+  state.entries = [];
+  renderEntries();
+  scheduleSave();
+});
+
 document.getElementById('dateLabel').addEventListener('input', (e) => {
   state.date = e.target.value;
   scheduleSave();
@@ -1084,7 +1132,7 @@ async function init(){
         '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
         '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
         '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-        '攝影': { hourly: 0, sessionFee: 250000, guestBonus: 0, cutRate: 20, hasSession: true },
+        '攝影': { hourly: 0, sessionFee: 500000, guestBonus: 0, cutRate: 20, hasSession: true },
         '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
       }, loaded.rules || {});
       delete state.rules['前臺'];
@@ -1101,6 +1149,8 @@ async function init(){
   if(typeof state.notes !== 'string') state.notes = '';
   if(!state.employeeRoster || !Object.keys(state.employeeRoster).length){
     state.employeeRoster = JSON.parse(JSON.stringify(DEFAULT_EMPLOYEE_ROSTER));
+  } else if(!state.employeeRoster['傑傑諾利']){
+    state.employeeRoster['傑傑諾利'] = ['攝影'];
   }
   document.getElementById('dateLabel').value = state.date;
   document.getElementById('freeNotes').value = state.notes;
