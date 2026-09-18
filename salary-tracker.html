@@ -272,6 +272,14 @@
   }
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{filter:brightness(1.2);}
+  tbody tr.paid-row{opacity:0.5;}
+  tbody tr.paid-row .col-name select,
+  tbody tr.paid-row .col-pos select{text-decoration:line-through;}
+  .paid-check{
+    width:17px;height:17px;
+    accent-color:var(--brass);
+    cursor:pointer;
+  }
 
   td input[type=text], td input[type=number], td input[type=date], td select{
     background:transparent;
@@ -295,6 +303,7 @@
   td input:focus, td select:focus{outline:none;border-color:var(--brass-soft);background:rgba(201,161,93,0.06);}
 
   .col-date{width:118px;}
+  .col-paid{width:36px;text-align:center;}
   .col-name{width:132px;}
   .col-pos{width:100px;}
   .col-hours{width:82px;}
@@ -482,6 +491,7 @@
     <table>
       <thead>
         <tr>
+          <th class="col-paid"></th>
           <th class="col-name">姓名</th>
           <th class="col-pos">職位</th>
           <th class="num col-hours">工時</th>
@@ -604,7 +614,7 @@ let state = {
     '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
     '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
     '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-    '攝影': { hourly: 0, sessionFee: 500000, guestBonus: 0, cutRate: 20, hasSession: true },
+    '攝影': { hourly: 0, sessionFee: 700000, guestBonus: 0, cutRate: 20, hasSession: true },
     '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
   },
   employeeRoster: JSON.parse(JSON.stringify(DEFAULT_EMPLOYEE_ROSTER)),
@@ -634,7 +644,8 @@ function newEntry(){
     hours: 0,
     sessions: 0,
     guests: 0,
-    note: ''
+    note: '',
+    paid: false
   };
 }
 
@@ -893,8 +904,10 @@ function renderEntries(){
     tr.dataset.id = entry.id;
     tr.style.background = `${posColor}2e`;
     tr.style.boxShadow = `inset 4px 0 0 ${posColor}`;
+    if(entry.paid) tr.classList.add('paid-row');
     const totalDisplay = isReception ? receptionInfo.perEntry : c.total;
     tr.innerHTML = `
+      <td class="col-paid"><input type="checkbox" class="paid-check" data-field="paid" ${entry.paid ? 'checked' : ''} aria-label="已發薪"></td>
       <td class="col-name"><select data-field="name">${nameOptions(entry.name)}</select></td>
       <td class="col-pos"><select data-field="position" ${posLocked ? 'disabled' : ''} style="color:${posColor};border-color:${posColor}88;background:${posColor}3d;font-weight:700;border-radius:5px;">${positionOptionsForEmployee(entry.name, entry.position)}</select></td>
       <td class="col-hours"><input type="number" data-field="hours" min="0" step="0.5" value="${entry.hours}" ${isReception ? 'disabled' : ''}></td>
@@ -1044,6 +1057,10 @@ document.getElementById('tbody').addEventListener('change', (e) => {
     entry.position = e.target.value;
     renderEntries();
     scheduleSave();
+  } else if(field === 'paid'){
+    entry.paid = e.target.checked;
+    tr.classList.toggle('paid-row', entry.paid);
+    scheduleSave();
   }
 });
 
@@ -1132,7 +1149,7 @@ async function init(){
         '正式': { hourly: 50000, sessionFee: 150000, guestBonus: 50000, cutRate: 30, hasSession: true },
         '實習': { hourly: 50000, sessionFee: 100000, guestBonus: 50000, cutRate: 30, hasSession: true },
         '保安': { hourly: 100000, sessionFee: 0, guestBonus: 0, cutRate: 0, hasSession: false },
-        '攝影': { hourly: 0, sessionFee: 500000, guestBonus: 0, cutRate: 20, hasSession: true },
+        '攝影': { hourly: 0, sessionFee: 700000, guestBonus: 0, cutRate: 20, hasSession: true },
         '接待': { mode: 'revenue_share', sharePercent: 70, entranceFee: 0, hasSession: false }
       }, loaded.rules || {});
       delete state.rules['前臺'];
