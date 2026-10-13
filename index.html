@@ -32,7 +32,7 @@
     font-family:'Noto Sans TC','Noto Serif TC',serif;
     -webkit-font-smoothing:antialiased;
   }
-  .stage{max-width:980px;margin:0 auto;padding:60px 20px 80px;}
+  .stage{max-width:1180px;margin:0 auto;padding:60px 20px 80px;}
   h1{
     font-family:'Cinzel','Noto Serif TC',serif;
     font-weight:600;
@@ -48,8 +48,9 @@
     margin:0 0 44px;
     letter-spacing:0.05em;
   }
-  .categories{display:grid;grid-template-columns:repeat(3, 1fr);gap:22px;align-items:start;}
-  @media (max-width:760px){.categories{grid-template-columns:1fr;}}
+  .categories{display:grid;grid-template-columns:repeat(4, 1fr);gap:20px;align-items:start;}
+  @media (max-width:980px){.categories{grid-template-columns:repeat(2, 1fr);}}
+  @media (max-width:520px){.categories{grid-template-columns:1fr;}}
   .category{display:flex;flex-direction:column;gap:12px;}
   .category-title{
     font-family:'Noto Serif TC',serif;
@@ -223,6 +224,38 @@
           <p class="tool-desc">接待招呼範本參考</p>
         </div>
       </a>
+      <a class="tool-card" href="https://a3358697-cpu.github.io/ff14werewolf/#host" target="_blank" rel="noopener noreferrer">
+        <div class="tool-icon">🐺</div>
+        <div>
+          <div class="tool-name">狼人殺(主持用)</div>
+          <p class="tool-desc">外部主持工具 ↗</p>
+        </div>
+      </a>
+    </div>
+
+    <div class="category">
+      <div class="category-title">貓尾草</div>
+      <a class="tool-card" href="neko-salary-tracker.html">
+        <div class="tool-icon">￥</div>
+        <div>
+          <div class="tool-name">接待台帳</div>
+          <p class="tool-desc">每日紀錄、預約、自由筆記</p>
+        </div>
+      </a>
+      <a class="tool-card" href="neko-security-log.html">
+        <div class="tool-icon">✚</div>
+        <div>
+          <div class="tool-name">保安紀錄</div>
+          <p class="tool-desc">流程、確認事項、人數金額、ID到訪次數</p>
+        </div>
+      </a>
+      <a class="tool-card" href="neko-macros.html">
+        <div class="tool-icon">✎</div>
+        <div>
+          <div class="tool-name">巨集/宏</div>
+          <p class="tool-desc">內容僅供參考，之後陸續新增</p>
+        </div>
+      </a>
     </div>
   </div>
 
@@ -235,6 +268,7 @@
       <a class="link-btn" href="https://isla-liu.github.io/ffxiv-best-craft-zhtw/#/welcome" target="_blank" rel="noopener noreferrer">生產巨集 <span class="arrow">↗</span></a>
       <a class="link-btn" href="https://cycleapple.github.io/xiv-tc-treasure-finder/" target="_blank" rel="noopener noreferrer">藏寶圖查詢 <span class="arrow">↗</span></a>
       <a class="link-btn" href="https://glamxiv.com/" target="_blank" rel="noopener noreferrer">幻化櫃 <span class="arrow">↗</span></a>
+      <a class="link-btn" href="https://island.xivtc.com/" target="_blank" rel="noopener noreferrer">無人島攻坊 <span class="arrow">↗</span></a>
     </div>
     <div class="links-row">
       <a class="link-btn" href="https://sweet-cotton-cafeff14.vercel.app/" target="_blank" rel="noopener noreferrer">甜綿菓室 <span class="arrow">↗</span></a>
@@ -270,7 +304,9 @@
     { label: '保安紀錄', key: 'rp-security:state-v2' },
     { label: '夜酌巨集/宏', key: 'rp-night-macros:state-v1' },
     { label: '桌遊', key: 'rp-boardgames:state-v1' },
-    { label: '甜綿菓室巨集/宏', key: 'sweet-macros:state-v1' }
+    { label: '甜綿菓室巨集/宏', key: 'sweet-macros:state-v1' },
+    { label: '貓尾草接待台帳', key: 'neko-payroll:state-v1' },
+    { label: '貓尾草保安紀錄', key: 'neko-security:state-v1' }
   ];
 
   const hasCloudStorage = !!(window.storage && typeof window.storage.get === 'function' && typeof window.storage.set === 'function');

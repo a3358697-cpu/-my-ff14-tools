@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>貓尾草丨巨集/宏</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17111a;
+    --panel:#1f1620;
+    --panel-2:#271b29;
+    --line:#4a3a45;
+    --line-soft:#382c37;
+    --accent:#b9a2d6;
+    --accent-soft:#6f5d8a;
+    --ivory:#f0e6d8;
+    --ivory-dim:#a99c9f;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    background-image:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(185,162,214,0.09), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 0%, rgba(185,162,214,0.06), transparent 60%);
+    color:var(--ivory);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding:40px 20px 80px;
+  }
+  .wrap{max-width:820px;margin:0 auto;}
+
+  .home-link{
+    display:inline-flex;align-items:center;gap:4px;
+    font-size:13px;color:var(--ivory-dim);text-decoration:none;
+    margin-bottom:12px;transition:color .15s ease;
+  }
+  .home-link:hover{color:var(--accent);}
+
+  header.top{
+    display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px;
+    border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px;
+  }
+  .brand{display:flex;align-items:baseline;gap:14px;}
+  .brand .mark{
+    font-family:'Noto Serif TC', serif;font-weight:700;font-size:15px;letter-spacing:0.12em;
+    color:var(--accent);border:1px solid var(--accent-soft);padding:4px 10px;border-radius:3px;
+  }
+  h1{
+    font-family:'Noto Serif TC', serif;font-weight:700;font-size:30px;margin:0;
+    letter-spacing:0.03em;color:var(--ivory);
+  }
+
+  p.intro{font-size:13.5px;color:var(--ivory-dim);line-height:1.7;margin:0 0 24px;}
+
+  details.game{
+    background:var(--panel);border:1px solid var(--line-soft);
+    border-radius:var(--radius);overflow:hidden;
+  }
+  details.game + details.game{margin-top:12px;}
+  details.game summary{
+    list-style:none;cursor:pointer;padding:16px 20px;
+    font-family:'Noto Serif TC', serif;font-size:16px;font-weight:700;color:var(--ivory);
+    display:flex;align-items:center;justify-content:space-between;transition:background .15s ease;
+  }
+  details.game summary::-webkit-details-marker{display:none;}
+  details.game summary::after{
+    content:'▾';color:var(--accent);font-size:13px;transition:transform .2s ease;margin-left:12px;
+  }
+  details.game[open] summary::after{transform:rotate(180deg);}
+  details.game summary:hover{background:var(--panel-2);}
+  .game-body{padding:18px 20px 22px;border-top:1px solid var(--line-soft);}
+
+  .empty-note{
+    text-align:center;padding:30px 12px;color:var(--ivory-dim);font-size:14px;
+    border:1px dashed var(--line);border-radius:10px;line-height:1.8;
+  }
+
+  ::selection{background:var(--accent-soft);color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="home-link">← 回工具箱</a>
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">貓尾草</span>
+      <h1>巨集/宏</h1>
+    </div>
+  </header>
+
+  <p class="intro">貓尾草的常用宏會放在這裡。內容僅供參考，目前還是空的，之後會陸續新增。</p>
+
+  <details class="game" open>
+    <summary>範本參考</summary>
+    <div class="game-body">
+      <div class="empty-note">目前還沒有內容，之後確定好宏的文字再補上。</div>
+    </div>
+  </details>
+
+</div>
+</body>
+</html>
