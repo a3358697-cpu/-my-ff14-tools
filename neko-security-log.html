@@ -405,9 +405,9 @@
 const STORAGE_KEY = 'neko-security:state-v1';
 
 let state = {
-  process: ['迎賓問候', '確認身分與年齡', '說明店內規則', '完成收費', '引導入座'],
-  confirmItems: ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒'],
-  counter: { count: 0, priceEach: 30000, history: [] },
+  process: [],
+  confirmItems: [],
+  counter: { count: 0, priceEach: 50000, history: [] },
   entries: [],
   notes: ''
 };
@@ -671,13 +671,9 @@ async function init(){
     if(raw){
       const loaded = JSON.parse(raw);
       state = Object.assign(state, loaded);
-      if(!Array.isArray(state.process) || !state.process.length){
-        state.process = ['迎賓問候', '確認身分與年齡', '說明店內規則', '完成收費', '引導入座'];
-      }
-      if(!Array.isArray(state.confirmItems) || !state.confirmItems.length){
-        state.confirmItems = ['身分/年齡確認', '店規說明', '收費完成', '違禁品提醒'];
-      }
-      if(!state.counter) state.counter = { count: 0, priceEach: 30000, history: [] };
+      if(!Array.isArray(state.process)) state.process = [];
+      if(!Array.isArray(state.confirmItems)) state.confirmItems = [];
+      if(!state.counter) state.counter = { count: 0, priceEach: 50000, history: [] };
       if(!Array.isArray(state.counter.history)) state.counter.history = [];
       if(!Array.isArray(state.entries)) state.entries = [];
       if(typeof state.notes !== 'string') state.notes = '';

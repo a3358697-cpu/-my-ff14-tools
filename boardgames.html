@@ -168,17 +168,6 @@
   }
   .macro-field:has(+ .board-subhead){margin-bottom:0;}
 
-  .role-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-  .role-chip{
-    display:flex;align-items:center;gap:7px;
-    background:var(--panel-2);border:1px solid var(--line-soft);
-    border-radius:20px;padding:7px 14px 7px 10px;
-    font-size:13px;color:var(--ivory-dim);cursor:pointer;
-    transition:border-color .15s, color .15s, background .15s;
-  }
-  .role-chip input{accent-color:var(--accent);cursor:pointer;}
-  .role-chip:has(input:checked){border-color:var(--accent-soft);color:var(--ivory);background:rgba(217,155,176,0.1);}
-
   .board-table-scroll{overflow-x:auto;margin-top:8px;border:1px solid var(--line-soft);border-radius:8px;}
   table.board-table{width:100%;border-collapse:collapse;min-width:920px;}
   table.board-table thead th{
@@ -564,155 +553,6 @@
     </div>
   </details>
 
-  <details class="game">
-    <summary>艾歐澤亞推理劇場</summary>
-    <div class="game-body">
-      <div class="macro-field"><div class="macro-label">開場宏</div><div class="macro-row"><div class="macro-box">/em 翻開甜綿菓室特製冒險者名冊。 &lt;wait.3&gt;
-/sh 歡迎來到《艾歐澤亞深夜推理劇場》！ &lt;wait.3&gt;
-/sh 傳聞近日有黑暗勢力偽裝成冒險者，悄悄混入了城鎮。 &lt;wait.4&gt;
-/sh 而真正的敵人……也許正坐在你的身旁。 &lt;wait.3&gt;
-/sh 願各位今晚結束後，還能繼續一起排本。 &lt;wait.3&gt;
-/sh 稍後主持人會邀請各位加入跨服通訊貝，請留意密語通知。 &lt;wait.4&gt;
-/sh 勝利條件: &lt;wait.3&gt;
-/sh 冒險者陣營：放逐所有暗黑騎士即可獲勝。 &lt;wait.4&gt;
-/sh 暗黑騎士陣營：當暗黑騎士人數與其他存活玩家相同時獲勝。 &lt;wait.4&gt;
-/sh 特殊角色則依照各自的勝利條件進行結算。 &lt;wait.4&gt;
-/sh 接下來，為各位介紹今晚登場的角色。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">角色介紹宏</div><div class="macro-row"><div class="macro-box">/sh 角色介紹： &lt;wait.3&gt;
-/sh 暗黑騎士：每晚可以選擇一名玩家作為襲擊目標，白天請努力隱藏自己的身分。 &lt;wait.4&gt;
-/sh 占星術士：每晚可以查驗一名玩家的身分，得知對方是否受到黑暗侵蝕。 &lt;wait.4&gt;
-/sh 白魔法師：擁有一次「復活」與一次「神聖制裁」。可於夜晚施展復活拯救遭襲的玩家，也可降下神聖制裁使一名玩家退場。 &lt;wait.5&gt;
-/sh 機工士：無論以任何方式死亡，皆可立即指定一名玩家一同退場。 &lt;wait.4&gt;
-/sh 騎士：每晚可以守護一名玩家，使其免於襲擊；但不可連續兩晚守護同一位玩家。 &lt;wait.4&gt;
-/sh 青魔法師：沒有能力，只要在白天投票環節被放逐，便立即獨自獲得勝利。 &lt;wait.4&gt;
-/sh 莫古禮儀師：沒有能力，若存活至最後，可指定一位已死亡玩家體驗歡樂殯葬服務。 &lt;wait.4&gt;
-/sh 漁夫：沒有能力，只要存活到最後，便只有漁夫獨自獲得勝利。 &lt;wait.4&gt;
-/sh 冒險者：沒有特殊能力，請透過發言與推理找出真正的敵人。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">夜晚行動宏</div><div class="macro-row"><div class="macro-box">/sh 夜幕降臨，請各位閉上雙眼。 &lt;wait.3&gt;
-/sh 暗黑騎士請睜眼，請私訊主持人今晚的目標。（若為兩位暗黑騎士，請互相密語確認目標）
-/sh 占星術士請睜眼，請私訊主持人查驗對象。 
-/sh 騎士請睜眼，選擇今晚守護對象。 
-/sh 白魔法師請睜眼，請決定是否使用復活或神聖制裁。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">平安夜宏</div><div class="macro-row"><div class="macro-box">/sh 天亮了。 &lt;wait.3&gt;
-/sh 昨夜的艾歐澤亞十分平靜。 &lt;wait.3&gt;
-/sh 沒有人回歸以太。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">死亡公告宏</div><div class="macro-row"><div class="macro-box">/sh 天亮了。 &lt;wait.3&gt;
-/sh 經過漫長的一夜。 &lt;wait.3&gt;
-/sh &lt;t&gt; 已回歸水晶母晶的懷抱。 &lt;wait.4&gt;
-/sh 死亡玩家請留下最後遺言。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">發言宏</div><div class="macro-row"><div class="macro-box">/sh 接下來請依序發言，每人一句話。 &lt;wait.3&gt;
-/sh 請 &lt;t&gt; 開始發言。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">投票宏</div><div class="macro-row"><div class="macro-box">/sh 請各位在三分鐘內投票選出你認為最可疑的人。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">票死人宏</div><div class="macro-row"><div class="macro-box">/sh 經過大家的討論與投票。 &lt;wait.3&gt;
-/sh &lt;t&gt; 將接受命運的審判。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">無人放逐宏</div><div class="macro-row"><div class="macro-box">/sh 經過大家的討論與投票。 &lt;wait.3&gt;
-/sh 今日沒有選出放逐對象。 &lt;wait.3&gt;
-/sh 或許是仁慈，也可能是猶豫。 &lt;wait.3&gt;
-/sh 但真正的危險仍潛伏於黑暗之中。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">暗黑騎士陣營勝利宏</div><div class="macro-row"><div class="macro-box">/em 緩緩合上手中的冒險者名冊。 &lt;wait.3&gt;
-/sh 遊戲結束。 &lt;wait.3&gt;
-/sh 暗黑騎士陣營獲勝！ &lt;wait.3&gt;
-/sh 偽裝騙過了所有人，懷疑吞噬了彼此。 &lt;wait.3&gt;
-/sh 直到最後，也沒有人發現真正的敵人。 &lt;wait.4&gt;
-/sh 請大家給暗黑騎士一點掌聲。 &lt;wait.3&gt;
-/sh 被背刺的人，也請記得明天還要一起排本。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">冒險者陣營勝利宏</div><div class="macro-row"><div class="macro-box">/em 長長地鬆了一口氣。 &lt;wait.3&gt;
-/sh 遊戲結束。 &lt;wait.3&gt;
-/sh 艾歐澤亞再次恢復了和平。 &lt;wait.3&gt;
-/sh 冒險者陣營獲勝！ &lt;wait.3&gt;
-/sh 經過無數次爭論、猜疑與互相指控。 &lt;wait.3&gt;
-/sh 大家終於找出了真正的暗黑騎士。 &lt;wait.4&gt;
-/sh 恭喜各位守護了城鎮。 &lt;wait.3&gt;
-/sh 也恭喜那些被誤票的人終於沉冤得雪。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">青魔導士勝利宏</div><div class="macro-row"><div class="macro-box">/em 看著全場陷入沉默。 &lt;wait.3&gt;
-/sh 遊戲結束。 &lt;wait.3&gt;
-/sh ……等等？ &lt;wait.3&gt;
-/sh 青魔導士獲勝！ &lt;wait.3&gt;
-/sh 他不是暗黑騎士，也不是冒險者。 &lt;wait.3&gt;
-/sh 他只是成功讓大家受不了，然後把他票了出去。 &lt;wait.4&gt;
-/sh 恭喜各位。 &lt;wait.3&gt;
-/sh 你們親手把真正的贏家送上了王座。 &lt;wait.4&gt;
-/sh 「我就說我不是暗黑騎士吧，庫啵？」</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">漁夫勝利宏</div><div class="macro-row"><div class="macro-box">/em 翻了翻結算紀錄。 &lt;wait.3&gt;
-/sh 暗黑騎士輸了。 &lt;wait.3&gt;
-/sh 冒險者也輸了。 &lt;wait.3&gt;
-/sh 真正的贏家是…… &lt;wait.3&gt;
-/sh 漁夫！ &lt;wait.4&gt;
-/sh 當大家還在激烈爭論誰才是暗黑騎士時， &lt;wait.3&gt;
-/sh 他早已拋下魚竿，靜靜等待下一條傳說魚上鉤。 &lt;wait.4&gt;
-/sh 感謝各位的努力。 &lt;wait.3&gt;
-/sh 讓一個從頭到尾都在釣魚的人獲得了勝利。 &lt;wait.4&gt;
-/sh 恭喜獲得「年度最佳漁夫」稱號！</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">莫古禮儀師結算宏</div><div class="macro-row"><div class="macro-box">/em 推出不知道什麼時候準備好的棺材。 &lt;wait.3&gt;
-/sh 莫古禮儀師完成了自己的使命。 &lt;wait.3&gt;
-/sh 今晚，將為一位已故冒險者獻上最後的歡送。 &lt;wait.4&gt;
-/sh 請大家準備香檳、掌聲，以及最燦爛的笑容。 &lt;wait.4&gt;
-/sh 庫啵～死亡並不可怕。 &lt;wait.3&gt;
-/sh 因為在甜綿菓室，送別也是一場派對。  &lt;wait.3&gt;
-/sh 請莫古禮儀師選擇一位已死亡的玩家接受歡樂殯葬服務</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">身分揭曉宏</div><div class="macro-row"><div class="macro-box">/sh 現在進入身分揭曉時間。 &lt;wait.3&gt;
-/sh 請依序公開自己的身分。 &lt;wait.3&gt;
-/sh 並分享一件事： &lt;wait.3&gt;
-/sh 「哪個瞬間讓你最想把某個人票出去？」 &lt;wait.4&gt;
-/sh 願今晚的友情經得起真相的考驗。</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">結束宏</div><div class="macro-row"><div class="macro-box">/em 緩緩合上甜綿菓室特製冒險者名冊。 &lt;wait.3&gt;
-/sh 《艾歐澤亞深夜推理劇場》到此落幕。 &lt;wait.3&gt;
-/sh 感謝各位冒險者參與今晚的鬥智與欺瞞。 &lt;wait.4&gt;
-/sh 但無論結果如何，這終究只是一場遊戲。 &lt;wait.3&gt;
-/sh 希望各位明天還願意一起排本、一起打零式、一起來甜綿菓室喝杯咖啡。 &lt;wait.5&gt;
-/sh 請給今晚的所有玩家一點掌聲！  &lt;wait.3&gt;
-/sh 也恭喜那些活到最後的人，以及那些死得很冤的人。 &lt;wait.4&gt;
-/sh 若遊戲結束後需要道歉、絕交或申請歡樂殯葬服務，請至櫃台辦理。 &lt;wait.4&gt;
-/sh 若您對今日小遊戲十分滿意，歡迎點餐外帶，或是打賞主持人支持我們。 &lt;wait.3&gt;
-/sh 本店菜單:https://sweet-cotton-cafeff14.vercel.app/</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">人數配置參考 1</div><div class="macro-row"><div class="macro-box">/sh 【6人局】暗黑騎士×1 占星術士×1 白魔法師×1 冒險者×3</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">人數配置參考 2</div><div class="macro-row"><div class="macro-box">/sh 【8人局】暗黑騎士×2 占星術士×1 白魔法師×1 機工士×1 冒險者×3 (青魔法師x1)</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field"><div class="macro-label">人數配置參考 3</div><div class="macro-row"><div class="macro-box">/sh 【10人以上】暗黑騎士×2 占星術士×1 白魔法師×1 機工士×1 騎士×1 冒險者×4(青魔法師×1 莫古禮儀師×1 漁夫×1)</div><button class="copy-btn" type="button">複製</button></div></div>
-      <div class="macro-field">
-        <div class="macro-label">本場在場角色（勾選當場實際使用的角色）</div>
-        <div class="role-chips">
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r0"><span>暗黑騎士</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r1"><span>占星術士</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r2"><span>白魔法師</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r3"><span>機工</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r4"><span>騎士</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r5"><span>冒險者</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r6"><span>冒險者(青魔)</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r7"><span>冒險者(魚師)</span></label>
-        <label class="role-chip"><input type="checkbox" class="role-check" data-role="r8"><span>冒險者(禮儀師)</span></label>
-        </div>
-      </div>
-      <div class="macro-field">
-        <div class="macro-label">結算時確認事項</div>
-        <div class="role-chips">
-        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c0"><span>青魔是否被白天放逐？</span></label>
-        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c1"><span>漁夫是否存活到最後？</span></label>
-        <label class="role-chip"><input type="checkbox" class="cond-check" data-cond="c2"><span>遊戲結束時莫古禮儀師仍存活？</span></label>
-        </div>
-      </div>
-      <div class="macro-field">
-        <div class="macro-label">夜晚／白天紀錄表</div>
-        <div class="board-table-scroll">
-        <table class="board-table">
-          <thead><tr><th>夜晚</th><th>暗黑騎士</th><th>占星</th><th>騎士</th><th>白魔:復生/制裁</th><th>機工帶走人</th><th>名單</th><th>白天</th><th>放逐對象</th><th>死亡名單</th><th>存活數量</th><th>陣營人數</th></tr></thead>
-          <tbody id="mysteryRoundsBody">
-        <tr><td class="fixed-cell">N1</td><td><input type="text" class="round-input" data-round="1" data-key="dk"></td><td><input type="text" class="round-input" data-round="1" data-key="astro"></td><td><input type="text" class="round-input" data-round="1" data-key="knight"></td><td><input type="text" class="round-input" data-round="1" data-key="wmage"></td><td><input type="text" class="round-input" data-round="1" data-key="mch"></td><td><input type="text" class="round-input" data-round="1" data-key="roster"></td><td class="fixed-cell">D1</td><td><input type="text" class="round-input" data-round="1" data-key="exile"></td><td><input type="text" class="round-input" data-round="1" data-key="death"></td><td><input type="text" class="round-input" data-round="1" data-key="alive"></td><td><input type="text" class="round-input" data-round="1" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N2</td><td><input type="text" class="round-input" data-round="2" data-key="dk"></td><td><input type="text" class="round-input" data-round="2" data-key="astro"></td><td><input type="text" class="round-input" data-round="2" data-key="knight"></td><td><input type="text" class="round-input" data-round="2" data-key="wmage"></td><td><input type="text" class="round-input" data-round="2" data-key="mch"></td><td><input type="text" class="round-input" data-round="2" data-key="roster"></td><td class="fixed-cell">D2</td><td><input type="text" class="round-input" data-round="2" data-key="exile"></td><td><input type="text" class="round-input" data-round="2" data-key="death"></td><td><input type="text" class="round-input" data-round="2" data-key="alive"></td><td><input type="text" class="round-input" data-round="2" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N3</td><td><input type="text" class="round-input" data-round="3" data-key="dk"></td><td><input type="text" class="round-input" data-round="3" data-key="astro"></td><td><input type="text" class="round-input" data-round="3" data-key="knight"></td><td><input type="text" class="round-input" data-round="3" data-key="wmage"></td><td><input type="text" class="round-input" data-round="3" data-key="mch"></td><td><input type="text" class="round-input" data-round="3" data-key="roster"></td><td class="fixed-cell">D3</td><td><input type="text" class="round-input" data-round="3" data-key="exile"></td><td><input type="text" class="round-input" data-round="3" data-key="death"></td><td><input type="text" class="round-input" data-round="3" data-key="alive"></td><td><input type="text" class="round-input" data-round="3" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N4</td><td><input type="text" class="round-input" data-round="4" data-key="dk"></td><td><input type="text" class="round-input" data-round="4" data-key="astro"></td><td><input type="text" class="round-input" data-round="4" data-key="knight"></td><td><input type="text" class="round-input" data-round="4" data-key="wmage"></td><td><input type="text" class="round-input" data-round="4" data-key="mch"></td><td><input type="text" class="round-input" data-round="4" data-key="roster"></td><td class="fixed-cell">D4</td><td><input type="text" class="round-input" data-round="4" data-key="exile"></td><td><input type="text" class="round-input" data-round="4" data-key="death"></td><td><input type="text" class="round-input" data-round="4" data-key="alive"></td><td><input type="text" class="round-input" data-round="4" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N5</td><td><input type="text" class="round-input" data-round="5" data-key="dk"></td><td><input type="text" class="round-input" data-round="5" data-key="astro"></td><td><input type="text" class="round-input" data-round="5" data-key="knight"></td><td><input type="text" class="round-input" data-round="5" data-key="wmage"></td><td><input type="text" class="round-input" data-round="5" data-key="mch"></td><td><input type="text" class="round-input" data-round="5" data-key="roster"></td><td class="fixed-cell">D5</td><td><input type="text" class="round-input" data-round="5" data-key="exile"></td><td><input type="text" class="round-input" data-round="5" data-key="death"></td><td><input type="text" class="round-input" data-round="5" data-key="alive"></td><td><input type="text" class="round-input" data-round="5" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N6</td><td><input type="text" class="round-input" data-round="6" data-key="dk"></td><td><input type="text" class="round-input" data-round="6" data-key="astro"></td><td><input type="text" class="round-input" data-round="6" data-key="knight"></td><td><input type="text" class="round-input" data-round="6" data-key="wmage"></td><td><input type="text" class="round-input" data-round="6" data-key="mch"></td><td><input type="text" class="round-input" data-round="6" data-key="roster"></td><td class="fixed-cell">D6</td><td><input type="text" class="round-input" data-round="6" data-key="exile"></td><td><input type="text" class="round-input" data-round="6" data-key="death"></td><td><input type="text" class="round-input" data-round="6" data-key="alive"></td><td><input type="text" class="round-input" data-round="6" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N7</td><td><input type="text" class="round-input" data-round="7" data-key="dk"></td><td><input type="text" class="round-input" data-round="7" data-key="astro"></td><td><input type="text" class="round-input" data-round="7" data-key="knight"></td><td><input type="text" class="round-input" data-round="7" data-key="wmage"></td><td><input type="text" class="round-input" data-round="7" data-key="mch"></td><td><input type="text" class="round-input" data-round="7" data-key="roster"></td><td class="fixed-cell">D7</td><td><input type="text" class="round-input" data-round="7" data-key="exile"></td><td><input type="text" class="round-input" data-round="7" data-key="death"></td><td><input type="text" class="round-input" data-round="7" data-key="alive"></td><td><input type="text" class="round-input" data-round="7" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N8</td><td><input type="text" class="round-input" data-round="8" data-key="dk"></td><td><input type="text" class="round-input" data-round="8" data-key="astro"></td><td><input type="text" class="round-input" data-round="8" data-key="knight"></td><td><input type="text" class="round-input" data-round="8" data-key="wmage"></td><td><input type="text" class="round-input" data-round="8" data-key="mch"></td><td><input type="text" class="round-input" data-round="8" data-key="roster"></td><td class="fixed-cell">D8</td><td><input type="text" class="round-input" data-round="8" data-key="exile"></td><td><input type="text" class="round-input" data-round="8" data-key="death"></td><td><input type="text" class="round-input" data-round="8" data-key="alive"></td><td><input type="text" class="round-input" data-round="8" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N9</td><td><input type="text" class="round-input" data-round="9" data-key="dk"></td><td><input type="text" class="round-input" data-round="9" data-key="astro"></td><td><input type="text" class="round-input" data-round="9" data-key="knight"></td><td><input type="text" class="round-input" data-round="9" data-key="wmage"></td><td><input type="text" class="round-input" data-round="9" data-key="mch"></td><td><input type="text" class="round-input" data-round="9" data-key="roster"></td><td class="fixed-cell">D9</td><td><input type="text" class="round-input" data-round="9" data-key="exile"></td><td><input type="text" class="round-input" data-round="9" data-key="death"></td><td><input type="text" class="round-input" data-round="9" data-key="alive"></td><td><input type="text" class="round-input" data-round="9" data-key="faction"></td></tr>
-        <tr><td class="fixed-cell">N10</td><td><input type="text" class="round-input" data-round="10" data-key="dk"></td><td><input type="text" class="round-input" data-round="10" data-key="astro"></td><td><input type="text" class="round-input" data-round="10" data-key="knight"></td><td><input type="text" class="round-input" data-round="10" data-key="wmage"></td><td><input type="text" class="round-input" data-round="10" data-key="mch"></td><td><input type="text" class="round-input" data-round="10" data-key="roster"></td><td class="fixed-cell">D10</td><td><input type="text" class="round-input" data-round="10" data-key="exile"></td><td><input type="text" class="round-input" data-round="10" data-key="death"></td><td><input type="text" class="round-input" data-round="10" data-key="alive"></td><td><input type="text" class="round-input" data-round="10" data-key="faction"></td></tr>
-          </tbody>
-        </table>
-        </div>
-        <button class="reset-btn" id="resetMysteryBoard" type="button" style="margin-top:10px;">清空這張紀錄表</button>
-      </div>
-    </div>
-  </details>
 
   <details class="game">
     <summary>今晚正常營業嗎？</summary>
@@ -855,9 +695,6 @@
 <script>
 const STORAGE_KEY = 'rp-boardgames:state-v1';
 let state = {
-  mysteryRoles: {},
-  mysteryConditions: {},
-  mysteryRounds: {},
   avalonPlayers: [],
   avalonRounds: {}
 };
@@ -965,34 +802,6 @@ document.getElementById('resetAvalonBoard').addEventListener('click', () => {
   scheduleSave();
 });
 
-document.querySelectorAll('.role-check').forEach(cb => {
-  cb.addEventListener('change', () => {
-    state.mysteryRoles[cb.dataset.role] = cb.checked;
-    scheduleSave();
-  });
-});
-document.querySelectorAll('.cond-check').forEach(cb => {
-  cb.addEventListener('change', () => {
-    state.mysteryConditions[cb.dataset.cond] = cb.checked;
-    scheduleSave();
-  });
-});
-document.querySelectorAll('#mysteryRoundsBody .round-input').forEach(inp => {
-  inp.addEventListener('input', () => {
-    const round = inp.dataset.round;
-    const key = inp.dataset.key;
-    if(!state.mysteryRounds[round]) state.mysteryRounds[round] = {};
-    state.mysteryRounds[round][key] = inp.value;
-    scheduleSave();
-  });
-});
-document.getElementById('resetMysteryBoard').addEventListener('click', () => {
-  if(!confirm('確定要清空這張紀錄表嗎？角色勾選與確認事項不會被清空。')) return;
-  state.mysteryRounds = {};
-  document.querySelectorAll('#mysteryRoundsBody .round-input').forEach(inp => { inp.value = ''; });
-  scheduleSave();
-});
-
 document.querySelectorAll('.copy-btn').forEach(btn => {
   btn.addEventListener('click', async () => {
     const box = btn.closest('.macro-row').querySelector('.macro-box');
@@ -1018,26 +827,10 @@ async function init(){
     if(raw){
       const loaded = JSON.parse(raw);
       state = Object.assign(state, loaded);
-      if(!state.mysteryRoles) state.mysteryRoles = {};
-      if(!state.mysteryConditions) state.mysteryConditions = {};
-      if(!state.mysteryRounds) state.mysteryRounds = {};
       if(!Array.isArray(state.avalonPlayers)) state.avalonPlayers = [];
       if(!state.avalonRounds) state.avalonRounds = {};
     }
   }catch(e){ /* keep defaults */ }
-  document.getElementById('recordB').value = state.recordB || '';
-  document.querySelectorAll('.role-check').forEach(cb => {
-    cb.checked = !!state.mysteryRoles[cb.dataset.role];
-  });
-  document.querySelectorAll('.cond-check').forEach(cb => {
-    cb.checked = !!state.mysteryConditions[cb.dataset.cond];
-  });
-  document.querySelectorAll('#mysteryRoundsBody .round-input').forEach(inp => {
-    const round = inp.dataset.round;
-    const key = inp.dataset.key;
-    const saved = state.mysteryRounds[round];
-    if(saved && saved[key]) inp.value = saved[key];
-  });
   document.querySelectorAll('#avalonRoundsBody .round-input').forEach(inp => {
     const round = inp.dataset.round;
     const key = inp.dataset.key;
