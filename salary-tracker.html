@@ -252,7 +252,7 @@
     margin-bottom:24px;
   }
   .ledger-scroll{overflow-x:auto;}
-  table{width:100%;border-collapse:collapse;min-width:1220px;}
+  table{width:100%;border-collapse:collapse;min-width:1420px;}
   thead th{
     text-align:left;
     font-size:13px;
@@ -306,6 +306,19 @@
   .col-paid{width:36px;text-align:center;}
   .col-name{width:132px;}
   .col-pos{width:100px;}
+  .col-timer{width:190px;}
+  .timer-cell{display:flex;flex-direction:column;gap:5px;}
+  .timer-row{display:flex;align-items:center;gap:4px;}
+  .timer-row span.sep{font-size:12px;color:var(--ivory-dim);flex:0 0 auto;}
+  .timer-row input[type=number]{width:0;flex:1;min-width:30px;text-align:center;padding:5px 2px;font-size:12.5px;}
+  .timer-btn{
+    flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--ivory-dim);
+    font-family:'Noto Sans TC', sans-serif;font-size:11.5px;padding:4px 8px;border-radius:5px;cursor:pointer;
+    transition:border-color .15s,color .15s;white-space:nowrap;
+  }
+  .timer-btn:hover{border-color:var(--brass-soft);color:var(--brass);}
+  .timer-remain{flex:1;font-family:'IBM Plex Mono', monospace;font-size:12.5px;color:var(--brass);white-space:nowrap;}
+  .timer-remain.over{color:#e0876a;font-weight:700;}
   .col-hours{width:82px;}
   .col-sessions{width:74px;}
   .col-guests{width:84px;}
@@ -387,7 +400,7 @@
   }
   @media (max-width:820px){
     .summary-row{grid-template-columns:1fr;}
-    table{min-width:900px;}
+    table{min-width:1420px;}
   }
 
   .by-employee{
@@ -494,6 +507,7 @@
           <th class="col-paid"></th>
           <th class="col-name">姓名</th>
           <th class="col-pos">職位</th>
+          <th class="col-timer">服務計時（一節20分）</th>
           <th class="num col-hours">工時</th>
           <th class="num col-sessions">節數</th>
           <th class="num col-guests">額外人頭</th>
@@ -645,7 +659,9 @@ function newEntry(){
     sessions: 0,
     guests: 0,
     note: '',
-    paid: false
+    paid: false,
+    timerStart: null,
+    timerEnd: null
   };
 }
 
@@ -910,6 +926,7 @@ function renderEntries(){
       <td class="col-paid"><input type="checkbox" class="paid-check" data-field="paid" ${entry.paid ? 'checked' : ''} aria-label="已發薪"></td>
       <td class="col-name"><select data-field="name">${nameOptions(entry.name)}</select></td>
       <td class="col-pos"><select data-field="position" ${posLocked ? 'disabled' : ''} style="color:${posColor};border-color:${posColor}88;background:${posColor}3d;font-weight:700;border-radius:5px;">${positionOptionsForEmployee(entry.name, entry.position)}</select></td>
+      <td class="col-timer">${timerCellHtml(entry)}</td>
       <td class="col-hours"><input type="number" data-field="hours" min="0" step="0.5" value="${entry.hours}" ${isReception ? 'disabled' : ''}></td>
       <td class="col-sessions"><input type="number" data-field="sessions" min="0" step="1" value="${entry.sessions}" ${r.hasSession ? '' : 'disabled'}></td>
       <td class="col-guests"><input type="number" data-field="guests" min="0" step="1" value="${entry.guests}" ${r.hasSession ? '' : 'disabled'}></td>
@@ -1139,6 +1156,115 @@ document.getElementById('freeNotes').addEventListener('input', (e) => {
   scheduleSave();
 });
 
+
+/* ---------- 服務計時（一節 20 分鐘） ---------- */
+const TIMER_MINUTES = 20;
+
+function timerCellHtml(entry){
+  const hasStart = !!entry.timerStart;
+  const d = hasStart ? new Date(entry.timerStart) : null;
+  const hv = hasStart ? d.getHours() : '';
+  const mv = hasStart ? String(d.getMinutes()).padStart(2, '0') : '';
+  return `<div class="timer-cell">
+    <div class="timer-row">
+      <input type="number" class="timer-h" data-timer="h" min="0" max="23" value="${hv}" aria-label="開始時">
+      <span class="sep">:</span>
+      <input type="number" class="timer-m" data-timer="m" min="0" max="59" value="${mv}" aria-label="開始分">
+      <button type="button" class="timer-btn" data-timer-action="now" title="以現在時間開始計時">現在</button>
+    </div>
+    <div class="timer-row">
+      <span class="timer-remain" data-timer-remain>—</span>
+      <button type="button" class="timer-btn" data-timer-action="extend" title="續時 20 分鐘">續+20</button>
+      <button type="button" class="timer-btn" data-timer-action="clear" title="清除計時">✕</button>
+    </div>
+  </div>`;
+}
+
+function syncTimerInputs(tr, entry){
+  const h = tr.querySelector('.timer-h');
+  const m = tr.querySelector('.timer-m');
+  if(!h || !m) return;
+  if(entry.timerStart){
+    const d = new Date(entry.timerStart);
+    h.value = d.getHours();
+    m.value = String(d.getMinutes()).padStart(2, '0');
+  }else{
+    h.value = '';
+    m.value = '';
+  }
+}
+
+function updateTimerDisplays(){
+  const now = Date.now();
+  document.querySelectorAll('#tbody tr').forEach(tr => {
+    const el = tr.querySelector('[data-timer-remain]');
+    if(!el) return;
+    const entry = state.entries.find(x => x.id === tr.dataset.id);
+    if(!entry || !entry.timerEnd){
+      el.textContent = '—';
+      el.classList.remove('over');
+      return;
+    }
+    const diff = entry.timerEnd - now;
+    if(diff <= 0){
+      el.textContent = '時間到';
+      el.classList.add('over');
+    }else{
+      el.textContent = `剩 ${Math.ceil(diff / 60000)} 分`;
+      el.classList.remove('over');
+    }
+  });
+}
+
+document.getElementById('tbody').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-timer-action]');
+  if(!btn) return;
+  const tr = btn.closest('tr');
+  const entry = state.entries.find(x => x.id === tr.dataset.id);
+  if(!entry) return;
+  const action = btn.dataset.timerAction;
+  const now = Date.now();
+  const slot = TIMER_MINUTES * 60000;
+  if(action === 'now'){
+    entry.timerStart = now;
+    entry.timerEnd = now + slot;
+  }else if(action === 'extend'){
+    if(!entry.timerEnd) return;
+    if(entry.timerEnd <= now){
+      entry.timerStart = now;
+      entry.timerEnd = now + slot;
+    }else{
+      entry.timerEnd += slot;
+    }
+  }else if(action === 'clear'){
+    entry.timerStart = null;
+    entry.timerEnd = null;
+  }
+  syncTimerInputs(tr, entry);
+  updateTimerDisplays();
+  scheduleSave();
+});
+
+document.getElementById('tbody').addEventListener('change', (e) => {
+  if(!e.target.dataset.timer) return;
+  const tr = e.target.closest('tr');
+  const entry = state.entries.find(x => x.id === tr.dataset.id);
+  if(!entry) return;
+  const hv = tr.querySelector('.timer-h').value;
+  const mv = tr.querySelector('.timer-m').value;
+  if(hv === '' || mv === '') return;
+  const h = Math.min(23, Math.max(0, Number(hv) || 0));
+  const m = Math.min(59, Math.max(0, Number(mv) || 0));
+  const d = new Date();
+  d.setHours(h, m, 0, 0);
+  const dur = (entry.timerStart && entry.timerEnd) ? (entry.timerEnd - entry.timerStart) : TIMER_MINUTES * 60000;
+  entry.timerStart = d.getTime();
+  entry.timerEnd = entry.timerStart + dur;
+  syncTimerInputs(tr, entry);
+  updateTimerDisplays();
+  scheduleSave();
+});
+
 async function init(){
   try{
     const raw = await loadState();
@@ -1176,6 +1302,8 @@ async function init(){
   renderEmployeeList();
   renderEntries();
   renderReservations();
+  updateTimerDisplays();
+  setInterval(updateTimerDisplays, 1000);
 }
 
 init();
