@@ -783,25 +783,34 @@ function renderRules(){
   const P = state.prices;
   const money = (key, label) => `<div class="rule-field"><span>${label}</span><input type="number" data-price="${key}" value="${P[key]}" min="0" step="1000"></div>`;
   const pct = (key, label) => `<div class="rule-field"><span>${label}</span><input type="number" data-price="${key}" value="${P[key]}" min="0" max="100" step="1"></div>`;
-  const priceCard = document.createElement('div');
-  priceCard.className = 'rule-card';
-  priceCard.style.boxShadow = 'inset 4px 0 0 var(--brass)';
-  priceCard.style.background = 'rgba(201,161,93,0.08)';
-  priceCard.innerHTML = `
-    <div class="pos-name" style="color:var(--brass);">服務價目與抽成</div>
-    ${money('fish','小魚乾')}
-    ${money('symphony','交響樂')}
-    ${money('special','特殊服務')}
-    ${money('party','吸貓派對')}
-    ${money('wound','傷口包紮（僅醫護）')}
-    ${money('shot','喵喵健康針（僅醫護）')}
-    ${pct('serviceCut','以上服務店家額外抽成 %')}
-    ${money('photo','與貓咪合照（僅攝影，含1隻貓）')}
-    ${money('extraCat','每多一隻貓收入＋')}
-    ${money('catPay','被拍攝貓每隻可得（不抽成）')}
-    ${pct('photoCut','合照店家抽成 %（扣完貓咪分潤後）')}
-  `;
-  grid.appendChild(priceCard);
+  const note = (text) => `<p style="margin:8px 2px 0;font-size:12px;color:var(--ivory-dim);line-height:1.5;">${text}</p>`;
+  const addCard = (title, color, body) => {
+    const card = document.createElement('div');
+    card.className = 'rule-card';
+    card.style.boxShadow = `inset 4px 0 0 ${color}`;
+    card.style.background = `${color}14`;
+    card.innerHTML = `<div class="pos-name" style="color:${color};">${title}</div>${body}`;
+    grid.appendChild(card);
+  };
+
+  addCard('一般服務價目', '#d4a373',
+    money('fish', '小魚乾') +
+    money('symphony', '交響樂') +
+    money('special', '特殊服務') +
+    money('party', '吸貓派對') +
+    pct('serviceCut', '店家額外抽成 %') +
+    note('店家抽成也適用於醫護服務。'));
+
+  addCard('醫護服務價目（僅醫護）', '#7fb3a8',
+    money('wound', '傷口包紮') +
+    money('shot', '喵喵健康針') +
+    note('店家抽成比例同「一般服務價目」。'));
+
+  addCard('與貓咪合照（僅攝影）', '#a3607e',
+    money('photo', '合照（含1隻貓）') +
+    money('extraCat', '每多一隻貓收入＋') +
+    money('catPay', '被拍攝貓每隻可得（不抽成）') +
+    pct('photoCut', '店家抽成 %（扣完貓咪分潤後）'));
 }
 
 document.getElementById('rulesGrid').addEventListener('input', (e) => {

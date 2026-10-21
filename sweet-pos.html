@@ -118,11 +118,6 @@
   }
   .order-total .k{font-size:14px;color:var(--ivory-dim);}
   .order-total .v{font-family:'IBM Plex Mono', monospace;font-size:24px;font-weight:600;color:var(--accent);}
-  .order-note{
-    width:100%;margin-top:12px;background:var(--panel-2);border:1px solid var(--line-soft);
-    border-radius:8px;color:var(--ivory);font-family:'Noto Sans TC', sans-serif;font-size:14px;padding:9px 12px;
-  }
-  .order-note:focus{outline:none;border-color:var(--accent-soft);}
   .order-actions{display:flex;gap:10px;margin-top:14px;}
   .btn{
     font-family:'Noto Sans TC', sans-serif;font-size:14.5px;border-radius:8px;cursor:pointer;
@@ -147,27 +142,16 @@
   .totals-top .lbl{font-size:13px;color:var(--ivory-dim);margin-bottom:4px;}
   .totals-top .big{font-family:'IBM Plex Mono', monospace;font-size:34px;font-weight:600;color:var(--accent);line-height:1.1;}
   .totals-top .cnt{font-size:13.5px;color:var(--ivory-dim);}
-  .sales-table{width:100%;border-collapse:collapse;margin-top:16px;}
-  .sales-table th{
-    text-align:left;font-size:12px;letter-spacing:0.05em;color:var(--accent);font-weight:600;
-    padding:8px 6px;border-bottom:1px solid var(--line);
-  }
-  .sales-table th.r, .sales-table td.r{text-align:right;}
-  .sales-table td{padding:8px 6px;font-size:14px;border-bottom:1px solid var(--line-soft);}
-  .sales-table td.r{font-family:'IBM Plex Mono', monospace;}
-  .sales-table tr:last-child td{border-bottom:none;}
-  .totals-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+  .totals-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;}
 
   .record{
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
     background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);
-    padding:14px 18px;margin-bottom:10px;
+    padding:10px 16px;margin-bottom:8px;
   }
-  .record-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
-  .record-head .no{font-family:'Noto Serif TC', serif;font-weight:700;color:var(--ivory);}
-  .record-head .tm{font-family:'IBM Plex Mono', monospace;font-size:12.5px;color:var(--ivory-dim);margin-left:10px;}
-  .record-head .note{font-size:12.5px;color:var(--accent);margin-left:10px;}
-  .record-head .amt{font-family:'IBM Plex Mono', monospace;font-size:17px;font-weight:600;color:var(--accent);}
-  .record-items{margin:8px 0 0;font-size:13.5px;color:var(--ivory-dim);line-height:1.8;}
+  .record .no{font-family:'Noto Serif TC', serif;font-weight:700;}
+  .record .tm{font-family:'IBM Plex Mono', monospace;font-size:12.5px;color:var(--ivory-dim);margin-left:10px;}
+  .record .amt{font-family:'IBM Plex Mono', monospace;font-size:16px;font-weight:600;color:var(--accent);}
   .record-del{
     background:none;border:none;color:var(--ivory-dim);cursor:pointer;font-size:16px;padding:2px 8px;border-radius:5px;margin-left:8px;
   }
@@ -203,8 +187,6 @@
       <h2 class="sec">目前這一單</h2>
       <div id="orderLines"></div>
       <div class="order-total"><span class="k">本單合計</span><span class="v" id="orderTotal">0</span></div>
-      <div style="margin-top:12px;font-size:12px;color:var(--ivory-dim);">備註（桌號／客人，選填）</div>
-      <input type="text" class="order-note" id="orderNote" maxlength="30" style="margin-top:6px;">
       <div class="order-actions">
         <button class="btn danger" id="clearOrderBtn" type="button">取消本單</button>
         <button class="btn primary" id="checkoutBtn" type="button">結帳</button>
@@ -223,17 +205,12 @@
         </div>
         <div class="cnt" id="orderCount">共 0 單</div>
       </div>
-      <table class="sales-table">
-        <thead><tr><th>品項</th><th class="r">數量</th><th class="r">金額</th></tr></thead>
-        <tbody id="salesBody"></tbody>
-      </table>
       <div class="totals-actions">
-        <button class="btn" id="copySummaryBtn" type="button">複製上繳摘要</button>
         <button class="btn danger" id="clearAllBtn" type="button">清空今日明細</button>
       </div>
     </div>
 
-    <h2 class="sec" style="margin-top:26px;">結帳明細</h2>
+    <h2 class="sec">結帳明細</h2>
     <div id="recordList"></div>
   </section>
 
@@ -258,16 +235,12 @@ const ITEMS = {};
 MENU.forEach(g => g.items.forEach(it => { ITEMS[it.id] = it; }));
 
 const STORAGE_KEY = 'sweet-pos:state-v1';
-let state = { current: {}, note: '', records: [], nextNo: 1 };
+let state = { current: {}, records: [], nextNo: 1 };
 
 function fmt(n){ return Math.round(Number(n) || 0).toLocaleString('en-US'); }
 function hhmm(ts){
   const d = new Date(ts);
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-}
-function mmdd(ts){
-  const d = new Date(ts);
-  return String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
 }
 
 /* ---------- storage ---------- */
@@ -389,25 +362,17 @@ function renderOrder(){
     minus.addEventListener('click', () => changeQty(id, -1));
     plus.addEventListener('click', () => changeQty(id, 1));
     ctl.append(minus, num, plus);
-    const unit = document.createElement('div'); unit.className = 'sub'; unit.style.color = 'var(--ivory-dim)'; unit.textContent = fmt(it.price) + ' 每份';
-    line.append(nm, sub, ctl, unit);
+    line.append(nm, sub, ctl);
     box.appendChild(line);
   });
   document.getElementById('orderTotal').textContent = fmt(orderTotal());
   document.getElementById('checkoutBtn').disabled = ids.length === 0;
-  document.getElementById('clearOrderBtn').disabled = ids.length === 0 && !state.note;
+  document.getElementById('clearOrderBtn').disabled = ids.length === 0;
   updateMenuBadges();
 }
 
-document.getElementById('orderNote').addEventListener('input', e => {
-  state.note = e.target.value;
-  scheduleSave();
-});
-
 document.getElementById('clearOrderBtn').addEventListener('click', () => {
   state.current = {};
-  state.note = '';
-  document.getElementById('orderNote').value = '';
   renderOrder();
   scheduleSave();
 });
@@ -415,12 +380,9 @@ document.getElementById('clearOrderBtn').addEventListener('click', () => {
 document.getElementById('checkoutBtn').addEventListener('click', () => {
   const ids = Object.keys(state.current).filter(id => ITEMS[id]);
   if(!ids.length) return;
-  const items = ids.map(id => ({ id, name: ITEMS[id].name, price: ITEMS[id].price, qty: state.current[id] }));
-  const total = items.reduce((s, it) => s + it.price * it.qty, 0);
-  state.records.push({ no: state.nextNo++, time: Date.now(), items, total, note: (state.note || '').trim() });
+  const total = orderTotal();
+  state.records.push({ no: state.nextNo++, time: Date.now(), total });
   state.current = {};
-  state.note = '';
-  document.getElementById('orderNote').value = '';
   renderOrder();
   renderRecords();
   scheduleSave();
@@ -437,18 +399,12 @@ function renderRecords(){
     list.appendChild(empty);
   }
   [...state.records].reverse().forEach(rec => {
-    const card = document.createElement('div');
-    card.className = 'record';
-    const head = document.createElement('div');
-    head.className = 'record-head';
+    const row = document.createElement('div');
+    row.className = 'record';
     const left = document.createElement('div');
     const no = document.createElement('span'); no.className = 'no'; no.textContent = `第 ${rec.no} 單`;
     const tm = document.createElement('span'); tm.className = 'tm'; tm.textContent = hhmm(rec.time);
     left.append(no, tm);
-    if(rec.note){
-      const note = document.createElement('span'); note.className = 'note'; note.textContent = rec.note;
-      left.appendChild(note);
-    }
     const right = document.createElement('div');
     const amt = document.createElement('span'); amt.className = 'amt'; amt.textContent = fmt(rec.total) + ' Gil';
     const del = document.createElement('button'); del.type = 'button'; del.className = 'record-del'; del.textContent = '×';
@@ -460,66 +416,17 @@ function renderRecords(){
       scheduleSave();
     });
     right.append(amt, del);
-    head.append(left, right);
-    const items = document.createElement('div');
-    items.className = 'record-items';
-    items.textContent = rec.items.map(it => `${it.name} ×${it.qty}（${fmt(it.price * it.qty)}）`).join('　');
-    card.append(head, items);
-    list.appendChild(card);
+    row.append(left, right);
+    list.appendChild(row);
   });
   renderTotals();
 }
 
-function salesBreakdown(){
-  const agg = {};
-  state.records.forEach(rec => rec.items.forEach(it => {
-    if(!agg[it.id]) agg[it.id] = { name: it.name, qty: 0, amount: 0 };
-    agg[it.id].qty += it.qty;
-    agg[it.id].amount += it.price * it.qty;
-  }));
-  // 依菜單順序列出
-  const rows = [];
-  MENU.forEach(g => g.items.forEach(it => { if(agg[it.id]) rows.push(agg[it.id]); }));
-  return rows;
-}
-
 function renderTotals(){
-  const grand = state.records.reduce((s, r) => s + r.total, 0);
+  const grand = state.records.reduce((s, r) => s + (Number(r.total) || 0), 0);
   document.getElementById('grandTotal').textContent = fmt(grand);
   document.getElementById('orderCount').textContent = `共 ${state.records.length} 單`;
-  const body = document.getElementById('salesBody');
-  body.innerHTML = '';
-  const rows = salesBreakdown();
-  if(!rows.length){
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 3; td.style.color = 'var(--ivory-dim)'; td.textContent = '尚無銷售';
-    tr.appendChild(td); body.appendChild(tr);
-  }
-  rows.forEach(r => {
-    const tr = document.createElement('tr');
-    const a = document.createElement('td'); a.textContent = r.name;
-    const b = document.createElement('td'); b.className = 'r'; b.textContent = r.qty;
-    const c = document.createElement('td'); c.className = 'r'; c.textContent = fmt(r.amount);
-    tr.append(a, b, c);
-    body.appendChild(tr);
-  });
 }
-
-document.getElementById('copySummaryBtn').addEventListener('click', async (e) => {
-  const btn = e.currentTarget;
-  const rows = salesBreakdown();
-  const grand = state.records.reduce((s, r) => s + r.total, 0);
-  const lines = [`甜綿菓室 營業結算 ${mmdd(Date.now())}`, `共 ${state.records.length} 單`];
-  rows.forEach(r => lines.push(`${r.name} ×${r.qty}　${fmt(r.amount)}`));
-  lines.push(`合計 ${fmt(grand)} Gil`);
-  const text = lines.join('\n');
-  try{ await navigator.clipboard.writeText(text); }
-  catch(err){ window.prompt('請手動複製以下內容：', text); return; }
-  const old = btn.textContent;
-  btn.textContent = '已複製';
-  setTimeout(() => { btn.textContent = old; }, 1500);
-});
 
 document.getElementById('clearAllBtn').addEventListener('click', () => {
   if(!state.records.length) return;
@@ -542,7 +449,6 @@ async function init(){
     }
   }catch(e){ /* keep defaults */ }
   buildMenu();
-  document.getElementById('orderNote').value = state.note || '';
   renderOrder();
   renderRecords();
 }
