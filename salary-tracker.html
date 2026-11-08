@@ -485,7 +485,7 @@
         <span class="mark">RP店</span>
         <h1>接待台帳</h1>
       </div>
-      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已儲存</span></div>
     </div>
     <div class="month-field">
       日期
@@ -638,9 +638,14 @@ let state = {
 };
 
 function uid(){ return 'r' + Math.random().toString(36).slice(2, 9); }
+// 營業日：凌晨 6 點以前仍算前一天（夜間營業跨過午夜時，日期不會提早跳到隔天）
+const BUSINESS_DAY_START_HOUR = 6;
+function businessDate(){
+  return new Date(Date.now() - BUSINESS_DAY_START_HOUR * 3600 * 1000);
+}
 function todayStr(){
-  const d = new Date();
-  return d.toISOString().slice(0,10);
+  const d = businessDate();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
 }
 function fmtMoney(n){
   n = Math.round(Number(n) || 0);
@@ -666,7 +671,7 @@ function newEntry(){
 }
 
 function newReservation(){
-  const now = new Date();
+  const now = businessDate();
   return {
     id: uid(),
     month: now.getMonth() + 1,
@@ -734,7 +739,7 @@ function scheduleSave(){
     try{
       await persistState();
       dot.classList.remove('saving');
-      text.textContent = '已同步';
+      text.textContent = '已儲存';
     }catch(e){
       dot.classList.remove('saving');
       text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';
@@ -1106,6 +1111,8 @@ document.getElementById('clearEntriesBtn').addEventListener('click', () => {
   if(!state.entries.length) return;
   if(!confirm(`確定要清空本日全部 ${state.entries.length} 筆每日紀錄嗎？此動作無法復原。`)) return;
   state.entries = [];
+  state.date = todayStr();
+  document.getElementById('dateLabel').value = state.date;
   renderEntries();
   scheduleSave();
 });

@@ -174,7 +174,7 @@
       <span class="mark">甜綿菓室</span>
       <h1>點餐窗口</h1>
     </div>
-    <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+    <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已儲存</span></div>
   </header>
 
   <div class="pos-layout">
@@ -279,7 +279,7 @@ function scheduleSave(){
     try{
       await persistState();
       dot.classList.remove('saving');
-      text.textContent = '已同步';
+      text.textContent = '已儲存';
     }catch(e){
       dot.classList.remove('saving');
       text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';

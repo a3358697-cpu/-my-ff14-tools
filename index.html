@@ -124,6 +124,8 @@
     transition:border-color .15s ease, color .15s ease;
   }
   .backup-btn:hover{border-color:var(--accent-gold-soft);color:var(--accent-gold);}
+  .backup-last{margin-top:14px;font-size:13.5px;color:var(--text-muted);}
+  .backup-last.warn{color:#e0876a;font-weight:600;}
   .backup-status{margin-top:12px;font-size:12.5px;color:var(--text-dim);min-height:1.4em;}
 
   .links-panel{
@@ -295,6 +297,7 @@
       <button class="backup-btn" id="importBackupBtn" type="button">還原備份</button>
       <input type="file" id="importBackupFile" accept=".json" style="display:none;">
     </div>
+    <div class="backup-last" id="backupLast"></div>
     <div class="backup-status" id="backupStatus"></div>
   </div>
 
@@ -335,6 +338,40 @@
   }
 
   const statusEl = document.getElementById('backupStatus');
+  const lastEl = document.getElementById('backupLast');
+  const LAST_BACKUP_KEY = 'toolbox:last-backup-at';   // 只記時間，不屬於備份內容
+  const OVERDUE_DAYS = 7;
+
+  async function refreshBackupReminder(){
+    let hasData = false;
+    for(const tool of TOOL_KEYS){
+      const raw = await storeGet(tool.key);
+      if(raw !== null && raw !== undefined){ hasData = true; break; }
+    }
+    if(!hasData){
+      lastEl.textContent = '';
+      lastEl.classList.remove('warn');
+      return;
+    }
+    const raw = await storeGet(LAST_BACKUP_KEY);
+    const ts = Number(raw);
+    if(!ts){
+      lastEl.textContent = '尚未備份過，建議現在下載一份。';
+      lastEl.classList.add('warn');
+      return;
+    }
+    const days = Math.floor((Date.now() - ts) / 86400000);
+    if(days <= 0){
+      lastEl.textContent = '上次備份：今天';
+      lastEl.classList.remove('warn');
+    }else if(days >= OVERDUE_DAYS){
+      lastEl.textContent = `上次備份：${days} 天前，已超過一週，建議再備份一次。`;
+      lastEl.classList.add('warn');
+    }else{
+      lastEl.textContent = `上次備份：${days} 天前`;
+      lastEl.classList.remove('warn');
+    }
+  }
 
   document.getElementById('downloadBackupBtn').addEventListener('click', async () => {
     statusEl.textContent = '正在收集資料…';
@@ -360,6 +397,8 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     statusEl.textContent = `已下載備份，包含 ${foundCount} 個工具的資料。`;
+    await storeSet(LAST_BACKUP_KEY, String(Date.now()));
+    refreshBackupReminder();
   });
 
   document.getElementById('importBackupBtn').addEventListener('click', () => {
@@ -394,6 +433,7 @@
   if(!hasCloudStorage){
     statusEl.textContent = '目前是用瀏覽器本機儲存，建議定期下載備份以防資料遺失。';
   }
+  refreshBackupReminder();
 })();
 </script>
 </body>

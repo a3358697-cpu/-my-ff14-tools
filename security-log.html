@@ -329,7 +329,7 @@
         <span class="mark">RP店</span>
         <h1>保安紀錄</h1>
       </div>
-      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已同步</span></div>
+      <div class="save-status"><span class="save-dot" id="saveDot"></span><span id="saveText">已儲存</span></div>
     </div>
   </header>
 
@@ -466,7 +466,7 @@ function scheduleSave(){
     try{
       await persistState();
       dot.classList.remove('saving');
-      text.textContent = '已同步';
+      text.textContent = '已儲存';
     }catch(e){
       dot.classList.remove('saving');
       text.textContent = '儲存失敗，請確認網路或改用工具箱首頁的備份功能';

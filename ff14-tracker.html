@@ -266,6 +266,8 @@
     background:rgba(0,0,0,0.65);color:var(--text-parchment);border:none;font-size:10px;
     display:flex;align-items:center;justify-content:center;cursor:pointer;line-height:1;padding:0;
   }
+  .image-usage{margin-top:8px;font-size:12px;color:var(--text-dim);}
+  .image-usage.warn{color:var(--accent-coral);}
   .image-add-btn{
     width:72px;height:72px;flex:0 0 auto;border-radius:8px;
     border:1px dashed var(--border-soft);background:var(--bg-void-2);
@@ -377,6 +379,7 @@
       <div class="image-row" id="imageRow">
         <button class="image-add-btn" id="imageAddBtn" aria-label="新增圖片" type="button">＋</button>
       </div>
+      <div class="image-usage" id="imageUsage"></div>
       <input type="file" id="imageFileInput" accept="image/*" multiple style="display:none;">
     </div>
 
@@ -587,6 +590,21 @@
     });
   }
 
+  // 瀏覽器儲存空間約 5MB，圖片轉成文字後佔空間，超過會存不進去
+  const STORAGE_SOFT_LIMIT = 3500000;   // 開始提醒
+  const STORAGE_HARD_LIMIT = 4500000;   // 不再允許新增
+  function stateSize(){ return JSON.stringify(state).length; }
+  function updateImageUsage(){
+    const el = document.getElementById('imageUsage');
+    if(!el) return;
+    const size = stateSize();
+    const mb = (size / 1000000).toFixed(1);
+    el.classList.toggle('warn', size >= STORAGE_SOFT_LIMIT);
+    el.textContent = state.misc.images.length
+      ? `圖片 ${state.misc.images.length} 張・儲存空間已用約 ${mb} MB／5 MB` + (size >= STORAGE_SOFT_LIMIT ? '（快滿了，建議刪掉一些圖片）' : '')
+      : '';
+  }
+
   function renderImages(){
     const row = document.getElementById('imageRow');
     row.querySelectorAll('.image-thumb').forEach(el=>el.remove());
@@ -603,6 +621,7 @@
       });
       row.insertBefore(thumb, addBtn);
     });
+    updateImageUsage();
   }
 
   function openLightbox(url){
@@ -624,6 +643,10 @@
     for(const file of files){
       try{
         const dataUrl = await compressImage(file);
+        if(stateSize() + dataUrl.length > STORAGE_HARD_LIMIT){
+          alert('儲存空間快滿了，這張圖片沒有加入。請先刪掉一些舊圖片再新增。');
+          break;
+        }
         state.misc.images.push({ id: uid(), dataUrl });
       }catch(err){ console.error('圖片處理失敗', err); }
     }
@@ -645,7 +668,7 @@
   async function init(){
     document.getElementById('storageMode').textContent = hasCloudStorage
       ? '資料儲存在你的 Claude 帳號中，換裝置登入也會同步。'
-      : '⚠ 未偵測到 Claude 帳號儲存，資料僅存在目前這個瀏覽器（清除瀏覽器資料會遺失，換裝置也不會同步）。';
+      : '資料只存在這台裝置的瀏覽器裡，換裝置或清除瀏覽器資料就不會保留，建議定期到工具箱備份。';
     await load();
     document.getElementById('saveStatus').textContent = '已載入 · ' + new Date().toLocaleTimeString('zh-TW',{hour12:false});
     document.getElementById('miscNotes').value = state.misc.notes || '';
