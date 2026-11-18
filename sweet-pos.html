@@ -81,7 +81,6 @@
   .menu-item:hover{border-color:var(--accent-soft);background:var(--panel-2);}
   .menu-item:active{transform:scale(0.98);}
   .menu-item .nm{font-family:'Noto Serif TC', serif;font-size:15.5px;font-weight:700;padding-right:34px;}
-  .menu-item .ds{font-size:12px;color:var(--ivory-dim);line-height:1.5;}
   .menu-item .pr{font-family:'IBM Plex Mono', monospace;font-size:14px;color:var(--accent);margin-top:2px;}
   .menu-item .badge{
     position:absolute;top:10px;right:10px;min-width:24px;height:24px;padding:0 7px;border-radius:12px;
@@ -219,16 +218,16 @@
 <script>
 const MENU = [
   { cat: '飲品', items: [
-    { id: 'd1', name: '養身甘菊茶',   desc: '溫和草本香氣，療癒身心',           price: 8000 },
-    { id: 'd2', name: '雪都熱可可',   desc: '濃郁可可，溫暖心靈',               price: 10000 },
-    { id: 'd3', name: '雪都奶茶',     desc: '香醇奶香與茶韻的完美結合',         price: 12000 },
-    { id: 'd4', name: '鮮奶油咖啡',   desc: '香濃咖啡配上綿密鮮奶油',           price: 12000 }
+    { id: 'd1', name: '養身甘菊茶',   price: 8000 },
+    { id: 'd2', name: '雪都熱可可',   price: 10000 },
+    { id: 'd3', name: '雪都奶茶',     price: 12000 },
+    { id: 'd4', name: '鮮奶油咖啡',   price: 12000 }
   ]},
   { cat: '甜點', items: [
-    { id: 's1', name: '堅果餅乾',         desc: '酥脆口感，堅果滿滿（含有堅果過敏源）', price: 8000 },
-    { id: 's2', name: '營養滿分水煮蛋',   desc: '簡單美味，補充能量',               price: 8000 },
-    { id: 's3', name: '蝴蝶餅',           desc: '經典酥脆，甜而不膩',               price: 10000 },
-    { id: 's4', name: '美式瑪芬',         desc: '鬆軟綿密，經典美味',               price: 12000 }
+    { id: 's1', name: '堅果餅乾',         price: 8000 },
+    { id: 's2', name: '營養滿分水煮蛋',   price: 8000 },
+    { id: 's3', name: '蝴蝶餅',           price: 10000 },
+    { id: 's4', name: '美式瑪芬',         price: 12000 }
   ]}
 ];
 const ITEMS = {};
@@ -305,10 +304,9 @@ function buildMenu(){
       btn.className = 'menu-item';
       btn.dataset.id = it.id;
       const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = it.name;
-      const ds = document.createElement('span'); ds.className = 'ds'; ds.textContent = it.desc;
       const pr = document.createElement('span'); pr.className = 'pr'; pr.textContent = fmt(it.price) + ' Gil';
       const bd = document.createElement('span'); bd.className = 'badge'; bd.textContent = '0';
-      btn.append(nm, ds, pr, bd);
+      btn.append(nm, pr, bd);
       btn.addEventListener('click', () => changeQty(it.id, 1));
       grid.appendChild(btn);
     });
